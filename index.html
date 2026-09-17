@@ -1,446 +1,323 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Apo1.reed</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>Apo1.reed</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background:
-        radial-gradient(circle at top, #30204d 0%, #17121f 35%, #0d0b11 100%);
-      color: #fff;
-      min-height: 100vh;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    .banner {
-      width: 100%;
-      padding: 35px 20px 30px;
-      text-align: center;
-      background: linear-gradient(135deg, #241633, #5b357e, #21152d);
-      border-bottom: 2px solid #8e5bb7;
-      box-shadow: 0 5px 25px rgba(0,0,0,.45);
-    }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0d0d12;
+  color: white;
+}
 
-    .gatos {
-      font-size: 45px;
-      margin-bottom: 5px;
-    }
+header {
+  background: linear-gradient(135deg, #171722, #292943);
+  padding: 30px 20px;
+  text-align: center;
+  border-bottom: 2px solid #3b3b5c;
+}
 
-    .titulo {
-      margin: 0;
-      font-size: clamp(38px, 8vw, 70px);
-      font-weight: 900;
-      letter-spacing: 2px;
-      text-shadow: 0 4px 15px rgba(0,0,0,.6);
-    }
+header h1 {
+  margin: 0;
+  font-size: 42px;
+}
 
-    .subtitulo {
-      margin: 10px 0 0;
-      color: #eadcff;
-      font-size: 17px;
-    }
+header p {
+  margin: 8px 0 0;
+  color: #bbb;
+}
 
-    .palomitas {
-      font-size: 28px;
-      margin-top: 12px;
-    }
+.gatos {
+  font-size: 30px;
+  margin-bottom: 8px;
+}
 
-    .contenedor {
-      width: min(1200px, 94%);
-      margin: 25px auto 50px;
-    }
+.contenedor {
+  width: 92%;
+  max-width: 1200px;
+  margin: 25px auto;
+}
 
-    .buscador {
-      width: 100%;
-      padding: 16px 20px;
-      border-radius: 15px;
-      border: 1px solid #63487d;
-      background: #17121e;
-      color: white;
-      font-size: 16px;
-      outline: none;
-      box-shadow: 0 5px 20px rgba(0,0,0,.25);
-    }
+.buscar {
+  width: 100%;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid #444;
+  background: #181820;
+  color: white;
+  font-size: 16px;
+  margin-bottom: 18px;
+}
 
-    .buscador:focus {
-      border-color: #bd82f1;
-    }
+.categorias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 25px;
+}
 
-    .categorias {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin: 22px 0;
-    }
+.categoria-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 11px 16px;
+  background: #222230;
+  color: white;
+  cursor: pointer;
+  font-size: 15px;
+}
 
-    .categoria-btn {
-      border: 1px solid #64457e;
-      background: #21182b;
-      color: #eee;
-      padding: 11px 18px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-size: 15px;
-      transition: .2s;
-    }
+.categoria-btn:hover,
+.categoria-btn.activo {
+  background: #5c4cff;
+}
 
-    .categoria-btn:hover {
-      transform: translateY(-2px);
-      background: #352044;
-    }
+.peliculas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 22px;
+}
 
-    .categoria-btn.activa {
-      background: #8b52b8;
-      border-color: #b57bdd;
-      color: white;
-    }
+.tarjeta {
+  background: #17171f;
+  border: 1px solid #292936;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0,0,0,.25);
+}
 
-    .admin-esquina {
-      position: fixed;
-      left: 12px;
-      bottom: 12px;
-      z-index: 900;
-    }
+.poster {
+  width: 100%;
+  height: 330px;
+  object-fit: cover;
+  background: #222;
+}
 
-    .btn-admin {
-      border: 1px solid #76528f;
-      background: rgba(45,30,58,.95);
-      color: #eee;
-      border-radius: 50px;
-      padding: 10px 14px;
-      cursor: pointer;
-      font-size: 13px;
-      box-shadow: 0 5px 20px rgba(0,0,0,.4);
-    }
+.contenido {
+  padding: 15px;
+}
 
-    .btn-admin:hover {
-      background: #5a3970;
-    }
+.titulo {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
 
-    .btn {
-      border: 0;
-      border-radius: 12px;
-      padding: 12px 18px;
-      cursor: pointer;
-      color: white;
-      font-weight: bold;
-      font-size: 14px;
-      transition: .2s;
-    }
+.descripcion {
+  color: #aaa;
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 10px 0;
+}
 
-    .btn:hover {
-      transform: translateY(-2px);
-      filter: brightness(1.1);
-    }
+.etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
 
-    .btn-principal {
-      background: #8a4db7;
-    }
+.etiqueta {
+  background: #292943;
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-size: 12px;
+  color: #ddd;
+}
 
-    .btn-ver {
-      background: #71409b;
-      flex: 1;
-    }
+.favorita {
+  background: #7b294e;
+}
 
-    .btn-descargar {
-      background: #355c78;
-      flex: 1;
-      text-decoration: none;
-      text-align: center;
-    }
+.botones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 
-    .btn-eliminar {
-      background: #8f3047;
-      width: 100%;
-      margin-top: 9px;
-    }
+.btn {
+  border: none;
+  border-radius: 9px;
+  padding: 10px 13px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 14px;
+  display: inline-block;
+}
 
-    .panel {
-      display: none;
-      background: rgba(22,16,29,.97);
-      border: 1px solid #63477b;
-      border-radius: 18px;
-      padding: 22px;
-      margin: 20px 0;
-      box-shadow: 0 10px 35px rgba(0,0,0,.45);
-    }
+.ver {
+  background: #5c4cff;
+  color: white;
+}
 
-    .panel.visible {
-      display: block;
-    }
+.descargar {
+  background: #292936;
+  color: white;
+}
 
-    .panel h2 {
-      margin-top: 0;
-    }
+.eliminar {
+  background: #8b2635;
+  color: white;
+}
 
-    .campo {
-      margin-bottom: 14px;
-    }
+.admin-boton {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  z-index: 1000;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  background: #292936;
+  color: white;
+  cursor: pointer;
+  font-size: 21px;
+  box-shadow: 0 5px 18px rgba(0,0,0,.4);
+}
 
-    .campo label {
-      display: block;
-      margin-bottom: 6px;
-      color: #dfcbed;
-      font-size: 14px;
-    }
+.panel {
+  display: none;
+  background: #17171f;
+  border: 1px solid #333344;
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 25px;
+}
 
-    .campo input,
-    .campo select,
-    .campo textarea {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid #5d4471;
-      background: #100d14;
-      color: white;
-      outline: none;
-      font-family: inherit;
-    }
+.panel.visible {
+  display: block;
+}
 
-    .campo textarea {
-      min-height: 90px;
-      resize: vertical;
-    }
+.panel input,
+.panel select,
+.panel textarea {
+  width: 100%;
+  margin: 7px 0;
+  padding: 12px;
+  border-radius: 9px;
+  border: 1px solid #444;
+  background: #0e0e14;
+  color: white;
+}
 
-    .fila {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
+.panel button {
+  border: none;
+  border-radius: 9px;
+  padding: 11px 15px;
+  background: #5c4cff;
+  color: white;
+  cursor: pointer;
+  margin-top: 8px;
+}
 
-    .checkbox {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      margin: 15px 0;
-      color: #ffd9e9;
-    }
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0;
+}
 
-    .checkbox input {
-      width: 18px;
-      height: 18px;
-    }
+.checkbox input {
+  width: auto;
+}
 
-    .mensaje {
-      margin-top: 12px;
-      color: #e5cfff;
-      text-align: center;
-    }
+.mensaje {
+  color: #aaa;
+  text-align: center;
+  padding: 35px;
+}
 
-    .titulo-seccion {
-      margin: 30px 0 18px;
-      font-size: 26px;
-    }
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.92);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
 
-    .peliculas {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 22px;
-    }
+.modal.visible {
+  display: flex;
+}
 
-    .pelicula {
-      background: linear-gradient(180deg, #201727, #141017);
-      border: 1px solid #44334f;
-      border-radius: 17px;
-      overflow: hidden;
-      box-shadow: 0 9px 25px rgba(0,0,0,.3);
-      transition: .25s;
-    }
+.modal-contenido {
+  width: 100%;
+  max-width: 1100px;
+  position: relative;
+}
 
-    .pelicula:hover {
-      transform: translateY(-5px);
-      border-color: #79549a;
-    }
+#videoPlayer {
+  width: 100%;
+  max-height: 80vh;
+  background: black;
+  border-radius: 12px;
+}
 
-    .poster-contenedor {
-      position: relative;
-      background: #0b0910;
-      aspect-ratio: 2 / 3;
-      overflow: hidden;
-    }
+.cerrar {
+  position: absolute;
+  right: 0;
+  top: -45px;
+  border: none;
+  background: #8b2635;
+  color: white;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
 
-    .poster {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+.abrir-dropbox {
+  display: inline-block;
+  margin-top: 10px;
+  color: #bbb;
+  font-size: 13px;
+}
 
-    .poster-sin-imagen {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 55px;
-      color: #796b82;
-    }
+@media(max-width:600px) {
+  header h1 {
+    font-size: 32px;
+  }
 
-    .favorita {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(120,25,60,.9);
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 13px;
-    }
-
-    .contenido-pelicula {
-      padding: 15px;
-    }
-
-    .nombre-pelicula {
-      font-size: 19px;
-      font-weight: bold;
-      margin-bottom: 9px;
-    }
-
-    .badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      margin-bottom: 9px;
-    }
-
-    .badge {
-      background: #382443;
-      color: #ddc5e9;
-      padding: 5px 8px;
-      border-radius: 7px;
-      font-size: 11px;
-    }
-
-    .descripcion {
-      color: #c2b8c7;
-      font-size: 13px;
-      line-height: 1.4;
-      margin-bottom: 13px;
-    }
-
-    .botones {
-      display: flex;
-      gap: 7px;
-    }
-
-    .sin-resultados {
-      text-align: center;
-      color: #b8aebe;
-      padding: 45px 10px;
-      grid-column: 1 / -1;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      inset: 0;
-      background: rgba(0,0,0,.92);
-      align-items: center;
-      justify-content: center;
-      padding: 15px;
-    }
-
-    .modal.visible {
-      display: flex;
-    }
-
-    .modal-contenido {
-      width: min(1100px, 100%);
-      position: relative;
-    }
-
-    .video {
-      width: 100%;
-      max-height: 85vh;
-      background: black;
-      border-radius: 12px;
-    }
-
-    .cerrar {
-      position: absolute;
-      right: 0;
-      bottom: calc(100% + 8px);
-      border: 0;
-      background: #8d3b55;
-      color: white;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 20px;
-    }
-
-    .abrir-dropbox {
-      display: inline-block;
-      margin-top: 10px;
-      color: #e4c8ff;
-      text-decoration: none;
-    }
-
-    @media (max-width: 650px) {
-      .fila {
-        grid-template-columns: 1fr;
-      }
-
-      .peliculas {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
-      }
-
-      .contenido-pelicula {
-        padding: 10px;
-      }
-
-      .nombre-pelicula {
-        font-size: 16px;
-      }
-
-      .botones {
-        flex-direction: column;
-      }
-
-      .categoria-btn {
-        padding: 9px 13px;
-        font-size: 13px;
-      }
-    }
-  </style>
+  .poster {
+    height: 300px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-<header class="banner">
+<header>
   <div class="gatos">🐈‍⬛ ✨ 🐈</div>
-  <h1 class="titulo">Apo1.reed</h1>
-  <p class="subtitulo">Nuestra pequeña colección de películas 🍿</p>
-  <div class="palomitas">🍿 🎬 🍿</div>
+  <h1>Apo1.reed</h1>
+  <p>Películas para nosotros 🍿</p>
 </header>
 
-<main class="contenedor">
+<div class="contenedor">
 
   <input
     id="buscador"
-    class="buscador"
+    class="buscar"
     type="text"
-    placeholder="🔎 Buscar una película..."
+    placeholder="🔎 Buscar película..."
     oninput="mostrarPeliculas()"
   >
 
   <div class="categorias">
 
     <button
-      class="categoria-btn activa"
+      class="categoria-btn activo"
       onclick="cambiarCategoria('todas', this)"
     >
       🎬 Todas
@@ -476,154 +353,135 @@
 
   </div>
 
-  <section id="loginPanel" class="panel">
+  <div id="panelLogin" class="panel">
 
-    <h2>🔐 Entrar como administrador</h2>
+    <h2>🔐 Administración</h2>
 
-    <div class="campo">
-      <label>Correo</label>
-      <input id="loginEmail" type="email" placeholder="Tu correo">
-    </div>
+    <input
+      id="email"
+      type="email"
+      placeholder="Correo"
+    >
 
-    <div class="campo">
-      <label>Contraseña</label>
-      <input id="loginPassword" type="password" placeholder="Tu contraseña">
-    </div>
+    <input
+      id="password"
+      type="password"
+      placeholder="Contraseña"
+    >
 
-    <button class="btn btn-principal" onclick="iniciarSesion()">
-      Entrar
+    <button onclick="iniciarSesion()">
+      Iniciar sesión
     </button>
 
-    <div id="loginMensaje" class="mensaje"></div>
+    <p id="mensajeLogin"></p>
 
-  </section>
+  </div>
 
-  <section id="adminPanel" class="panel">
+  <div id="panelAdmin" class="panel">
 
     <h2>🎬 Agregar película</h2>
 
-    <div class="fila">
+    <input
+      id="titulo"
+      placeholder="Título"
+    >
 
-      <div class="campo">
-        <label>Título</label>
-        <input id="titulo" type="text" placeholder="Ej. Coraline">
-      </div>
+    <input
+      id="poster"
+      placeholder="Enlace del póster"
+    >
 
-      <div class="campo">
-        <label>Año</label>
-        <input id="anio" type="text" placeholder="Ej. 2009">
-      </div>
+    <input
+      id="enlace"
+      placeholder="Enlace de Dropbox"
+    >
 
-    </div>
+    <input
+      id="anio"
+      placeholder="Año"
+    >
 
-    <div class="fila">
+    <input
+      id="calidad"
+      placeholder="Calidad (1080p, 720p...)"
+    >
 
-      <div class="campo">
-        <label>Calidad</label>
-        <input id="calidad" type="text" placeholder="Ej. 1080p">
-      </div>
+    <input
+      id="tamano"
+      placeholder="Tamaño (GB, MB...)"
+    >
 
-      <div class="campo">
-        <label>Tamaño</label>
-        <input id="tamano" type="text" placeholder="Ej. 1.5 GB">
-      </div>
+    <select id="categoria">
+      <option value="principal">🎬 Principal</option>
+      <option value="familia">👨‍👩‍👧 Familia</option>
+      <option value="terror">👻 Terror</option>
+      <option value="accion">💥 Acción</option>
+    </select>
 
-    </div>
-
-    <div class="campo">
-      <label>Categoría</label>
-
-      <select id="categoria">
-        <option value="principal">🎬 Principal</option>
-        <option value="familia">👨‍👩‍👧 Familia</option>
-        <option value="terror">👻 Terror</option>
-        <option value="accion">💥 Acción</option>
-      </select>
-    </div>
-
-    <div class="campo">
-      <label>Descripción</label>
-      <textarea
-        id="descripcion"
-        placeholder="Escribe una pequeña descripción..."
-      ></textarea>
-    </div>
-
-    <div class="campo">
-      <label>URL del póster</label>
-      <input id="poster" type="url" placeholder="https://...">
-    </div>
-
-    <div class="campo">
-      <label>Enlace de Dropbox</label>
+    <div class="checkbox">
       <input
-        id="enlace"
-        type="url"
-        placeholder="https://www.dropbox.com/..."
+        id="favoritaMari"
+        type="checkbox"
       >
+      <label for="favoritaMari">
+        ❤️ Favorita de Mari
+      </label>
     </div>
 
-    <label class="checkbox">
-      <input id="favoritaMari" type="checkbox">
-      ❤️ Favorita de Mari
-    </label>
+    <textarea
+      id="descripcion"
+      rows="4"
+      placeholder="Descripción"
+    ></textarea>
 
-    <button class="btn btn-principal" onclick="agregarPelicula()">
+    <button onclick="agregarPelicula()">
       ➕ Agregar película
     </button>
 
-    <button
-      class="btn btn-admin"
-      onclick="cerrarSesion()"
-      style="margin-left:8px;"
-    >
+    <button onclick="cerrarSesion()">
       Cerrar sesión
     </button>
 
-    <div id="adminMensaje" class="mensaje"></div>
+    <p id="mensajeAdmin"></p>
 
-  </section>
+  </div>
 
-  <h2 id="tituloSeccion" class="titulo-seccion">
-    🎬 Todas las películas
-  </h2>
-
-  <section id="peliculas" class="peliculas"></section>
-
-</main>
-
-<div class="admin-esquina">
-
-  <button
-    id="btnAdmin"
-    class="btn-admin"
-    onclick="mostrarLogin()"
-  >
-    🔐 Administración
-  </button>
+  <div id="peliculas" class="peliculas"></div>
 
 </div>
+
+<button
+  class="admin-boton"
+  onclick="abrirAdministracion()"
+>
+  ⚙️
+</button>
 
 <div id="modal" class="modal">
 
   <div class="modal-contenido">
 
-    <button class="cerrar" onclick="cerrarVideo()">×</button>
+    <button
+      class="cerrar"
+      onclick="cerrarVideo()"
+    >
+      ✕ Cerrar
+    </button>
 
     <video
       id="videoPlayer"
-      class="video"
       controls
       playsinline
+      preload="metadata"
     ></video>
 
     <a
       id="abrirDropbox"
       class="abrir-dropbox"
       target="_blank"
-      rel="noopener noreferrer"
+      rel="noopener"
     >
-      Abrir directamente en Dropbox
+      Abrir enlace original de Dropbox
     </a>
 
   </div>
@@ -649,99 +507,47 @@ let categoriaActual = "todas";
 let usuarioActual = null;
 
 
+/* =========================
+   INICIO
+========================= */
+
 document.addEventListener(
   "DOMContentLoaded",
   async function() {
 
     await comprobarSesion();
+
     await cargarPeliculas();
 
   }
 );
 
 
+/* =========================
+   SESIÓN
+========================= */
+
 async function comprobarSesion() {
 
   const resultado =
     await supabaseClient.auth.getSession();
-
-  if (resultado.error) {
-    console.error(resultado.error);
-    return;
-  }
 
   usuarioActual =
     resultado.data.session
       ? resultado.data.session.user
       : null;
 
-  actualizarAdmin();
-
-}
-
-
-function actualizarAdmin() {
-
-  const loginPanel =
-    document.getElementById("loginPanel");
-
-  const adminPanel =
-    document.getElementById("adminPanel");
-
-  const btnAdmin =
-    document.getElementById("btnAdmin");
-
-  if (usuarioActual) {
-
-    loginPanel.classList.remove("visible");
-    adminPanel.classList.add("visible");
-    btnAdmin.style.display = "none";
-
-  } else {
-
-    adminPanel.classList.remove("visible");
-    btnAdmin.style.display = "inline-block";
-
-  }
-
-}
-
-
-function mostrarLogin() {
-
-  document
-    .getElementById("loginPanel")
-    .classList.toggle("visible");
-
+  actualizarPanelAdmin();
 }
 
 
 async function iniciarSesion() {
 
   const email =
-    document
-      .getElementById("loginEmail")
-      .value
-      .trim();
+    document.getElementById("email").value.trim();
 
   const password =
-    document
-      .getElementById("loginPassword")
-      .value;
-
-  const mensaje =
-    document.getElementById("loginMensaje");
-
-  if (!email || !password) {
-
-    mensaje.textContent =
-      "Escribe tu correo y contraseña.";
-
-    return;
-  }
-
-  mensaje.textContent =
-    "Entrando...";
+    document.getElementById("password").value;
 
   const resultado =
     await supabaseClient.auth.signInWithPassword({
@@ -751,10 +557,10 @@ async function iniciarSesion() {
 
   if (resultado.error) {
 
-    console.error(resultado.error);
-
-    mensaje.textContent =
-      "No se pudo iniciar sesión. Revisa tu correo y contraseña.";
+    document.getElementById(
+      "mensajeLogin"
+    ).textContent =
+      "❌ " + resultado.error.message;
 
     return;
   }
@@ -762,12 +568,14 @@ async function iniciarSesion() {
   usuarioActual =
     resultado.data.user;
 
-  mensaje.textContent = "";
+  document.getElementById(
+    "mensajeLogin"
+  ).textContent =
+    "✅ Sesión iniciada";
 
-  actualizarAdmin();
+  actualizarPanelAdmin();
 
   await cargarPeliculas();
-
 }
 
 
@@ -777,41 +585,77 @@ async function cerrarSesion() {
 
   usuarioActual = null;
 
-  actualizarAdmin();
+  actualizarPanelAdmin();
 
-  mostrarPeliculas();
+  alert("Sesión cerrada");
+}
+
+
+function abrirAdministracion() {
+
+  if (usuarioActual) {
+
+    document
+      .getElementById("panelAdmin")
+      .classList.toggle("visible");
+
+  } else {
+
+    document
+      .getElementById("panelLogin")
+      .classList.toggle("visible");
+
+  }
+}
+
+
+function actualizarPanelAdmin() {
+
+  const login =
+    document.getElementById("panelLogin");
+
+  const admin =
+    document.getElementById("panelAdmin");
+
+  if (usuarioActual) {
+
+    login.classList.remove("visible");
+
+    admin.classList.add("visible");
+
+  } else {
+
+    admin.classList.remove("visible");
+
+  }
 
 }
 
 
+/* =========================
+   PELÍCULAS
+========================= */
+
 async function cargarPeliculas() {
-
-  const contenedor =
-    document.getElementById("peliculas");
-
-  contenedor.innerHTML =
-    '<div class="sin-resultados">🎬 Cargando películas...</div>';
 
   const resultado =
     await supabaseClient
       .from("peliculas")
       .select("*")
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      );
+      .order("created_at", {
+        ascending: false
+      });
 
   if (resultado.error) {
 
     console.error(
-      "Error Supabase:",
       resultado.error
     );
 
-    contenedor.innerHTML =
-      '<div class="sin-resultados">❌ No se pudieron cargar las películas.</div>';
+    document.getElementById(
+      "peliculas"
+    ).innerHTML =
+      '<div class="mensaje">❌ No se pudieron cargar las películas.</div>';
 
     return;
   }
@@ -820,7 +664,6 @@ async function cargarPeliculas() {
     resultado.data || [];
 
   mostrarPeliculas();
-
 }
 
 
@@ -828,23 +671,32 @@ function obtenerDatos(pelicula) {
 
   try {
 
-    if (!pelicula.descripcion) {
-      return {};
-    }
+    if (
+      pelicula.descripcion &&
+      typeof pelicula.descripcion === "string"
+    ) {
 
-    return JSON.parse(
-      pelicula.descripcion
-    ) || {};
+      return JSON.parse(
+        pelicula.descripcion
+      );
+
+    }
 
   } catch (error) {
 
-    return {
-      texto: pelicula.descripcion || "",
-      categoria: "principal"
-    };
+    console.log(
+      "Descripción antigua"
+    );
 
   }
 
+  return {
+    anio: "",
+    calidad: "",
+    tamano: "",
+    categoria: "principal",
+    texto: pelicula.descripcion || ""
+  };
 }
 
 
@@ -859,154 +711,131 @@ function cambiarCategoria(
   document
     .querySelectorAll(".categoria-btn")
     .forEach(function(btn) {
-      btn.classList.remove("activa");
+
+      btn.classList.remove(
+        "activo"
+      );
+
     });
 
-  boton.classList.add("activa");
-
-  const nombres = {
-
-    todas:
-      "🎬 Todas las películas",
-
-    mari:
-      "❤️ Películas favoritas de Mari",
-
-    familia:
-      "👨‍👩‍👧 Películas de Familia",
-
-    terror:
-      "👻 Películas de terror",
-
-    accion:
-      "💥 Películas de acción"
-
-  };
-
-  document.getElementById(
-    "tituloSeccion"
-  ).textContent =
-    nombres[categoria];
+  boton.classList.add(
+    "activo"
+  );
 
   mostrarPeliculas();
-
 }
 
 
 function mostrarPeliculas() {
 
   const contenedor =
-    document.getElementById("peliculas");
+    document.getElementById(
+      "peliculas"
+    );
 
-  const buscador =
+  const busqueda =
     document
       .getElementById("buscador")
       .value
-      .trim()
-      .toLowerCase();
+      .toLowerCase()
+      .trim();
 
   let peliculas =
-    [...todasLasPeliculas];
+    todasLasPeliculas.filter(
+      function(pelicula) {
 
+        const datos =
+          obtenerDatos(pelicula);
 
-  if (buscador) {
+        const categoria =
+          datos.categoria ||
+          "principal";
 
-    peliculas =
-      peliculas.filter(
-        function(pelicula) {
+        const textoBusqueda = (
 
-          const datos =
-            obtenerDatos(pelicula);
+          pelicula.titulo +
+          " " +
+          (datos.texto || "") +
+          " " +
+          (datos.anio || "") +
+          " " +
+          categoria
 
-          const texto =
-            [
-              pelicula.titulo,
-              datos.texto,
-              datos.categoria,
-              datos.anio
-            ]
-              .join(" ")
-              .toLowerCase();
+        ).toLowerCase();
 
-          return texto.includes(
-            buscador
+        const coincideBusqueda =
+          !busqueda ||
+          textoBusqueda.includes(
+            busqueda
           );
 
+        let coincideCategoria =
+          true;
+
+        if (
+          categoriaActual === "mari"
+        ) {
+
+          coincideCategoria =
+            pelicula.favorita_mari === true;
+
+        } else if (
+          categoriaActual !== "todas"
+        ) {
+
+          const categoriaNormalizada =
+            categoria === "familiares"
+              ? "familia"
+              : categoria;
+
+          coincideCategoria =
+            categoriaNormalizada ===
+            categoriaActual;
+
         }
-      );
 
-  }
+        return (
+          coincideBusqueda &&
+          coincideCategoria
+        );
 
+      }
+    );
 
   if (
-    categoriaActual === "mari"
+    peliculas.length === 0
   ) {
-
-    peliculas =
-      peliculas.filter(
-        function(pelicula) {
-
-          return (
-            pelicula.favorita_mari === true
-          );
-
-        }
-      );
-
-  }
-
-  else if (
-    categoriaActual !== "todas"
-  ) {
-
-    peliculas =
-      peliculas.filter(
-        function(pelicula) {
-
-          const datos =
-            obtenerDatos(pelicula);
-
-          let categoria =
-            datos.categoria ||
-            "principal";
-
-          if (
-            categoria === "familiares"
-          ) {
-            categoria = "familia";
-          }
-
-          return (
-            categoria ===
-            categoriaActual
-          );
-
-        }
-      );
-
-  }
-
-
-  if (peliculas.length === 0) {
 
     contenedor.innerHTML =
-      '<div class="sin-resultados">🍿 No encontramos películas aquí todavía.</div>';
+      '<div class="mensaje">🍿 No hay películas en esta sección.</div>';
 
     return;
   }
 
-
   contenedor.innerHTML =
     peliculas
       .map(function(pelicula) {
-        return crearTarjeta(pelicula);
+
+        const indice =
+          todasLasPeliculas.indexOf(
+            pelicula
+          );
+
+        return crearTarjeta(
+          pelicula,
+          indice
+        );
+
       })
       .join("");
 
 }
 
 
-function crearTarjeta(pelicula) {
+function crearTarjeta(
+  pelicula,
+  indice
+) {
 
   const datos =
     obtenerDatos(pelicula);
@@ -1015,210 +844,164 @@ function crearTarjeta(pelicula) {
     datos.categoria ||
     "principal";
 
-  const texto =
-    datos.texto ||
-    "";
+  let etiquetas = "";
 
-  const anio =
-    datos.anio ||
-    "";
+  if (datos.anio) {
 
-  const calidad =
-    datos.calidad ||
-    "";
+    etiquetas +=
+      `<span class="etiqueta">${datos.anio}</span>`;
 
-  const tamano =
-    datos.tamano ||
-    "";
+  }
+
+  if (datos.calidad) {
+
+    etiquetas +=
+      `<span class="etiqueta">${datos.calidad}</span>`;
+
+  }
+
+  if (datos.tamano) {
+
+    etiquetas +=
+      `<span class="etiqueta">${datos.tamano}</span>`;
+
+  }
+
+  if (categoria === "familia") {
+
+    etiquetas +=
+      `<span class="etiqueta">👨‍👩‍👧 Familia</span>`;
+
+  }
+
+  if (categoria === "terror") {
+
+    etiquetas +=
+      `<span class="etiqueta">👻 Terror</span>`;
+
+  }
+
+  if (categoria === "accion") {
+
+    etiquetas +=
+      `<span class="etiqueta">💥 Acción</span>`;
+
+  }
+
+  if (
+    pelicula.favorita_mari === true
+  ) {
+
+    etiquetas +=
+      `<span class="etiqueta favorita">❤️ Mari</span>`;
+
+  }
 
   const poster =
     pelicula.poster_url ||
     "";
 
-  const favorita =
-    pelicula.favorita_mari === true;
+  const descripcion =
+    datos.texto ||
+    "";
 
-  let nombreCategoria =
-    "🎬 Principal";
-
-  if (
-    categoria === "familia" ||
-    categoria === "familiares"
-  ) {
-    nombreCategoria =
-      "👨‍👩‍👧 Familia";
-  }
-
-  else if (
-    categoria === "terror"
-  ) {
-    nombreCategoria =
-      "👻 Terror";
-  }
-
-  else if (
-    categoria === "accion"
-  ) {
-    nombreCategoria =
-      "💥 Acción";
-  }
-
-
-  const indice =
-    todasLasPeliculas.indexOf(
-      pelicula
+  const enlaceDescarga =
+    convertirDropbox(
+      pelicula.videos_url ||
+      "",
+      true
     );
 
+  return `
 
-  let html = "";
+    <div class="tarjeta">
 
-  html +=
-    '<article class="pelicula">';
+      ${
+        poster
+          ? `<img
+              class="poster"
+              src="${poster}"
+              alt="${pelicula.titulo}"
+            >`
+          : `<div class="poster"></div>`
+      }
 
-  html +=
-    '<div class="poster-contenedor">';
+      <div class="contenido">
 
+        <div class="titulo">
+          ${pelicula.titulo}
+        </div>
 
-  if (poster) {
+        <div class="etiquetas">
+          ${etiquetas}
+        </div>
 
-    html +=
-      '<img class="poster" src="' +
-      escaparHTML(poster) +
-      '" alt="' +
-      escaparHTML(pelicula.titulo || "Película") +
-      '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">';
+        <div class="descripcion">
+          ${descripcion}
+        </div>
 
-    html +=
-      '<div class="poster-sin-imagen" style="display:none;">🎬</div>';
+        <div class="botones">
 
-  } else {
+          <button
+            class="btn ver"
+            onclick="verPeliculaPorIndice(${indice})"
+          >
+            ▶️ Ver
+          </button>
 
-    html +=
-      '<div class="poster-sin-imagen">🎬</div>';
+          ${
+            enlaceDescarga
+              ? `<a
+                  class="btn descargar"
+                  href="${enlaceDescarga}"
+                  target="_blank"
+                  rel="noopener"
+                  download
+                >
+                  ⬇️ Descargar
+                </a>`
+              : ""
+          }
 
-  }
+          ${
+            usuarioActual
+              ? `<button
+                  class="btn eliminar"
+                  onclick="eliminarPelicula('${pelicula.id}')"
+                >
+                  🗑️
+                </button>`
+              : ""
+          }
 
+        </div>
 
-  if (favorita) {
+      </div>
 
-    html +=
-      '<div class="favorita">❤️ Favorita de Mari</div>';
+    </div>
 
-  }
-
-
-  html +=
-    "</div>";
-
-
-  html +=
-    '<div class="contenido-pelicula">';
-
-  html +=
-    '<div class="nombre-pelicula">' +
-    escaparHTML(
-      pelicula.titulo || "Sin título"
-    ) +
-    "</div>";
-
-
-  html +=
-    '<div class="badges">';
-
-
-  if (anio) {
-
-    html +=
-      '<span class="badge">📅 ' +
-      escaparHTML(anio) +
-      "</span>";
-
-  }
-
-  if (calidad) {
-
-    html +=
-      '<span class="badge">🎞️ ' +
-      escaparHTML(calidad) +
-      "</span>";
-
-  }
-
-  if (tamano) {
-
-    html +=
-      '<span class="badge">💾 ' +
-      escaparHTML(tamano) +
-      "</span>";
-
-  }
-
-
-  html +=
-    '<span class="badge">' +
-    nombreCategoria +
-    "</span>";
-
-  html +=
-    "</div>";
-
-
-  if (texto) {
-
-    html +=
-      '<div class="descripcion">' +
-      escaparHTML(texto) +
-      "</div>";
-
-  }
-
-
-  html +=
-    '<div class="botones">';
-
-  html +=
-    '<button class="btn btn-ver" onclick="verPeliculaPorIndice(' +
-    indice +
-    ')">▶️ Ver</button>';
-
-  html +=
-    '<a class="btn btn-descargar" href="' +
-    escaparHTML(
-      convertirDropbox(
-        pelicula.videos_url || "",
-        true
-      )
-    ) +
-    '" target="_blank" rel="noopener noreferrer">⬇️ Descargar</a>';
-
-  html +=
-    "</div>";
-
-
-  if (usuarioActual) {
-
-    html +=
-      '<button class="btn btn-eliminar" onclick="eliminarPelicula(\'' +
-      escaparJS(pelicula.id) +
-      '\')">🗑️ Eliminar</button>';
-
-  }
-
-
-  html +=
-    "</div>";
-
-  html +=
-    "</article>";
-
-  return html;
-
+  `;
 }
 
 
 /* =========================
-   DROPBOX CORREGIDO
+   DROPBOX
 ========================= */
+
+/*
+   IMPORTANTE:
+
+   NO eliminamos los parámetros del enlace.
+
+   Dropbox necesita parámetros como:
+   rlkey
+   st
+
+   en los enlaces nuevos.
+
+   Solamente cambiamos dl=0
+   por raw=1.
+*/
 
 function convertirDropbox(
   url,
@@ -1229,57 +1012,65 @@ function convertirDropbox(
     return "";
   }
 
-  let nuevaUrl =
-    url.trim();
+  try {
 
-  /*
-    Convertimos el enlace normal
-    de Dropbox en un enlace directo.
-  */
+    const nuevaUrl =
+      new URL(
+        url.trim()
+      );
 
-  nuevaUrl =
-    nuevaUrl.replace(
-      "www.dropbox.com",
-      "dl.dropboxusercontent.com"
+    /*
+      Para reproducir:
+      dl=0  → raw=1
+
+      Conservamos rlkey,
+      st y cualquier otro
+      parámetro que Dropbox
+      haya incluido.
+    */
+
+    if (descargar) {
+
+      nuevaUrl.searchParams.set(
+        "dl",
+        "1"
+      );
+
+      nuevaUrl.searchParams.delete(
+        "raw"
+      );
+
+    } else {
+
+      nuevaUrl.searchParams.delete(
+        "dl"
+      );
+
+      nuevaUrl.searchParams.set(
+        "raw",
+        "1"
+      );
+
+    }
+
+    return nuevaUrl.toString();
+
+  } catch (error) {
+
+    console.error(
+      "Enlace Dropbox inválido:",
+      error
     );
 
-  /*
-    Conservamos la ruta del archivo.
-    Quitamos solamente los parámetros
-    anteriores para evitar conflictos.
-  */
-
-  const partes =
-    nuevaUrl.split("?");
-
-  nuevaUrl =
-    partes[0];
-
-  /*
-    Para reproducir:
-    raw=1 le indica a Dropbox que
-    entregue el archivo directamente.
-
-    Para descargar:
-    dl=1 fuerza la descarga.
-  */
-
-  if (descargar) {
-
-    nuevaUrl +=
-      "?dl=1";
-
-  } else {
-
-    nuevaUrl +=
-      "?raw=1";
+    return url.trim();
 
   }
-
-  return nuevaUrl;
-
 }
 
+
+/* =========================
+   REPRODUCIR
+========================= */
 
 function verPeliculaPorIndice(
   indice
@@ -1292,13 +1083,11 @@ function verPeliculaPorIndice(
     return;
   }
 
-  const url =
-    convertirDropbox(
-      pelicula.videos_url || "",
-      false
-    );
+  const enlaceOriginal =
+    pelicula.videos_url ||
+    "";
 
-  if (!url) {
+  if (!enlaceOriginal) {
 
     alert(
       "Esta película no tiene un enlace de Dropbox."
@@ -1306,6 +1095,12 @@ function verPeliculaPorIndice(
 
     return;
   }
+
+  const urlVideo =
+    convertirDropbox(
+      enlaceOriginal,
+      false
+    );
 
   const video =
     document.getElementById(
@@ -1322,31 +1117,57 @@ function verPeliculaPorIndice(
       "abrirDropbox"
     );
 
-
-  video.pause();
-
-  video.src =
-    url;
-
-  video.load();
-
-
-  enlace.href =
-    pelicula.videos_url ||
-    url;
-
+  /*
+    Primero mostramos el reproductor.
+  */
 
   modal.classList.add(
     "visible"
   );
 
+  /*
+    Limpiamos cualquier video
+    anterior.
+  */
+
+  video.pause();
+
+  video.removeAttribute(
+    "src"
+  );
+
+  video.load();
+
+  /*
+    Ponemos el nuevo enlace.
+  */
+
+  video.src =
+    urlVideo;
+
+  enlace.href =
+    enlaceOriginal;
+
+  /*
+    Volvemos a cargar.
+  */
+
+  video.load();
+
+  /*
+    No dependemos del autoplay.
+    El usuario puede darle Play
+    si el navegador lo bloquea.
+  */
 
   video.play().catch(
     function(error) {
+
       console.log(
-        "Reproducción automática bloqueada:",
+        "Autoplay bloqueado:",
         error
       );
+
     }
   );
 
@@ -1380,40 +1201,36 @@ function cerrarVideo() {
 }
 
 
-document.addEventListener(
-  "click",
-  function(event) {
-
-    const modal =
-      document.getElementById(
-        "modal"
-      );
-
-    if (
-      event.target === modal
-    ) {
-      cerrarVideo();
-    }
-
-  }
-);
-
+/* =========================
+   AGREGAR
+========================= */
 
 async function agregarPelicula() {
 
   if (!usuarioActual) {
 
     alert(
-      "Primero inicia sesión como administrador."
+      "Debes iniciar sesión."
     );
 
     return;
   }
 
-
   const titulo =
     document
       .getElementById("titulo")
+      .value
+      .trim();
+
+  const poster =
+    document
+      .getElementById("poster")
+      .value
+      .trim();
+
+  const enlace =
+    document
+      .getElementById("enlace")
       .value
       .trim();
 
@@ -1440,56 +1257,28 @@ async function agregarPelicula() {
       .getElementById("categoria")
       .value;
 
+  const favoritaMari =
+    document
+      .getElementById("favoritaMari")
+      .checked;
+
   const descripcion =
     document
       .getElementById("descripcion")
       .value
       .trim();
 
-  const poster =
-    document
-      .getElementById("poster")
-      .value
-      .trim();
+  if (
+    !titulo ||
+    !enlace
+  ) {
 
-  const enlace =
-    document
-      .getElementById("enlace")
-      .value
-      .trim();
-
-  const favoritaMari =
-    document
-      .getElementById("favoritaMari")
-      .checked;
-
-  const mensaje =
-    document.getElementById(
-      "adminMensaje"
+    alert(
+      "Escribe al menos el título y el enlace de Dropbox."
     );
 
-
-  if (!titulo) {
-
-    mensaje.textContent =
-      "Escribe el título de la película.";
-
     return;
   }
-
-
-  if (!enlace) {
-
-    mensaje.textContent =
-      "Escribe el enlace de Dropbox.";
-
-    return;
-  }
-
-
-  mensaje.textContent =
-    "Agregando película...";
-
 
   const datos = {
 
@@ -1505,7 +1294,6 @@ async function agregarPelicula() {
 
   };
 
-
   const resultado =
     await supabaseClient
       .from("peliculas")
@@ -1514,7 +1302,9 @@ async function agregarPelicula() {
         titulo: titulo,
 
         descripcion:
-          JSON.stringify(datos),
+          JSON.stringify(
+            datos
+          ),
 
         poster_url:
           poster,
@@ -1527,175 +1317,110 @@ async function agregarPelicula() {
 
       });
 
-
   if (resultado.error) {
 
     console.error(
       resultado.error
     );
 
-    mensaje.textContent =
-      "❌ No se pudo agregar la película.";
+    document.getElementById(
+      "mensajeAdmin"
+    ).textContent =
+      "❌ " +
+      resultado.error.message;
 
     return;
   }
 
+  document.getElementById(
+    "mensajeAdmin"
+  ).textContent =
+    "✅ Película agregada";
 
-  mensaje.textContent =
-    "✅ Película agregada correctamente.";
+  /*
+    Limpiamos los campos.
+  */
 
+  document.getElementById(
+    "titulo"
+  ).value = "";
 
-  document
-    .getElementById("titulo")
-    .value = "";
+  document.getElementById(
+    "poster"
+  ).value = "";
 
-  document
-    .getElementById("anio")
-    .value = "";
+  document.getElementById(
+    "enlace"
+  ).value = "";
 
-  document
-    .getElementById("calidad")
-    .value = "";
+  document.getElementById(
+    "anio"
+  ).value = "";
 
-  document
-    .getElementById("tamano")
-    .value = "";
+  document.getElementById(
+    "calidad"
+  ).value = "";
 
-  document
-    .getElementById("descripcion")
-    .value = "";
+  document.getElementById(
+    "tamano"
+  ).value = "";
 
-  document
-    .getElementById("poster")
-    .value = "";
+  document.getElementById(
+    "descripcion"
+  ).value = "";
 
-  document
-    .getElementById("enlace")
-    .value = "";
-
-  document
-    .getElementById("favoritaMari")
-    .checked = false;
-
+  document.getElementById(
+    "favoritaMari"
+  ).checked = false;
 
   await cargarPeliculas();
 
 }
 
+
+/* =========================
+   ELIMINAR
+========================= */
 
 async function eliminarPelicula(
   id
 ) {
 
   if (!usuarioActual) {
+
+    alert(
+      "Debes iniciar sesión."
+    );
+
     return;
   }
 
-
   const confirmar =
     confirm(
-      "¿Seguro que quieres eliminar esta película?"
+      "¿Quieres eliminar esta película?"
     );
-
 
   if (!confirmar) {
     return;
   }
 
-
   const resultado =
     await supabaseClient
       .from("peliculas")
       .delete()
-      .eq(
-        "id",
-        id
-      );
-
+      .eq("id", id);
 
   if (resultado.error) {
 
-    console.error(
-      resultado.error
-    );
-
     alert(
-      "No se pudo eliminar la película."
+      "❌ " +
+      resultado.error.message
     );
 
     return;
   }
 
-
   await cargarPeliculas();
-
-}
-
-
-function escaparHTML(
-  texto
-) {
-
-  if (
-    texto === null ||
-    texto === undefined
-  ) {
-    return "";
-  }
-
-  return String(texto)
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
-}
-
-
-function escaparJS(
-  texto
-) {
-
-  if (
-    texto === null ||
-    texto === undefined
-  ) {
-    return "";
-  }
-
-  return String(texto)
-    .replace(
-      /\\/g,
-      "\\\\"
-    )
-    .replace(
-      /'/g,
-      "\\'"
-    )
-    .replace(
-      /\r/g,
-      "\\r"
-    )
-    .replace(
-      /\n/g,
-      "\\n"
-    );
 
 }
 
