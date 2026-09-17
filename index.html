@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Apo1.reed</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -26,8 +25,7 @@
       width: 100%;
       padding: 35px 20px 30px;
       text-align: center;
-      background:
-        linear-gradient(135deg, #241633, #5b357e, #21152d);
+      background: linear-gradient(135deg, #241633, #5b357e, #21152d);
       border-bottom: 2px solid #8e5bb7;
       box-shadow: 0 5px 25px rgba(0,0,0,.45);
     }
@@ -75,7 +73,6 @@
 
     .buscador:focus {
       border-color: #bd82f1;
-      box-shadow: 0 0 0 3px rgba(189,130,241,.15);
     }
 
     .categorias {
@@ -106,10 +103,8 @@
       background: #8b52b8;
       border-color: #b57bdd;
       color: white;
-      box-shadow: 0 5px 18px rgba(139,82,184,.35);
     }
 
-    /* ADMINISTRACIÓN EN LA ESQUINA */
     .admin-esquina {
       position: fixed;
       left: 12px;
@@ -160,6 +155,8 @@
     .btn-descargar {
       background: #355c78;
       flex: 1;
+      text-decoration: none;
+      text-align: center;
     }
 
     .btn-eliminar {
@@ -213,12 +210,6 @@
     .campo textarea {
       min-height: 90px;
       resize: vertical;
-    }
-
-    .campo input:focus,
-    .campo select:focus,
-    .campo textarea:focus {
-      border-color: #b678df;
     }
 
     .fila {
@@ -419,19 +410,9 @@
         flex-direction: column;
       }
 
-      .btn-ver,
-      .btn-descargar {
-        width: 100%;
-      }
-
       .categoria-btn {
         padding: 9px 13px;
         font-size: 13px;
-      }
-
-      .admin-esquina {
-        left: 8px;
-        bottom: 8px;
       }
     }
   </style>
@@ -439,1799 +420,1286 @@
 
 <body>
 
-  <header class="banner">
-    <div class="gatos">🐈‍⬛ ✨ 🐈</div>
-    <h1 class="titulo">Apo1.reed</h1>
-    <p class="subtitulo">Nuestra pequeña colección de películas 🍿</p>
-    <div class="palomitas">🍿 🎬 🍿</div>
-  </header>
+<header class="banner">
+  <div class="gatos">🐈‍⬛ ✨ 🐈</div>
+  <h1 class="titulo">Apo1.reed</h1>
+  <p class="subtitulo">Nuestra pequeña colección de películas 🍿</p>
+  <div class="palomitas">🍿 🎬 🍿</div>
+</header>
 
-  <main class="contenedor">
+<main class="contenedor">
 
-    <input
-      id="buscador"
-      class="buscador"
-      type="text"
-      placeholder="🔎 Buscar una película..."
-      oninput="mostrarPeliculas()"
-    >
+  <input
+    id="buscador"
+    class="buscador"
+    type="text"
+    placeholder="🔎 Buscar una película..."
+    oninput="mostrarPeliculas()"
+  >
 
-    <div class="categorias">
-
-      <button
-        class="categoria-btn activa"
-        onclick="cambiarCategoria('todas', this)"
-      >
-        🎬 Todas
-      </button>
-
-      <button
-        class="categoria-btn"
-        onclick="cambiarCategoria('mari', this)"
-      >
-        ❤️ Mari
-      </button>
-
-      <button
-        class="categoria-btn"
-        onclick="cambiarCategoria('familia', this)"
-      >
-        👨‍👩‍👧 Familia
-      </button>
-
-      <button
-        class="categoria-btn"
-        onclick="cambiarCategoria('terror', this)"
-      >
-        👻 Terror
-      </button>
-
-      <button
-        class="categoria-btn"
-        onclick="cambiarCategoria('accion', this)"
-      >
-        💥 Acción
-      </button>
-
-    </div>
-
-    <section id="loginPanel" class="panel">
-
-      <h2>🔐 Entrar como administrador</h2>
-
-      <div class="campo">
-        <label>Correo</label>
-        <input
-          id="loginEmail"
-          type="email"
-          placeholder="Tu correo"
-        >
-      </div>
-
-      <div class="campo">
-        <label>Contraseña</label>
-        <input
-          id="loginPassword"
-          type="password"
-          placeholder="Tu contraseña"
-        >
-      </div>
-
-      <button
-        class="btn btn-principal"
-        onclick="iniciarSesion()"
-      >
-        Entrar
-      </button>
-
-      <div id="loginMensaje" class="mensaje"></div>
-
-    </section>
-
-    <section id="adminPanel" class="panel">
-
-      <h2>🎬 Agregar película</h2>
-
-      <div class="fila">
-
-        <div class="campo">
-          <label>Título</label>
-          <input
-            id="titulo"
-            type="text"
-            placeholder="Ej. Coraline"
-          >
-        </div>
-
-        <div class="campo">
-          <label>Año</label>
-          <input
-            id="anio"
-            type="text"
-            placeholder="Ej. 2009"
-          >
-        </div>
-
-      </div>
-
-      <div class="fila">
-
-        <div class="campo">
-          <label>Calidad</label>
-          <input
-            id="calidad"
-            type="text"
-            placeholder="Ej. 1080p"
-          >
-        </div>
-
-        <div class="campo">
-          <label>Tamaño</label>
-          <input
-            id="tamano"
-            type="text"
-            placeholder="Ej. 1.5 GB"
-          >
-        </div>
-
-      </div>
-
-      <div class="campo">
-
-        <label>Categoría</label>
-
-        <select id="categoria">
-
-          <option value="principal">
-            🎬 Principal
-          </option>
-
-          <option value="familia">
-            👨‍👩‍👧 Familia
-          </option>
-
-          <option value="terror">
-            👻 Terror
-          </option>
-
-          <option value="accion">
-            💥 Acción
-          </option>
-
-        </select>
-
-      </div>
-
-      <div class="campo">
-
-        <label>Descripción</label>
-
-        <textarea
-          id="descripcion"
-          placeholder="Escribe una pequeña descripción..."
-        ></textarea>
-
-      </div>
-
-      <div class="campo">
-
-        <label>URL del póster</label>
-
-        <input
-          id="poster"
-          type="url"
-          placeholder="https://..."
-        >
-
-      </div>
-
-      <div class="campo">
-
-        <label>Enlace de Dropbox</label>
-
-        <input
-          id="enlace"
-          type="url"
-          placeholder="https://www.dropbox.com/..."
-        >
-
-      </div>
-
-      <label class="checkbox">
-
-        <input
-          id="favoritaMari"
-          type="checkbox"
-        >
-
-        ❤️ Favorita de Mari
-
-      </label>
-
-      <button
-        class="btn btn-principal"
-        onclick="agregarPelicula()"
-      >
-        ➕ Agregar película
-      </button>
-
-      <button
-        class="btn btn-admin"
-        onclick="cerrarSesion()"
-        style="margin-left:8px;"
-      >
-        Cerrar sesión
-      </button>
-
-      <div
-        id="adminMensaje"
-        class="mensaje"
-      ></div>
-
-    </section>
-
-    <h2
-      id="tituloSeccion"
-      class="titulo-seccion"
-    >
-      🎬 Todas las películas
-    </h2>
-
-    <section
-      id="peliculas"
-      class="peliculas"
-    ></section>
-
-  </main>
-
-  <!-- ADMINISTRACIÓN EN LA ESQUINA -->
-
-  <div class="admin-esquina">
+  <div class="categorias">
 
     <button
-      id="btnAdmin"
-      class="btn-admin"
-      onclick="mostrarLogin()"
+      class="categoria-btn activa"
+      onclick="cambiarCategoria('todas', this)"
     >
-      🔐 Administración
+      🎬 Todas
+    </button>
+
+    <button
+      class="categoria-btn"
+      onclick="cambiarCategoria('mari', this)"
+    >
+      ❤️ Mari
+    </button>
+
+    <button
+      class="categoria-btn"
+      onclick="cambiarCategoria('familia', this)"
+    >
+      👨‍👩‍👧 Familia
+    </button>
+
+    <button
+      class="categoria-btn"
+      onclick="cambiarCategoria('terror', this)"
+    >
+      👻 Terror
+    </button>
+
+    <button
+      class="categoria-btn"
+      onclick="cambiarCategoria('accion', this)"
+    >
+      💥 Acción
     </button>
 
   </div>
 
-  <!-- REPRODUCTOR -->
+  <section id="loginPanel" class="panel">
 
-  <div
-    id="modal"
-    class="modal"
-  >
+    <h2>🔐 Entrar como administrador</h2>
 
-    <div class="modal-contenido">
+    <div class="campo">
+      <label>Correo</label>
+      <input id="loginEmail" type="email" placeholder="Tu correo">
+    </div>
 
-      <button
-        class="cerrar"
-        onclick="cerrarVideo()"
-      >
-        ×
-      </button>
+    <div class="campo">
+      <label>Contraseña</label>
+      <input id="loginPassword" type="password" placeholder="Tu contraseña">
+    </div>
 
-      <video
-        id="videoPlayer"
-        class="video"
-        controls
-        playsinline
-      ></video>
+    <button class="btn btn-principal" onclick="iniciarSesion()">
+      Entrar
+    </button>
 
-      <a
-        id="abrirDropbox"
-        class="abrir-dropbox"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Abrir directamente en Dropbox
-      </a>
+    <div id="loginMensaje" class="mensaje"></div>
+
+  </section>
+
+  <section id="adminPanel" class="panel">
+
+    <h2>🎬 Agregar película</h2>
+
+    <div class="fila">
+
+      <div class="campo">
+        <label>Título</label>
+        <input id="titulo" type="text" placeholder="Ej. Coraline">
+      </div>
+
+      <div class="campo">
+        <label>Año</label>
+        <input id="anio" type="text" placeholder="Ej. 2009">
+      </div>
 
     </div>
 
+    <div class="fila">
+
+      <div class="campo">
+        <label>Calidad</label>
+        <input id="calidad" type="text" placeholder="Ej. 1080p">
+      </div>
+
+      <div class="campo">
+        <label>Tamaño</label>
+        <input id="tamano" type="text" placeholder="Ej. 1.5 GB">
+      </div>
+
+    </div>
+
+    <div class="campo">
+      <label>Categoría</label>
+
+      <select id="categoria">
+        <option value="principal">🎬 Principal</option>
+        <option value="familia">👨‍👩‍👧 Familia</option>
+        <option value="terror">👻 Terror</option>
+        <option value="accion">💥 Acción</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label>Descripción</label>
+      <textarea
+        id="descripcion"
+        placeholder="Escribe una pequeña descripción..."
+      ></textarea>
+    </div>
+
+    <div class="campo">
+      <label>URL del póster</label>
+      <input id="poster" type="url" placeholder="https://...">
+    </div>
+
+    <div class="campo">
+      <label>Enlace de Dropbox</label>
+      <input
+        id="enlace"
+        type="url"
+        placeholder="https://www.dropbox.com/..."
+      >
+    </div>
+
+    <label class="checkbox">
+      <input id="favoritaMari" type="checkbox">
+      ❤️ Favorita de Mari
+    </label>
+
+    <button class="btn btn-principal" onclick="agregarPelicula()">
+      ➕ Agregar película
+    </button>
+
+    <button
+      class="btn btn-admin"
+      onclick="cerrarSesion()"
+      style="margin-left:8px;"
+    >
+      Cerrar sesión
+    </button>
+
+    <div id="adminMensaje" class="mensaje"></div>
+
+  </section>
+
+  <h2 id="tituloSeccion" class="titulo-seccion">
+    🎬 Todas las películas
+  </h2>
+
+  <section id="peliculas" class="peliculas"></section>
+
+</main>
+
+<div class="admin-esquina">
+
+  <button
+    id="btnAdmin"
+    class="btn-admin"
+    onclick="mostrarLogin()"
+  >
+    🔐 Administración
+  </button>
+
+</div>
+
+<div id="modal" class="modal">
+
+  <div class="modal-contenido">
+
+    <button class="cerrar" onclick="cerrarVideo()">×</button>
+
+    <video
+      id="videoPlayer"
+      class="video"
+      controls
+      playsinline
+    ></video>
+
+    <a
+      id="abrirDropbox"
+      class="abrir-dropbox"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Abrir directamente en Dropbox
+    </a>
+
   </div>
 
-  <script>
+</div>
 
-    /* =========================
-       SUPABASE
-    ========================= */
+<script>
 
-    const SUPABASE_URL =
-      "https://jnxtndenqxgqqzmmckco.supabase.co";
+const SUPABASE_URL =
+  "https://jnxtndenqxgqqzmmckco.supabase.co";
 
-    const SUPABASE_KEY =
-      "sb_publishable_3gyntuSUrTd999iy3dbkoQ_d-CcVBG4";
+const SUPABASE_KEY =
+  "sb_publishable_3gyntuSUrTd999iy3dbkoQ_d-CcVBG4";
 
-    const supabaseClient =
-      supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+let todasLasPeliculas = [];
+let categoriaActual = "todas";
+let usuarioActual = null;
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async function() {
+
+    await comprobarSesion();
+    await cargarPeliculas();
+
+  }
+);
+
+
+async function comprobarSesion() {
+
+  const resultado =
+    await supabaseClient.auth.getSession();
+
+  if (resultado.error) {
+    console.error(resultado.error);
+    return;
+  }
+
+  usuarioActual =
+    resultado.data.session
+      ? resultado.data.session.user
+      : null;
+
+  actualizarAdmin();
+
+}
+
+
+function actualizarAdmin() {
+
+  const loginPanel =
+    document.getElementById("loginPanel");
+
+  const adminPanel =
+    document.getElementById("adminPanel");
+
+  const btnAdmin =
+    document.getElementById("btnAdmin");
+
+  if (usuarioActual) {
+
+    loginPanel.classList.remove("visible");
+    adminPanel.classList.add("visible");
+    btnAdmin.style.display = "none";
+
+  } else {
+
+    adminPanel.classList.remove("visible");
+    btnAdmin.style.display = "inline-block";
+
+  }
+
+}
+
+
+function mostrarLogin() {
+
+  document
+    .getElementById("loginPanel")
+    .classList.toggle("visible");
+
+}
+
+
+async function iniciarSesion() {
+
+  const email =
+    document
+      .getElementById("loginEmail")
+      .value
+      .trim();
+
+  const password =
+    document
+      .getElementById("loginPassword")
+      .value;
+
+  const mensaje =
+    document.getElementById("loginMensaje");
+
+  if (!email || !password) {
+
+    mensaje.textContent =
+      "Escribe tu correo y contraseña.";
+
+    return;
+  }
+
+  mensaje.textContent =
+    "Entrando...";
+
+  const resultado =
+    await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+  if (resultado.error) {
+
+    console.error(resultado.error);
+
+    mensaje.textContent =
+      "No se pudo iniciar sesión. Revisa tu correo y contraseña.";
+
+    return;
+  }
+
+  usuarioActual =
+    resultado.data.user;
+
+  mensaje.textContent = "";
+
+  actualizarAdmin();
+
+  await cargarPeliculas();
+
+}
+
+
+async function cerrarSesion() {
+
+  await supabaseClient.auth.signOut();
+
+  usuarioActual = null;
+
+  actualizarAdmin();
+
+  mostrarPeliculas();
+
+}
+
+
+async function cargarPeliculas() {
+
+  const contenedor =
+    document.getElementById("peliculas");
+
+  contenedor.innerHTML =
+    '<div class="sin-resultados">🎬 Cargando películas...</div>';
+
+  const resultado =
+    await supabaseClient
+      .from("peliculas")
+      .select("*")
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
       );
 
+  if (resultado.error) {
 
-    /* =========================
-       VARIABLES
-    ========================= */
-
-    let todasLasPeliculas = [];
-
-    let categoriaActual = "todas";
-
-    let usuarioActual = null;
-
-
-    /* =========================
-       INICIO
-    ========================= */
-
-    document.addEventListener(
-      "DOMContentLoaded",
-      async function() {
-
-        await comprobarSesion();
-
-        await cargarPeliculas();
-
-      }
+    console.error(
+      "Error Supabase:",
+      resultado.error
     );
 
+    contenedor.innerHTML =
+      '<div class="sin-resultados">❌ No se pudieron cargar las películas.</div>';
 
-    /* =========================
-       SESIÓN
-    ========================= */
+    return;
+  }
 
-    async function comprobarSesion() {
+  todasLasPeliculas =
+    resultado.data || [];
 
-      try {
+  mostrarPeliculas();
 
-        const resultado =
-          await supabaseClient.auth.getSession();
+}
 
-        const data =
-          resultado.data;
 
-        const error =
-          resultado.error;
+function obtenerDatos(pelicula) {
 
-        if (error) {
+  try {
 
-          console.error(error);
+    if (!pelicula.descripcion) {
+      return {};
+    }
 
-          return;
+    return JSON.parse(
+      pelicula.descripcion
+    ) || {};
+
+  } catch (error) {
+
+    return {
+      texto: pelicula.descripcion || "",
+      categoria: "principal"
+    };
+
+  }
+
+}
+
+
+function cambiarCategoria(
+  categoria,
+  boton
+) {
+
+  categoriaActual =
+    categoria;
+
+  document
+    .querySelectorAll(".categoria-btn")
+    .forEach(function(btn) {
+      btn.classList.remove("activa");
+    });
+
+  boton.classList.add("activa");
+
+  const nombres = {
+
+    todas:
+      "🎬 Todas las películas",
+
+    mari:
+      "❤️ Películas favoritas de Mari",
+
+    familia:
+      "👨‍👩‍👧 Películas de Familia",
+
+    terror:
+      "👻 Películas de terror",
+
+    accion:
+      "💥 Películas de acción"
+
+  };
+
+  document.getElementById(
+    "tituloSeccion"
+  ).textContent =
+    nombres[categoria];
+
+  mostrarPeliculas();
+
+}
+
+
+function mostrarPeliculas() {
+
+  const contenedor =
+    document.getElementById("peliculas");
+
+  const buscador =
+    document
+      .getElementById("buscador")
+      .value
+      .trim()
+      .toLowerCase();
+
+  let peliculas =
+    [...todasLasPeliculas];
+
+
+  if (buscador) {
+
+    peliculas =
+      peliculas.filter(
+        function(pelicula) {
+
+          const datos =
+            obtenerDatos(pelicula);
+
+          const texto =
+            [
+              pelicula.titulo,
+              datos.texto,
+              datos.categoria,
+              datos.anio
+            ]
+              .join(" ")
+              .toLowerCase();
+
+          return texto.includes(
+            buscador
+          );
 
         }
-
-        usuarioActual =
-          data.session
-            ? data.session.user
-            : null;
-
-        actualizarAdmin();
-
-      } catch (error) {
-
-        console.error(
-          "Error comprobando sesión:",
-          error
-        );
-
-      }
-
-    }
-
-
-    function actualizarAdmin() {
-
-      const loginPanel =
-        document.getElementById(
-          "loginPanel"
-        );
-
-      const adminPanel =
-        document.getElementById(
-          "adminPanel"
-        );
-
-      const btnAdmin =
-        document.getElementById(
-          "btnAdmin"
-        );
-
-
-      if (usuarioActual) {
-
-        loginPanel.classList.remove(
-          "visible"
-        );
-
-        adminPanel.classList.add(
-          "visible"
-        );
-
-        btnAdmin.style.display =
-          "none";
-
-      } else {
-
-        adminPanel.classList.remove(
-          "visible"
-        );
-
-        btnAdmin.style.display =
-          "inline-block";
-
-      }
-
-    }
-
-
-    function mostrarLogin() {
-
-      const panel =
-        document.getElementById(
-          "loginPanel"
-        );
-
-      panel.classList.toggle(
-        "visible"
       );
 
-    }
+  }
 
 
-    async function iniciarSesion() {
+  if (
+    categoriaActual === "mari"
+  ) {
 
-      const email =
-        document
-          .getElementById("loginEmail")
-          .value
-          .trim();
+    peliculas =
+      peliculas.filter(
+        function(pelicula) {
 
-      const password =
-        document
-          .getElementById("loginPassword")
-          .value;
-
-      const mensaje =
-        document.getElementById(
-          "loginMensaje"
-        );
-
-
-      if (!email || !password) {
-
-        mensaje.textContent =
-          "Escribe tu correo y contraseña.";
-
-        return;
-
-      }
-
-
-      mensaje.textContent =
-        "Entrando...";
-
-
-      try {
-
-        const resultado =
-          await supabaseClient.auth.signInWithPassword({
-            email: email,
-            password: password
-          });
-
-
-        const data =
-          resultado.data;
-
-        const error =
-          resultado.error;
-
-
-        if (error) {
-
-          console.error(error);
-
-          mensaje.textContent =
-            "No se pudo iniciar sesión. Revisa tu correo y contraseña.";
-
-          return;
-
-        }
-
-
-        usuarioActual =
-          data.user;
-
-        mensaje.textContent = "";
-
-        actualizarAdmin();
-
-        await cargarPeliculas();
-
-
-      } catch (error) {
-
-        console.error(error);
-
-        mensaje.textContent =
-          "Ocurrió un error al iniciar sesión.";
-
-      }
-
-    }
-
-
-    async function cerrarSesion() {
-
-      await supabaseClient.auth.signOut();
-
-      usuarioActual = null;
-
-      actualizarAdmin();
-
-      mostrarPeliculas();
-
-    }
-
-
-    /* =========================
-       CARGAR PELÍCULAS
-    ========================= */
-
-    async function cargarPeliculas() {
-
-      const contenedor =
-        document.getElementById(
-          "peliculas"
-        );
-
-
-      contenedor.innerHTML =
-        '<div class="sin-resultados">🎬 Cargando películas...</div>';
-
-
-      try {
-
-        const resultado =
-          await supabaseClient
-            .from("peliculas")
-            .select("*")
-            .order(
-              "created_at",
-              {
-                ascending: false
-              }
-            );
-
-
-        const data =
-          resultado.data;
-
-        const error =
-          resultado.error;
-
-
-        if (error) {
-
-          console.error(
-            "Error Supabase:",
-            error
+          return (
+            pelicula.favorita_mari === true
           );
 
-          contenedor.innerHTML =
-            '<div class="sin-resultados">❌ No se pudieron cargar las películas.</div>';
-
-          return;
-
         }
+      );
 
+  }
 
-        todasLasPeliculas =
-          data || [];
+  else if (
+    categoriaActual !== "todas"
+  ) {
 
+    peliculas =
+      peliculas.filter(
+        function(pelicula) {
 
-        mostrarPeliculas();
+          const datos =
+            obtenerDatos(pelicula);
 
+          let categoria =
+            datos.categoria ||
+            "principal";
 
-      } catch (error) {
-
-        console.error(error);
-
-        contenedor.innerHTML =
-          '<div class="sin-resultados">❌ Error al conectar con la colección.</div>';
-
-      }
-
-    }
-
-
-    /* =========================
-       DATOS
-    ========================= */
-
-    function obtenerDatos(
-      pelicula
-    ) {
-
-      try {
-
-        if (!pelicula.descripcion) {
-
-          return {};
-
-        }
-
-
-        const datos =
-          JSON.parse(
-            pelicula.descripcion
-          );
-
-
-        return datos || {};
-
-
-      } catch (error) {
-
-        return {
-
-          texto:
-            pelicula.descripcion || "",
-
-          categoria:
-            "principal"
-
-        };
-
-      }
-
-    }
-
-
-    /* =========================
-       CATEGORÍAS
-    ========================= */
-
-    function cambiarCategoria(
-      categoria,
-      boton
-    ) {
-
-      categoriaActual =
-        categoria;
-
-
-      document
-        .querySelectorAll(
-          ".categoria-btn"
-        )
-        .forEach(
-          function(btn) {
-
-            btn.classList.remove(
-              "activa"
-            );
-
+          if (
+            categoria === "familiares"
+          ) {
+            categoria = "familia";
           }
-        );
 
+          return (
+            categoria ===
+            categoriaActual
+          );
 
-      boton.classList.add(
-        "activa"
+        }
       );
 
+  }
 
-      const titulo =
-        document.getElementById(
-          "tituloSeccion"
-        );
 
+  if (peliculas.length === 0) {
 
-      const nombres = {
+    contenedor.innerHTML =
+      '<div class="sin-resultados">🍿 No encontramos películas aquí todavía.</div>';
 
-        todas:
-          "🎬 Todas las películas",
+    return;
+  }
 
-        mari:
-          "❤️ Películas favoritas de Mari",
 
-        familia:
-          "👨‍👩‍👧 Películas de Familia",
+  contenedor.innerHTML =
+    peliculas
+      .map(function(pelicula) {
+        return crearTarjeta(pelicula);
+      })
+      .join("");
 
-        terror:
-          "👻 Películas de terror",
+}
 
-        accion:
-          "💥 Películas de acción"
 
-      };
+function crearTarjeta(pelicula) {
 
+  const datos =
+    obtenerDatos(pelicula);
 
-      titulo.textContent =
-        nombres[categoria] ||
-        "🎬 Películas";
+  const categoria =
+    datos.categoria ||
+    "principal";
 
+  const texto =
+    datos.texto ||
+    "";
 
-      mostrarPeliculas();
+  const anio =
+    datos.anio ||
+    "";
 
-    }
+  const calidad =
+    datos.calidad ||
+    "";
 
+  const tamano =
+    datos.tamano ||
+    "";
 
-    /* =========================
-       MOSTRAR PELÍCULAS
-    ========================= */
+  const poster =
+    pelicula.poster_url ||
+    "";
 
-    function mostrarPeliculas() {
+  const favorita =
+    pelicula.favorita_mari === true;
 
-      const contenedor =
-        document.getElementById(
-          "peliculas"
-        );
+  let nombreCategoria =
+    "🎬 Principal";
 
+  if (
+    categoria === "familia" ||
+    categoria === "familiares"
+  ) {
+    nombreCategoria =
+      "👨‍👩‍👧 Familia";
+  }
 
-      const buscador =
-        document
-          .getElementById(
-            "buscador"
-          )
-          .value
-          .trim()
-          .toLowerCase();
+  else if (
+    categoria === "terror"
+  ) {
+    nombreCategoria =
+      "👻 Terror";
+  }
 
+  else if (
+    categoria === "accion"
+  ) {
+    nombreCategoria =
+      "💥 Acción";
+  }
 
-      let peliculas =
-        [...todasLasPeliculas];
 
-
-      /* BUSCADOR */
-
-      if (buscador) {
-
-        peliculas =
-          peliculas.filter(
-            function(pelicula) {
-
-              const datos =
-                obtenerDatos(
-                  pelicula
-                );
-
-
-              const texto =
-                [
-
-                  pelicula.titulo,
-
-                  datos.texto,
-
-                  datos.categoria,
-
-                  datos.anio
-
-                ]
-                  .join(" ")
-                  .toLowerCase();
-
-
-              return texto.includes(
-                buscador
-              );
-
-            }
-          );
-
-      }
-
-
-      /* MARI */
-
-      if (
-        categoriaActual ===
-        "mari"
-      ) {
-
-        peliculas =
-          peliculas.filter(
-            function(pelicula) {
-
-              return (
-                pelicula.favorita_mari ===
-                true
-              );
-
-            }
-          );
-
-      }
-
-
-      /* OTRAS CATEGORÍAS */
-
-      else if (
-        categoriaActual !==
-        "todas"
-      ) {
-
-        peliculas =
-          peliculas.filter(
-            function(pelicula) {
-
-              const datos =
-                obtenerDatos(
-                  pelicula
-                );
-
-
-              let categoria =
-                datos.categoria ||
-                "principal";
-
-
-              /*
-                Compatibilidad con
-                películas anteriores
-                que usaban "familiares".
-              */
-
-              if (
-                categoria ===
-                "familiares"
-              ) {
-
-                categoria =
-                  "familia";
-
-              }
-
-
-              return (
-                categoria ===
-                categoriaActual
-              );
-
-            }
-          );
-
-      }
-
-
-      /* SIN RESULTADOS */
-
-      if (
-        peliculas.length ===
-        0
-      ) {
-
-        contenedor.innerHTML =
-          '<div class="sin-resultados">🍿 No encontramos películas aquí todavía.</div>';
-
-        return;
-
-      }
-
-
-      /* CREAR TARJETAS */
-
-      contenedor.innerHTML =
-        peliculas
-          .map(
-            function(pelicula) {
-
-              return crearTarjeta(
-                pelicula
-              );
-
-            }
-          )
-          .join("");
-
-    }
-
-
-    /* =========================
-       TARJETA
-    ========================= */
-
-    function crearTarjeta(
+  const indice =
+    todasLasPeliculas.indexOf(
       pelicula
-    ) {
-
-      const datos =
-        obtenerDatos(
-          pelicula
-        );
-
-
-      const categoria =
-        datos.categoria ||
-        "principal";
-
-
-      const texto =
-        datos.texto ||
-        "";
-
-
-      const anio =
-        datos.anio ||
-        "";
-
-
-      const calidad =
-        datos.calidad ||
-        "";
-
-
-      const tamano =
-        datos.tamano ||
-        "";
-
-
-      const poster =
-        pelicula.poster_url ||
-        "";
-
-
-      const videoOriginal =
-        pelicula.videos_url ||
-        "";
-
-
-      const videoUrl =
-        convertirDropbox(
-          videoOriginal,
-          false
-        );
-
-
-      const downloadUrl =
-        convertirDropbox(
-          videoOriginal,
-          true
-        );
-
-
-      const favorita =
-        pelicula.favorita_mari ===
-        true;
-
-
-      let nombreCategoria =
-        "🎬 Principal";
-
-
-      if (
-        categoria ===
-        "familia" ||
-        categoria ===
-        "familiares"
-      ) {
-
-        nombreCategoria =
-          "👨‍👩‍👧 Familia";
-
-      }
-
-      else if (
-        categoria ===
-        "terror"
-      ) {
-
-        nombreCategoria =
-          "👻 Terror";
-
-      }
-
-      else if (
-        categoria ===
-        "accion"
-      ) {
-
-        nombreCategoria =
-          "💥 Acción";
-
-      }
-
-
-      const tituloSeguro =
-        escaparHTML(
-          pelicula.titulo ||
-          "Sin título"
-        );
-
-
-      const descripcionSegura =
-        escaparHTML(
-          texto
-        );
-
-
-      const posterSeguro =
-        escaparHTML(
-          poster
-        );
-
-
-      let html = "";
-
-      html +=
-        '<article class="pelicula">';
-
-
-      html +=
-        '<div class="poster-contenedor">';
-
-
-      if (poster) {
-
-        html +=
-          '<img class="poster" src="' +
-          posterSeguro +
-          '" alt="' +
-          tituloSeguro +
-          '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">';
-
-        html +=
-          '<div class="poster-sin-imagen" style="display:none;">🎬</div>';
-
-      } else {
-
-        html +=
-          '<div class="poster-sin-imagen">🎬</div>';
-
-      }
-
-
-      if (favorita) {
-
-        html +=
-          '<div class="favorita">❤️ Favorita de Mari</div>';
-
-      }
-
-
-      html +=
-        "</div>";
-
-
-      html +=
-        '<div class="contenido-pelicula">';
-
-
-      html +=
-        '<div class="nombre-pelicula">' +
-        tituloSeguro +
-        "</div>";
-
-
-      html +=
-        '<div class="badges">';
-
-
-      if (anio) {
-
-        html +=
-          '<span class="badge">📅 ' +
-          escaparHTML(anio) +
-          "</span>";
-
-      }
-
-
-      if (calidad) {
-
-        html +=
-          '<span class="badge">🎞️ ' +
-          escaparHTML(calidad) +
-          "</span>";
-
-      }
-
-
-      if (tamano) {
-
-        html +=
-          '<span class="badge">💾 ' +
-          escaparHTML(tamano) +
-          "</span>";
-
-      }
-
-
-      html +=
-        '<span class="badge">' +
-        nombreCategoria +
-        "</span>";
-
-
-      html +=
-        "</div>";
-
-
-      if (texto) {
-
-        html +=
-          '<div class="descripcion">' +
-          descripcionSegura +
-          "</div>";
-
-      }
-
-
-      html +=
-        '<div class="botones">';
-
-
-      /*
-        Usamos data-attributes para evitar
-        problemas de comillas en los enlaces.
-      */
-
-      const indice =
-        todasLasPeliculas.indexOf(
-          pelicula
-        );
-
-
-      html +=
-        '<button class="btn btn-ver" onclick="verPeliculaPorIndice(' +
-        indice +
-        ')">▶️ Ver</button>';
-
-
-      html +=
-        '<a class="btn btn-descargar" href="' +
-        escaparHTML(downloadUrl) +
-        '" target="_blank" rel="noopener noreferrer" download>⬇️ Descargar</a>';
-
-
-      html +=
-        "</div>";
-
-
-      if (
-        usuarioActual
-      ) {
-
-        html +=
-          '<button class="btn btn-eliminar" onclick="eliminarPelicula(\'' +
-          escaparJS(
-            pelicula.id
-          ) +
-          '\')">🗑️ Eliminar</button>';
-
-      }
-
-
-      html +=
-        "</div>";
-
-
-      html +=
-        "</article>";
-
-
-      return html;
-
-    }
-
-
-    /* =========================
-       DROPBOX
-    ========================= */
-
-    function convertirDropbox(
-      url,
-      descargar
-    ) {
-
-      if (!url) {
-
-        return "";
-
-      }
-
-
-      let nuevaUrl =
-        url.trim();
-
-
-      /*
-        Convertimos enlaces normales
-        de Dropbox a enlaces directos.
-      */
-
-      nuevaUrl =
-        nuevaUrl.replace(
-          "www.dropbox.com",
-          "dl.dropboxusercontent.com"
-        );
-
-
-      /*
-        Quitamos parámetros anteriores.
-      */
-
-      nuevaUrl =
-        nuevaUrl.split("?")[0];
-
-
-      if (descargar) {
-
-        return (
-          nuevaUrl +
-          "?dl=1"
-        );
-
-      }
-
-
-      return nuevaUrl;
-
-    }
-
-
-    /* =========================
-       REPRODUCIR
-    ========================= */
-
-    function verPeliculaPorIndice(
-      indice
-    ) {
-
-      const pelicula =
-        todasLasPeliculas[
-          indice
-        ];
-
-
-      if (!pelicula) {
-
-        return;
-
-      }
-
-
-      const url =
-        convertirDropbox(
-          pelicula.videos_url ||
-          "",
-          false
-        );
-
-
-      if (!url) {
-
-        alert(
-          "Esta película no tiene un enlace de Dropbox."
-        );
-
-        return;
-
-      }
-
-
-      const video =
-        document.getElementById(
-          "videoPlayer"
-        );
-
-
-      const modal =
-        document.getElementById(
-          "modal"
-        );
-
-
-      const enlace =
-        document.getElementById(
-          "abrirDropbox"
-        );
-
-
-      video.pause();
-
-      video.src = url;
-
-      video.load();
-
-
-      enlace.href =
-        pelicula.videos_url ||
-        url;
-
-
-      modal.classList.add(
-        "visible"
-      );
-
-
-      video.play().catch(
-        function(error) {
-
-          console.log(
-            "El navegador bloqueó la reproducción automática.",
-            error
-          );
-
-        }
-      );
-
-    }
-
-
-    function cerrarVideo() {
-
-      const video =
-        document.getElementById(
-          "videoPlayer"
-        );
-
-
-      const modal =
-        document.getElementById(
-          "modal"
-        );
-
-
-      video.pause();
-
-      video.removeAttribute(
-        "src"
-      );
-
-      video.load();
-
-
-      modal.classList.remove(
-        "visible"
-      );
-
-    }
-
-
-    /* Cerrar al tocar fuera */
-
-    document.addEventListener(
-      "click",
-      function(event) {
-
-        const modal =
-          document.getElementById(
-            "modal"
-          );
-
-
-        if (
-          event.target ===
-          modal
-        ) {
-
-          cerrarVideo();
-
-        }
-
-      }
     );
 
 
-    /* =========================
-       AGREGAR PELÍCULA
-    ========================= */
+  let html = "";
 
-    async function agregarPelicula() {
+  html +=
+    '<article class="pelicula">';
 
-      if (!usuarioActual) {
+  html +=
+    '<div class="poster-contenedor">';
 
-        alert(
-          "Primero inicia sesión como administrador."
-        );
 
-        return;
+  if (poster) {
 
-      }
+    html +=
+      '<img class="poster" src="' +
+      escaparHTML(poster) +
+      '" alt="' +
+      escaparHTML(pelicula.titulo || "Película") +
+      '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">';
 
+    html +=
+      '<div class="poster-sin-imagen" style="display:none;">🎬</div>';
 
-      const titulo =
-        document
-          .getElementById(
-            "titulo"
-          )
-          .value
-          .trim();
+  } else {
 
+    html +=
+      '<div class="poster-sin-imagen">🎬</div>';
 
-      const anio =
-        document
-          .getElementById(
-            "anio"
-          )
-          .value
-          .trim();
+  }
 
 
-      const calidad =
-        document
-          .getElementById(
-            "calidad"
-          )
-          .value
-          .trim();
+  if (favorita) {
 
+    html +=
+      '<div class="favorita">❤️ Favorita de Mari</div>';
 
-      const tamano =
-        document
-          .getElementById(
-            "tamano"
-          )
-          .value
-          .trim();
+  }
 
 
-      const categoria =
-        document
-          .getElementById(
-            "categoria"
-          )
-          .value;
+  html +=
+    "</div>";
 
 
-      const descripcion =
-        document
-          .getElementById(
-            "descripcion"
-          )
-          .value
-          .trim();
+  html +=
+    '<div class="contenido-pelicula">';
 
+  html +=
+    '<div class="nombre-pelicula">' +
+    escaparHTML(
+      pelicula.titulo || "Sin título"
+    ) +
+    "</div>";
 
-      const poster =
-        document
-          .getElementById(
-            "poster"
-          )
-          .value
-          .trim();
 
+  html +=
+    '<div class="badges">';
 
-      const enlace =
-        document
-          .getElementById(
-            "enlace"
-          )
-          .value
-          .trim();
 
+  if (anio) {
 
-      const favoritaMari =
-        document
-          .getElementById(
-            "favoritaMari"
-          )
-          .checked;
+    html +=
+      '<span class="badge">📅 ' +
+      escaparHTML(anio) +
+      "</span>";
 
+  }
 
-      const mensaje =
-        document.getElementById(
-          "adminMensaje"
-        );
+  if (calidad) {
 
+    html +=
+      '<span class="badge">🎞️ ' +
+      escaparHTML(calidad) +
+      "</span>";
 
-      if (!titulo) {
+  }
 
-        mensaje.textContent =
-          "Escribe el título de la película.";
+  if (tamano) {
 
-        return;
+    html +=
+      '<span class="badge">💾 ' +
+      escaparHTML(tamano) +
+      "</span>";
 
-      }
+  }
 
 
-      if (!enlace) {
+  html +=
+    '<span class="badge">' +
+    nombreCategoria +
+    "</span>";
 
-        mensaje.textContent =
-          "Escribe el enlace de Dropbox.";
+  html +=
+    "</div>";
 
-        return;
 
-      }
+  if (texto) {
 
+    html +=
+      '<div class="descripcion">' +
+      escaparHTML(texto) +
+      "</div>";
 
-      mensaje.textContent =
-        "Agregando película...";
+  }
 
 
-      const datos = {
+  html +=
+    '<div class="botones">';
 
-        anio:
-          anio,
+  html +=
+    '<button class="btn btn-ver" onclick="verPeliculaPorIndice(' +
+    indice +
+    ')">▶️ Ver</button>';
 
-        calidad:
-          calidad,
+  html +=
+    '<a class="btn btn-descargar" href="' +
+    escaparHTML(
+      convertirDropbox(
+        pelicula.videos_url || "",
+        true
+      )
+    ) +
+    '" target="_blank" rel="noopener noreferrer">⬇️ Descargar</a>';
 
-        tamano:
-          tamano,
+  html +=
+    "</div>";
 
-        categoria:
-          categoria,
 
-        texto:
-          descripcion
+  if (usuarioActual) {
 
-      };
+    html +=
+      '<button class="btn btn-eliminar" onclick="eliminarPelicula(\'' +
+      escaparJS(pelicula.id) +
+      '\')">🗑️ Eliminar</button>';
 
+  }
 
-      try {
 
-        const resultado =
-          await supabaseClient
-            .from("peliculas")
-            .insert({
+  html +=
+    "</div>";
 
-              titulo:
-                titulo,
+  html +=
+    "</article>";
 
-              descripcion:
-                JSON.stringify(
-                  datos
-                ),
+  return html;
 
-              poster_url:
-                poster,
+}
 
-              videos_url:
-                enlace,
 
-              favorita_mari:
-                favoritaMari
+/* =========================
+   DROPBOX CORREGIDO
+========================= */
 
-            });
+function convertirDropbox(
+  url,
+  descargar
+) {
 
+  if (!url) {
+    return "";
+  }
 
-        const error =
-          resultado.error;
+  let nuevaUrl =
+    url.trim();
 
+  /*
+    Convertimos el enlace normal
+    de Dropbox en un enlace directo.
+  */
 
-        if (error) {
+  nuevaUrl =
+    nuevaUrl.replace(
+      "www.dropbox.com",
+      "dl.dropboxusercontent.com"
+    );
 
-          console.error(error);
+  /*
+    Conservamos la ruta del archivo.
+    Quitamos solamente los parámetros
+    anteriores para evitar conflictos.
+  */
 
-          mensaje.textContent =
-            "❌ No se pudo agregar la película.";
+  const partes =
+    nuevaUrl.split("?");
 
-          return;
+  nuevaUrl =
+    partes[0];
 
-        }
+  /*
+    Para reproducir:
+    raw=1 le indica a Dropbox que
+    entregue el archivo directamente.
 
+    Para descargar:
+    dl=1 fuerza la descarga.
+  */
 
-        mensaje.textContent =
-          "✅ Película agregada correctamente.";
+  if (descargar) {
 
+    nuevaUrl +=
+      "?dl=1";
 
-        /*
-          Limpiamos el formulario.
-        */
+  } else {
 
-        document
-          .getElementById(
-            "titulo"
-          )
-          .value = "";
+    nuevaUrl +=
+      "?raw=1";
 
-        document
-          .getElementById(
-            "anio"
-          )
-          .value = "";
+  }
 
-        document
-          .getElementById(
-            "calidad"
-          )
-          .value = "";
+  return nuevaUrl;
 
-        document
-          .getElementById(
-            "tamano"
-          )
-          .value = "";
+}
 
-        document
-          .getElementById(
-            "descripcion"
-          )
-          .value = "";
 
-        document
-          .getElementById(
-            "poster"
-          )
-          .value = "";
+function verPeliculaPorIndice(
+  indice
+) {
 
-        document
-          .getElementById(
-            "enlace"
-          )
-          .value = "";
+  const pelicula =
+    todasLasPeliculas[indice];
 
-        document
-          .getElementById(
-            "favoritaMari"
-          )
-          .checked = false;
+  if (!pelicula) {
+    return;
+  }
 
+  const url =
+    convertirDropbox(
+      pelicula.videos_url || "",
+      false
+    );
 
-        await cargarPeliculas();
+  if (!url) {
 
+    alert(
+      "Esta película no tiene un enlace de Dropbox."
+    );
 
-      } catch (error) {
+    return;
+  }
 
-        console.error(error);
+  const video =
+    document.getElementById(
+      "videoPlayer"
+    );
 
-        mensaje.textContent =
-          "❌ Ocurrió un error al agregar la película.";
+  const modal =
+    document.getElementById(
+      "modal"
+    );
 
-      }
+  const enlace =
+    document.getElementById(
+      "abrirDropbox"
+    );
 
+
+  video.pause();
+
+  video.src =
+    url;
+
+  video.load();
+
+
+  enlace.href =
+    pelicula.videos_url ||
+    url;
+
+
+  modal.classList.add(
+    "visible"
+  );
+
+
+  video.play().catch(
+    function(error) {
+      console.log(
+        "Reproducción automática bloqueada:",
+        error
+      );
     }
+  );
+
+}
 
 
-    /* =========================
-       ELIMINAR
-    ========================= */
+function cerrarVideo() {
 
-    async function eliminarPelicula(
-      id
+  const video =
+    document.getElementById(
+      "videoPlayer"
+    );
+
+  const modal =
+    document.getElementById(
+      "modal"
+    );
+
+  video.pause();
+
+  video.removeAttribute(
+    "src"
+  );
+
+  video.load();
+
+  modal.classList.remove(
+    "visible"
+  );
+
+}
+
+
+document.addEventListener(
+  "click",
+  function(event) {
+
+    const modal =
+      document.getElementById(
+        "modal"
+      );
+
+    if (
+      event.target === modal
     ) {
-
-      if (!usuarioActual) {
-
-        return;
-
-      }
-
-
-      const confirmar =
-        confirm(
-          "¿Seguro que quieres eliminar esta película?"
-        );
-
-
-      if (!confirmar) {
-
-        return;
-
-      }
-
-
-      try {
-
-        const resultado =
-          await supabaseClient
-            .from("peliculas")
-            .delete()
-            .eq(
-              "id",
-              id
-            );
-
-
-        const error =
-          resultado.error;
-
-
-        if (error) {
-
-          console.error(error);
-
-          alert(
-            "No se pudo eliminar la película."
-          );
-
-          return;
-
-        }
-
-
-        await cargarPeliculas();
-
-
-      } catch (error) {
-
-        console.error(error);
-
-        alert(
-          "Ocurrió un error al eliminar la película."
-        );
-
-      }
-
+      cerrarVideo();
     }
 
-
-    /* =========================
-       SEGURIDAD HTML
-    ========================= */
-
-    function escaparHTML(
-      texto
-    ) {
-
-      if (
-        texto === null ||
-        texto === undefined
-      ) {
-
-        return "";
-
-      }
+  }
+);
 
 
-      return String(texto)
-        .replace(
-          /&/g,
-          "&amp;"
-        )
-        .replace(
-          /</g,
-          "&lt;"
-        )
-        .replace(
-          />/g,
-          "&gt;"
-        )
-        .replace(
-          /"/g,
-          "&quot;"
-        )
-        .replace(
-          /'/g,
-          "&#039;"
-        );
+async function agregarPelicula() {
 
-    }
+  if (!usuarioActual) {
+
+    alert(
+      "Primero inicia sesión como administrador."
+    );
+
+    return;
+  }
 
 
-    function escaparJS(
-      texto
-    ) {
+  const titulo =
+    document
+      .getElementById("titulo")
+      .value
+      .trim();
 
-      if (
-        texto === null ||
-        texto === undefined
-      ) {
+  const anio =
+    document
+      .getElementById("anio")
+      .value
+      .trim();
 
-        return "";
+  const calidad =
+    document
+      .getElementById("calidad")
+      .value
+      .trim();
 
-      }
+  const tamano =
+    document
+      .getElementById("tamano")
+      .value
+      .trim();
+
+  const categoria =
+    document
+      .getElementById("categoria")
+      .value;
+
+  const descripcion =
+    document
+      .getElementById("descripcion")
+      .value
+      .trim();
+
+  const poster =
+    document
+      .getElementById("poster")
+      .value
+      .trim();
+
+  const enlace =
+    document
+      .getElementById("enlace")
+      .value
+      .trim();
+
+  const favoritaMari =
+    document
+      .getElementById("favoritaMari")
+      .checked;
+
+  const mensaje =
+    document.getElementById(
+      "adminMensaje"
+    );
 
 
-      return String(texto)
-        .replace(
-          /\\/g,
-          "\\\\"
-        )
-        .replace(
-          /'/g,
-          "\\'"
-        )
-        .replace(
-          /\r/g,
-          "\\r"
-        )
-        .replace(
-          /\n/g,
-          "\\n"
-        );
+  if (!titulo) {
 
-    }
+    mensaje.textContent =
+      "Escribe el título de la película.";
 
-  </script>
+    return;
+  }
+
+
+  if (!enlace) {
+
+    mensaje.textContent =
+      "Escribe el enlace de Dropbox.";
+
+    return;
+  }
+
+
+  mensaje.textContent =
+    "Agregando película...";
+
+
+  const datos = {
+
+    anio: anio,
+
+    calidad: calidad,
+
+    tamano: tamano,
+
+    categoria: categoria,
+
+    texto: descripcion
+
+  };
+
+
+  const resultado =
+    await supabaseClient
+      .from("peliculas")
+      .insert({
+
+        titulo: titulo,
+
+        descripcion:
+          JSON.stringify(datos),
+
+        poster_url:
+          poster,
+
+        videos_url:
+          enlace,
+
+        favorita_mari:
+          favoritaMari
+
+      });
+
+
+  if (resultado.error) {
+
+    console.error(
+      resultado.error
+    );
+
+    mensaje.textContent =
+      "❌ No se pudo agregar la película.";
+
+    return;
+  }
+
+
+  mensaje.textContent =
+    "✅ Película agregada correctamente.";
+
+
+  document
+    .getElementById("titulo")
+    .value = "";
+
+  document
+    .getElementById("anio")
+    .value = "";
+
+  document
+    .getElementById("calidad")
+    .value = "";
+
+  document
+    .getElementById("tamano")
+    .value = "";
+
+  document
+    .getElementById("descripcion")
+    .value = "";
+
+  document
+    .getElementById("poster")
+    .value = "";
+
+  document
+    .getElementById("enlace")
+    .value = "";
+
+  document
+    .getElementById("favoritaMari")
+    .checked = false;
+
+
+  await cargarPeliculas();
+
+}
+
+
+async function eliminarPelicula(
+  id
+) {
+
+  if (!usuarioActual) {
+    return;
+  }
+
+
+  const confirmar =
+    confirm(
+      "¿Seguro que quieres eliminar esta película?"
+    );
+
+
+  if (!confirmar) {
+    return;
+  }
+
+
+  const resultado =
+    await supabaseClient
+      .from("peliculas")
+      .delete()
+      .eq(
+        "id",
+        id
+      );
+
+
+  if (resultado.error) {
+
+    console.error(
+      resultado.error
+    );
+
+    alert(
+      "No se pudo eliminar la película."
+    );
+
+    return;
+  }
+
+
+  await cargarPeliculas();
+
+}
+
+
+function escaparHTML(
+  texto
+) {
+
+  if (
+    texto === null ||
+    texto === undefined
+  ) {
+    return "";
+  }
+
+  return String(texto)
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+function escaparJS(
+  texto
+) {
+
+  if (
+    texto === null ||
+    texto === undefined
+  ) {
+    return "";
+  }
+
+  return String(texto)
+    .replace(
+      /\\/g,
+      "\\\\"
+    )
+    .replace(
+      /'/g,
+      "\\'"
+    )
+    .replace(
+      /\r/g,
+      "\\r"
+    )
+    .replace(
+      /\n/g,
+      "\\n"
+    );
+
+}
+
+</script>
 
 </body>
 </html>
