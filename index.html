@@ -8,6 +8,31 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- GOOGLE CAST -->
+<script>
+window.__onGCastApiAvailable = function(isAvailable) {
+  if (isAvailable) {
+    inicializarGoogleCast();
+  }
+};
+
+function inicializarGoogleCast() {
+
+  cast.framework.CastContext.getInstance().setOptions({
+
+    receiverApplicationId:
+      chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+
+    autoJoinPolicy:
+      chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+
+  });
+
+}
+</script>
+
+<script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+
 <style>
 * {
   box-sizing: border-box;
@@ -169,6 +194,16 @@ header p {
   color: white;
 }
 
+/* BOTÓN TV */
+.tv {
+  background: #1683ff;
+  color: white;
+}
+
+.tv:hover {
+  background: #0066d6;
+}
+
 .admin-boton {
   position: fixed;
   bottom: 15px;
@@ -306,6 +341,7 @@ header p {
 
 <div class="contenedor">
 
+  <!-- BUSCADOR -->
   <input
     id="buscador"
     name="movie-search"
@@ -360,6 +396,7 @@ header p {
 
   </div>
 
+  <!-- LOGIN -->
   <div id="panelLogin" class="panel">
 
     <h2>🔐 Administración</h2>
@@ -388,21 +425,40 @@ header p {
 
   </div>
 
+  <!-- ADMIN -->
   <div id="panelAdmin" class="panel">
 
     <h2>🎬 Agregar película</h2>
 
-    <input id="titulo" placeholder="Título">
+    <input
+      id="titulo"
+      placeholder="Título"
+    >
 
-    <input id="poster" placeholder="Enlace del póster">
+    <input
+      id="poster"
+      placeholder="Enlace del póster"
+    >
 
-    <input id="enlace" placeholder="Enlace de Dropbox">
+    <input
+      id="enlace"
+      placeholder="Enlace de Dropbox"
+    >
 
-    <input id="anio" placeholder="Año">
+    <input
+      id="anio"
+      placeholder="Año"
+    >
 
-    <input id="calidad" placeholder="Calidad (1080p, 720p...)">
+    <input
+      id="calidad"
+      placeholder="Calidad (1080p, 720p...)"
+    >
 
-    <input id="tamano" placeholder="Tamaño (GB, MB...)">
+    <input
+      id="tamano"
+      placeholder="Tamaño (GB, MB...)"
+    >
 
     <select id="categoria">
       <option value="principal">🎬 Principal</option>
@@ -442,10 +498,12 @@ header p {
 
   </div>
 
+  <!-- PELÍCULAS -->
   <div id="peliculas" class="peliculas"></div>
 
 </div>
 
+<!-- BOTÓN ADMIN -->
 <button
   class="admin-boton"
   onclick="abrirAdministracion()"
@@ -453,6 +511,7 @@ header p {
   ⚙️
 </button>
 
+<!-- REPRODUCTOR -->
 <div id="modal" class="modal">
 
   <div class="modal-contenido">
@@ -486,6 +545,10 @@ header p {
 
 <script>
 
+/* =========================
+   SUPABASE
+========================= */
+
 const SUPABASE_URL =
   "https://jnxtndenqxgqqzmmckco.supabase.co";
 
@@ -498,12 +561,17 @@ const supabaseClient =
     SUPABASE_KEY
   );
 
+
 let todasLasPeliculas = [];
 
 let categoriaActual = "todas";
 
 let usuarioActual = null;
 
+
+/* =========================
+   INICIO
+========================= */
 
 document.addEventListener(
   "DOMContentLoaded",
@@ -523,6 +591,10 @@ document.addEventListener(
   }
 );
 
+
+/* =========================
+   SESIÓN
+========================= */
 
 async function comprobarSesion() {
 
@@ -659,6 +731,10 @@ function actualizarPanelAdmin() {
 
 }
 
+
+/* =========================
+   PELÍCULAS
+========================= */
 
 async function cargarPeliculas() {
 
@@ -1060,6 +1136,13 @@ function crearTarjeta(
             ▶️ Ver
           </button>
 
+          <button
+            class="btn tv"
+            onclick="transmitirPeliculaPorIndice(${indice})"
+          >
+            📺 TV
+          </button>
+
           ${
             enlaceDescarga
               ? `<a
@@ -1095,6 +1178,10 @@ function crearTarjeta(
 
 }
 
+
+/* =========================
+   DROPBOX
+========================= */
 
 function convertirDropbox(
   url,
@@ -1157,6 +1244,10 @@ function convertirDropbox(
 
 }
 
+
+/* =========================
+   REPRODUCIR
+========================= */
 
 function verPeliculaPorIndice(
   indice
@@ -1257,6 +1348,10 @@ function verPeliculaPorIndice(
 }
 
 
+/* =========================
+   CERRAR VIDEO
+========================= */
+
 function cerrarVideo() {
 
   const video =
@@ -1288,6 +1383,10 @@ function cerrarVideo() {
 
 }
 
+
+/* =========================
+   AGREGAR
+========================= */
 
 async function agregarPelicula() {
 
@@ -1487,6 +1586,10 @@ async function agregarPelicula() {
 }
 
 
+/* =========================
+   ELIMINAR
+========================= */
+
 async function eliminarPelicula(
   id
 ) {
@@ -1538,6 +1641,162 @@ async function eliminarPelicula(
 
 
   await cargarPeliculas();
+
+}
+
+
+/* =========================
+   GOOGLE CAST / TV
+========================= */
+
+async function transmitirPeliculaPorIndice(
+  indice
+) {
+
+  const pelicula =
+    todasLasPeliculas[
+      indice
+    ];
+
+
+  if (!pelicula) {
+
+    return;
+
+  }
+
+
+  const enlaceOriginal =
+    pelicula.videos_url ||
+    "";
+
+
+  if (!enlaceOriginal) {
+
+    alert(
+      "Esta película no tiene un enlace de Dropbox."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    typeof cast === "undefined" ||
+    !cast.framework ||
+    !cast.framework.CastContext
+  ) {
+
+    alert(
+      "Google Cast no está disponible en este navegador."
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    const castContext =
+      cast.framework.CastContext.getInstance();
+
+
+    let castSession =
+      castContext.getCurrentSession();
+
+
+    if (!castSession) {
+
+      await castContext.requestSession();
+
+      castSession =
+        castContext.getCurrentSession();
+
+    }
+
+
+    if (!castSession) {
+
+      alert(
+        "No se pudo conectar con la pantalla."
+      );
+
+      return;
+
+    }
+
+
+    const urlVideo =
+      convertirDropbox(
+        enlaceOriginal,
+        false
+      );
+
+
+    const mediaInfo =
+      new chrome.cast.media.MediaInfo(
+        urlVideo,
+        "video/mp4"
+      );
+
+
+    mediaInfo.metadata =
+      new chrome.cast.media.GenericMediaMetadata();
+
+
+    mediaInfo.metadata.title =
+      pelicula.titulo ||
+      "Película";
+
+
+    if (pelicula.poster_url) {
+
+      mediaInfo.metadata.images = [
+        {
+          url:
+            pelicula.poster_url
+        }
+      ];
+
+    }
+
+
+    const request =
+      new chrome.cast.media.LoadRequest(
+        mediaInfo
+      );
+
+
+    request.autoplay =
+      true;
+
+
+    await castSession.loadMedia(
+      request
+    );
+
+
+    console.log(
+      "Película enviada a la TV:",
+      pelicula.titulo
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Error al transmitir:",
+      error
+    );
+
+
+    alert(
+      "No se pudo transmitir la película a la pantalla."
+    );
+
+  }
 
 }
 
