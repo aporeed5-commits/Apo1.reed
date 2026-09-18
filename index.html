@@ -8,11 +8,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- =========================
-     GOOGLE CAST
-========================= -->
-<script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
-
 <style>
 * {
   box-sizing: border-box;
@@ -289,31 +284,6 @@ header p {
   font-size: 13px;
 }
 
-/* =========================
-   GOOGLE CAST
-========================= */
-
-.controles-tv {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.boton-tv {
-  border: none;
-  border-radius: 9px;
-  padding: 10px 13px;
-  background: #292936;
-  color: white;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.boton-tv:hover {
-  background: #3a3a4c;
-}
-
 @media(max-width:600px) {
   header h1 {
     font-size: 32px;
@@ -336,7 +306,6 @@ header p {
 
 <div class="contenedor">
 
-  <!-- BUSCADOR -->
   <input
     id="buscador"
     name="movie-search"
@@ -391,7 +360,6 @@ header p {
 
   </div>
 
-  <!-- LOGIN -->
   <div id="panelLogin" class="panel">
 
     <h2>🔐 Administración</h2>
@@ -420,40 +388,21 @@ header p {
 
   </div>
 
-  <!-- ADMIN -->
   <div id="panelAdmin" class="panel">
 
     <h2>🎬 Agregar película</h2>
 
-    <input
-      id="titulo"
-      placeholder="Título"
-    >
+    <input id="titulo" placeholder="Título">
 
-    <input
-      id="poster"
-      placeholder="Enlace del póster"
-    >
+    <input id="poster" placeholder="Enlace del póster">
 
-    <input
-      id="enlace"
-      placeholder="Enlace de Dropbox"
-    >
+    <input id="enlace" placeholder="Enlace de Dropbox">
 
-    <input
-      id="anio"
-      placeholder="Año"
-    >
+    <input id="anio" placeholder="Año">
 
-    <input
-      id="calidad"
-      placeholder="Calidad (1080p, 720p...)"
-    >
+    <input id="calidad" placeholder="Calidad (1080p, 720p...)">
 
-    <input
-      id="tamano"
-      placeholder="Tamaño (GB, MB...)"
-    >
+    <input id="tamano" placeholder="Tamaño (GB, MB...)">
 
     <select id="categoria">
       <option value="principal">🎬 Principal</option>
@@ -493,12 +442,10 @@ header p {
 
   </div>
 
-  <!-- PELÍCULAS -->
   <div id="peliculas" class="peliculas"></div>
 
 </div>
 
-<!-- BOTÓN ADMIN -->
 <button
   class="admin-boton"
   onclick="abrirAdministracion()"
@@ -506,7 +453,6 @@ header p {
   ⚙️
 </button>
 
-<!-- REPRODUCTOR -->
 <div id="modal" class="modal">
 
   <div class="modal-contenido">
@@ -525,22 +471,6 @@ header p {
       preload="metadata"
     ></video>
 
-    <!-- =========================
-         BOTÓN TV
-    ========================= -->
-
-    <div class="controles-tv">
-
-      <button
-        id="botonTV"
-        class="boton-tv"
-        onclick="transmitirATV()"
-      >
-        📺 Ver en TV
-      </button>
-
-    </div>
-
     <a
       id="abrirDropbox"
       class="abrir-dropbox"
@@ -556,10 +486,6 @@ header p {
 
 <script>
 
-/* =========================
-   SUPABASE
-========================= */
-
 const SUPABASE_URL =
   "https://jnxtndenqxgqqzmmckco.supabase.co";
 
@@ -572,254 +498,12 @@ const supabaseClient =
     SUPABASE_KEY
   );
 
-
 let todasLasPeliculas = [];
 
 let categoriaActual = "todas";
 
 let usuarioActual = null;
 
-
-/* =========================
-   GOOGLE CAST
-========================= */
-
-let googleCastDisponible = false;
-
-
-/*
-  Google llama automáticamente
-  a esta función cuando la API
-  de Cast termina de cargar.
-*/
-
-window.__onGCastApiAvailable =
-  function(isAvailable) {
-
-    if (!isAvailable) {
-
-      console.log(
-        "Google Cast no está disponible."
-      );
-
-      return;
-
-    }
-
-
-    inicializarGoogleCast();
-
-  };
-
-
-function inicializarGoogleCast() {
-
-  try {
-
-    if (
-      typeof cast === "undefined" ||
-      !cast.framework
-    ) {
-
-      return;
-
-    }
-
-
-    const castContext =
-      cast.framework.CastContext.getInstance();
-
-
-    castContext.setOptions({
-
-      receiverApplicationId:
-        chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
-
-      autoJoinPolicy:
-        chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
-
-    });
-
-
-    googleCastDisponible = true;
-
-
-    console.log(
-      "Google Cast disponible."
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "Error al iniciar Google Cast:",
-      error
-    );
-
-  }
-
-}
-
-
-/*
-  Transmite la película que está
-  abierta actualmente en el reproductor.
-*/
-
-async function transmitirATV() {
-
-  if (!googleCastDisponible) {
-
-    alert(
-      "Google Cast no está disponible en este navegador."
-    );
-
-    return;
-
-  }
-
-
-  const video =
-    document.getElementById(
-      "videoPlayer"
-    );
-
-
-  if (
-    !video ||
-    !(video.currentSrc || video.src)
-  ) {
-
-    alert(
-      "Primero abre una película."
-    );
-
-    return;
-
-  }
-
-
-  try {
-
-    const castContext =
-      cast.framework.CastContext.getInstance();
-
-
-    let session =
-      castContext.getCurrentSession();
-
-
-    /*
-      Si no hay conexión con una TV,
-      abre el selector de dispositivos.
-    */
-
-    if (!session) {
-
-      await castContext.requestSession();
-
-      session =
-        castContext.getCurrentSession();
-
-    }
-
-
-    if (!session) {
-
-      return;
-
-    }
-
-
-    const fuente =
-      video.currentSrc ||
-      video.src;
-
-
-    /*
-      Detectamos el tipo de archivo.
-    */
-
-    let tipoVideo =
-      "video/mp4";
-
-
-    if (
-      fuente
-        .toLowerCase()
-        .includes(".webm")
-    ) {
-
-      tipoVideo =
-        "video/webm";
-
-    }
-
-
-    /*
-      Información del contenido.
-    */
-
-    const mediaInfo =
-      new chrome.cast.media.MediaInfo(
-        fuente,
-        tipoVideo
-      );
-
-
-    mediaInfo.streamType =
-      chrome.cast.media.StreamType.BUFFERED;
-
-
-    /*
-      Enviamos la película.
-    */
-
-    const request =
-      new chrome.cast.media.LoadRequest(
-        mediaInfo
-      );
-
-
-    /*
-      Mantener la posición actual
-      de la película.
-    */
-
-    request.currentTime =
-      video.currentTime || 0;
-
-
-    await session.loadMedia(
-      request
-    );
-
-
-    console.log(
-      "Película enviada a la TV."
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "Error al transmitir:",
-      error
-    );
-
-
-    alert(
-      "No se pudo transmitir la película a la TV."
-    );
-
-  }
-
-}
-
-
-/* =========================
-   INICIO
-========================= */
 
 document.addEventListener(
   "DOMContentLoaded",
@@ -839,10 +523,6 @@ document.addEventListener(
   }
 );
 
-
-/* =========================
-   SESIÓN
-========================= */
 
 async function comprobarSesion() {
 
@@ -979,10 +659,6 @@ function actualizarPanelAdmin() {
 
 }
 
-
-/* =========================
-   PELÍCULAS
-========================= */
 
 async function cargarPeliculas() {
 
@@ -1127,12 +803,6 @@ function mostrarPeliculas() {
       .toLowerCase()
       .trim();
 
-
-  /*
-    Evita que un correo que el navegador
-    haya puesto automáticamente en el
-    buscador oculte las películas.
-  */
 
   if (
     busqueda.includes("@")
@@ -1426,10 +1096,6 @@ function crearTarjeta(
 }
 
 
-/* =========================
-   DROPBOX
-========================= */
-
 function convertirDropbox(
   url,
   descargar
@@ -1449,17 +1115,6 @@ function convertirDropbox(
         url.trim()
       );
 
-
-    /*
-      Para descargar:
-      dl=1
-
-      Para reproducir:
-      raw=1
-
-      Conservamos rlkey, st
-      y cualquier otro parámetro.
-    */
 
     if (descargar) {
 
@@ -1502,10 +1157,6 @@ function convertirDropbox(
 
 }
 
-
-/* =========================
-   REPRODUCIR
-========================= */
 
 function verPeliculaPorIndice(
   indice
@@ -1606,10 +1257,6 @@ function verPeliculaPorIndice(
 }
 
 
-/* =========================
-   CERRAR VIDEO
-========================= */
-
 function cerrarVideo() {
 
   const video =
@@ -1641,10 +1288,6 @@ function cerrarVideo() {
 
 }
 
-
-/* =========================
-   AGREGAR
-========================= */
 
 async function agregarPelicula() {
 
@@ -1843,10 +1486,6 @@ async function agregarPelicula() {
 
 }
 
-
-/* =========================
-   ELIMINAR
-========================= */
 
 async function eliminarPelicula(
   id
