@@ -204,6 +204,16 @@ header p {
   background: #0066d6;
 }
 
+/* NUEVO BOTÓN LG */
+.tv-lg {
+  background: #a21caf;
+  color: white;
+}
+
+.tv-lg:hover {
+  background: #86198f;
+}
+
 .admin-boton {
   position: fixed;
   bottom: 15px;
@@ -317,6 +327,112 @@ header p {
   margin-top: 10px;
   color: #bbb;
   font-size: 13px;
+}
+
+/* =========================
+   PANEL LG WEBOS
+========================= */
+
+.lg-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.92);
+  z-index: 3000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.lg-modal.visible {
+  display: flex;
+}
+
+.lg-panel {
+  width: 100%;
+  max-width: 500px;
+  background: #17171f;
+  border: 1px solid #39394d;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.5);
+}
+
+.lg-panel h2 {
+  margin-top: 0;
+}
+
+.lg-panel p {
+  color: #aaa;
+  line-height: 1.5;
+}
+
+.lg-input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #444;
+  background: #0e0e14;
+  color: white;
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+.lg-btn {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  margin-top: 8px;
+  color: white;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.lg-conectar {
+  background: #a21caf;
+}
+
+.lg-enviar {
+  background: #1683ff;
+}
+
+.lg-control {
+  background: #292936;
+}
+
+.lg-cerrar {
+  background: #8b2635;
+}
+
+.lg-estado {
+  background: #0c0c11;
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.lg-log {
+  background: #050505;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 12px;
+  height: 130px;
+  overflow-y: auto;
+  color: #aaa;
+  font-family: monospace;
+  font-size: 11px;
+  white-space: pre-wrap;
+}
+
+.lg-controles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 @media(max-width:600px) {
@@ -543,6 +659,114 @@ header p {
 
 </div>
 
+<!-- =========================
+     PANEL LG WEBOS
+========================= -->
+
+<div id="lgModal" class="lg-modal">
+
+  <div class="lg-panel">
+
+    <h2>📺 LG webOS</h2>
+
+    <p id="lgMovieName">
+      Conectar con tu TV LG.
+    </p>
+
+    <input
+      id="lgIp"
+      class="lg-input"
+      type="text"
+      inputmode="decimal"
+      autocomplete="off"
+      placeholder="IP de la TV, ejemplo: 192.168.1.50"
+    >
+
+    <button
+      class="lg-btn lg-conectar"
+      onclick="conectarLG()"
+    >
+      🔌 Conectar con LG
+    </button>
+
+    <button
+      id="lgEnviarBtn"
+      class="lg-btn lg-enviar"
+      onclick="enviarPeliculaALG()"
+      disabled
+    >
+      🎬 Enviar película a LG
+    </button>
+
+    <div class="lg-controles">
+
+      <button
+        class="lg-btn lg-control"
+        onclick="lgPlay()"
+      >
+        ▶️ Play
+      </button>
+
+      <button
+        class="lg-btn lg-control"
+        onclick="lgPause()"
+      >
+        ⏸️ Pausa
+      </button>
+
+      <button
+        class="lg-btn lg-control"
+        onclick="lgVolumeUp()"
+      >
+        🔊 Volumen +
+      </button>
+
+      <button
+        class="lg-btn lg-control"
+        onclick="lgVolumeDown()"
+      >
+        🔉 Volumen -
+      </button>
+
+      <button
+        class="lg-btn lg-control"
+        onclick="lgFastForward()"
+      >
+        ⏩ Adelantar
+      </button>
+
+      <button
+        class="lg-btn lg-control"
+        onclick="lgRewind()"
+      >
+        ⏪ Retroceder
+      </button>
+
+    </div>
+
+    <div
+      id="lgEstado"
+      class="lg-estado"
+    >
+      🔴 Desconectado
+    </div>
+
+    <div
+      id="lgLog"
+      class="lg-log"
+    ></div>
+
+    <button
+      class="lg-btn lg-cerrar"
+      onclick="cerrarLGModal()"
+    >
+      ✕ Cerrar
+    </button>
+
+  </div>
+
+</div>
+
 <script>
 
 /* =========================
@@ -587,6 +811,23 @@ document.addEventListener(
     await comprobarSesion();
 
     await cargarPeliculas();
+
+    /*
+      Recuperar IP guardada de la LG.
+    */
+
+    const ipGuardada =
+      localStorage.getItem(
+        "lg_webos_tv_ip"
+      );
+
+    if (ipGuardada) {
+
+      document.getElementById(
+        "lgIp"
+      ).value = ipGuardada;
+
+    }
 
   }
 );
@@ -1136,11 +1377,20 @@ function crearTarjeta(
             ▶️ Ver
           </button>
 
+          <!-- GOOGLE CAST: SE MANTIENE IGUAL -->
           <button
             class="btn tv"
             onclick="transmitirPeliculaPorIndice(${indice})"
           >
             📺 TV
+          </button>
+
+          <!-- NUEVO: LG WEBOS -->
+          <button
+            class="btn tv-lg"
+            onclick="prepararTransmisionLG(${indice})"
+          >
+            📺 LG
           </button>
 
           ${
@@ -1647,6 +1897,7 @@ async function eliminarPelicula(
 
 /* =========================
    GOOGLE CAST / TV
+   ORIGINAL SIN CAMBIOS
 ========================= */
 
 async function transmitirPeliculaPorIndice(
@@ -1817,6 +2068,1340 @@ async function transmitirPeliculaPorIndice(
   }
 
 }
+
+
+/* =========================================================
+   LG WEBOS / SSAP
+   NUEVA FUNCIÓN
+========================================================= */
+
+let lgSocket = null;
+
+let lgRequestId = 0;
+
+let lgPendingRequests = {};
+
+let lgIpActual =
+  localStorage.getItem(
+    "lg_webos_tv_ip"
+  ) || "";
+
+let lgClientKey =
+  localStorage.getItem(
+    "lg_webos_client_key"
+  ) || "";
+
+let peliculaLGActual = null;
+
+
+/* =========================
+   PREPARAR TRANSMISIÓN LG
+========================= */
+
+function prepararTransmisionLG(
+  indice
+) {
+
+  const pelicula =
+    todasLasPeliculas[
+      indice
+    ];
+
+
+  if (!pelicula) {
+
+    return;
+
+  }
+
+
+  if (!pelicula.videos_url) {
+
+    alert(
+      "Esta película no tiene un enlace de Dropbox."
+    );
+
+    return;
+
+  }
+
+
+  peliculaLGActual =
+    pelicula;
+
+
+  document.getElementById(
+    "lgMovieName"
+  ).textContent =
+    "🎬 Película seleccionada: " +
+    (pelicula.titulo || "Película");
+
+
+  document.getElementById(
+    "lgModal"
+  ).classList.add(
+    "visible"
+  );
+
+
+  actualizarEstadoLG();
+
+}
+
+
+/* =========================
+   CERRAR PANEL LG
+========================= */
+
+function cerrarLGModal() {
+
+  document
+    .getElementById(
+      "lgModal"
+    )
+    .classList.remove(
+      "visible"
+    );
+
+}
+
+
+/* =========================
+   ESTADO LG
+========================= */
+
+function actualizarEstadoLG(
+  texto
+) {
+
+  const estado =
+    document.getElementById(
+      "lgEstado"
+    );
+
+
+  if (texto) {
+
+    estado.textContent =
+      texto;
+
+    return;
+
+  }
+
+
+  if (
+    lgSocket &&
+    lgSocket.readyState ===
+      WebSocket.OPEN
+  ) {
+
+    estado.textContent =
+      "🟢 LG conectada";
+
+    document.getElementById(
+      "lgEnviarBtn"
+    ).disabled = false;
+
+  } else {
+
+    estado.textContent =
+      "🔴 LG desconectada";
+
+    document.getElementById(
+      "lgEnviarBtn"
+    ).disabled = true;
+
+  }
+
+}
+
+
+/* =========================
+   LOG LG
+========================= */
+
+function lgLog(
+  mensaje
+) {
+
+  const log =
+    document.getElementById(
+      "lgLog"
+    );
+
+
+  const hora =
+    new Date()
+      .toLocaleTimeString();
+
+
+  log.textContent +=
+    "[" +
+    hora +
+    "] " +
+    mensaje +
+    "\n";
+
+
+  log.scrollTop =
+    log.scrollHeight;
+
+
+  console.log(
+    "[LG]",
+    mensaje
+  );
+
+}
+
+
+/* =========================
+   CONECTAR LG
+========================= */
+
+async function conectarLG() {
+
+  const input =
+    document.getElementById(
+      "lgIp"
+    );
+
+
+  let ip =
+    input.value
+      .trim()
+      .replace(
+        /^https?:\/\//,
+        ""
+      )
+      .replace(
+        /\/.*$/,
+        ""
+      );
+
+
+  if (!ip) {
+
+    alert(
+      "Escribe la IP de tu TV LG."
+    );
+
+    return;
+
+  }
+
+
+  lgIpActual =
+    ip;
+
+
+  localStorage.setItem(
+    "lg_webos_tv_ip",
+    ip
+  );
+
+
+  if (
+    lgSocket &&
+    lgSocket.readyState ===
+      WebSocket.OPEN
+  ) {
+
+    actualizarEstadoLG(
+      "🟢 Ya estás conectado a la LG."
+    );
+
+    return;
+
+  }
+
+
+  actualizarEstadoLG(
+    "🟡 Conectando con " +
+    ip +
+    "..."
+  );
+
+
+  lgLog(
+    "Iniciando conexión con " +
+    ip
+  );
+
+
+  /*
+    Primero intentamos el puerto 3000,
+    que es el protocolo SSAP tradicional.
+
+    Si el navegador/TV no lo permite,
+    probamos 3001 con WSS.
+  */
+
+  try {
+
+    await conectarLGWebSocket(
+      "ws://" +
+      ip +
+      ":3000"
+    );
+
+
+    return;
+
+  } catch (error) {
+
+    lgLog(
+      "ws://:3000 falló: " +
+      error.message
+    );
+
+  }
+
+
+  try {
+
+    await conectarLGWebSocket(
+      "wss://" +
+      ip +
+      ":3001"
+    );
+
+
+    return;
+
+  } catch (error) {
+
+    lgLog(
+      "wss://:3001 falló: " +
+      error.message
+    );
+
+  }
+
+
+  actualizarEstadoLG(
+    "❌ No se pudo conectar con la LG."
+  );
+
+
+  alert(
+    "No se pudo conectar con la TV LG.\n\n" +
+    "Revisa que celular y TV estén en la misma Wi-Fi.\n\n" +
+    "Si tu TV es reciente, Chrome puede bloquear " +
+    "la conexión segura de webOS por el certificado " +
+    "de la TV. El registro de abajo muestra el error."
+  );
+
+}
+
+
+/* =========================
+   WEBSOCKET LG
+========================= */
+
+function conectarLGWebSocket(
+  url
+) {
+
+  return new Promise(
+    function(resolve, reject) {
+
+      lgLog(
+        "Abriendo " +
+        url
+      );
+
+
+      let ws;
+
+
+      try {
+
+        ws =
+          new WebSocket(
+            url
+          );
+
+      } catch (error) {
+
+        reject(error);
+
+        return;
+
+      }
+
+
+      lgSocket =
+        ws;
+
+
+      let terminado =
+        false;
+
+
+      const timeout =
+        setTimeout(
+          function() {
+
+            if (
+              !terminado
+            ) {
+
+              terminado =
+                true;
+
+              try {
+
+                ws.close();
+
+              } catch (e) {}
+
+
+              reject(
+                new Error(
+                  "Tiempo de espera agotado"
+                )
+              );
+
+            }
+
+          },
+          10000
+        );
+
+
+      ws.onopen =
+        function() {
+
+          lgLog(
+            "WebSocket conectado."
+          );
+
+
+          /*
+            SSAP comienza con HELLO.
+          */
+
+          enviarLGHello();
+
+        };
+
+
+      ws.onmessage =
+        function(event) {
+
+          try {
+
+            const data =
+              JSON.parse(
+                event.data
+              );
+
+
+            manejarMensajeLG(
+              data
+            );
+
+          } catch (error) {
+
+            lgLog(
+              "Mensaje no JSON recibido."
+            );
+
+          }
+
+        };
+
+
+      ws.onerror =
+        function() {
+
+          lgLog(
+            "Error WebSocket."
+          );
+
+        };
+
+
+      ws.onclose =
+        function() {
+
+          lgLog(
+            "WebSocket cerrado."
+          );
+
+
+          lgSocket =
+            null;
+
+
+          actualizarEstadoLG();
+
+
+          if (
+            !terminado
+          ) {
+
+            terminado =
+              true;
+
+            clearTimeout(
+              timeout
+            );
+
+
+            reject(
+              new Error(
+                "WebSocket cerrado"
+              )
+            );
+
+          }
+
+        };
+
+
+      window.__lgResolve =
+        function() {
+
+          if (
+            terminado
+          ) {
+
+            return;
+
+          }
+
+
+          terminado =
+            true;
+
+
+          clearTimeout(
+            timeout
+          );
+
+
+          resolve(
+            true
+          );
+
+        };
+
+
+      window.__lgReject =
+        function(error) {
+
+          if (
+            terminado
+          ) {
+
+            return;
+
+          }
+
+
+          terminado =
+            true;
+
+
+          clearTimeout(
+            timeout
+          );
+
+
+          reject(
+            error
+          );
+
+        };
+
+    }
+  );
+
+}
+
+
+/* =========================
+   HELLO
+========================= */
+
+function enviarLGHello() {
+
+  if (
+    !lgSocket
+  ) {
+
+    return;
+
+  }
+
+
+  const mensaje = {
+
+    type:
+      "hello",
+
+    id:
+      "hello"
+
+  };
+
+
+  lgLog(
+    "→ hello"
+  );
+
+
+  lgSocket.send(
+    JSON.stringify(
+      mensaje
+    )
+  );
+
+}
+
+
+/* =========================
+   REGISTRO / PAIRING
+========================= */
+
+function registrarLG() {
+
+  if (
+    !lgSocket
+  ) {
+
+    return;
+
+  }
+
+
+  const manifest = {
+
+    manifestVersion:
+      1,
+
+    appVersion:
+      "1.0",
+
+    signed: {
+
+      created:
+        "2026-01-01T00:00:00Z"
+
+    },
+
+    permissions: [
+
+      "LAUNCH",
+
+      "CONTROL_AUDIO",
+
+      "CONTROL_DISPLAY",
+
+      "READ_CURRENT_CHANNEL",
+
+      "READ_INPUT_DEVICE_LIST",
+
+      "CONTROL_INPUT_JOYSTICK_AND_BUTTONS",
+
+      "CONTROL_MOUSE_AND_KEYBOARD",
+
+      "CONTROL_POWER",
+
+      "READ_INSTALLED_APPS",
+
+      "READ_CURRENT_APP_INFO"
+
+    ]
+
+  };
+
+
+  const payload = {
+
+    pairingType:
+      "PROMPT",
+
+    manifest:
+      manifest
+
+  };
+
+
+  if (
+    lgClientKey
+  ) {
+
+    payload["client-key"] =
+      lgClientKey;
+
+  }
+
+
+  const mensaje = {
+
+    type:
+      "register",
+
+    id:
+      "register_0",
+
+    payload:
+      payload
+
+  };
+
+
+  lgLog(
+    lgClientKey
+      ? "→ Registrando con clave guardada."
+      : "→ Solicitando emparejamiento."
+  );
+
+
+  lgSocket.send(
+    JSON.stringify(
+      mensaje
+    )
+  );
+
+}
+
+
+/* =========================
+   MENSAJES LG
+========================= */
+
+function manejarMensajeLG(
+  data
+) {
+
+  lgLog(
+    "← " +
+    JSON.stringify(
+      data
+    )
+  );
+
+
+  /*
+    Respuesta al HELLO.
+  */
+
+  if (
+    data.type ===
+      "hello"
+  ) {
+
+    registrarLG();
+
+    return;
+
+  }
+
+
+  /*
+    Registro exitoso.
+  */
+
+  if (
+    data.type ===
+      "registered"
+  ) {
+
+    const key =
+      data.payload &&
+      (
+        data.payload["client-key"] ||
+        data.payload.clientKey
+      );
+
+
+    if (key) {
+
+      lgClientKey =
+        key;
+
+
+      localStorage.setItem(
+        "lg_webos_client_key",
+        lgClientKey
+      );
+
+
+      lgLog(
+        "🔑 Clave de LG guardada."
+      );
+
+    }
+
+
+    actualizarEstadoLG(
+      "🟢 LG conectada y emparejada."
+    );
+
+
+    if (
+      window.__lgResolve
+    ) {
+
+      window.__lgResolve();
+
+      window.__lgResolve =
+        null;
+
+    }
+
+
+    return;
+
+  }
+
+
+  /*
+    Algunas TVs mandan una respuesta
+    intermedia indicando el método de pairing.
+  */
+
+  if (
+    data.type ===
+      "response" &&
+    data.payload &&
+    data.payload.pairingType
+  ) {
+
+    lgLog(
+      "Método de emparejamiento: " +
+      data.payload.pairingType
+    );
+
+
+    if (
+      data.payload.pairingType ===
+        "PROMPT"
+    ) {
+
+      actualizarEstadoLG(
+        "🟡 Acepta el aviso de conexión en la TV LG..."
+      );
+
+    }
+
+
+    return;
+
+  }
+
+
+  /*
+    Respuestas normales a comandos.
+  */
+
+  if (
+    data.type ===
+      "response"
+  ) {
+
+    const id =
+      data.id;
+
+
+    if (
+      lgPendingRequests[id]
+    ) {
+
+      if (
+        data.error
+      ) {
+
+        lgPendingRequests[
+          id
+        ].reject(
+          data.error
+        );
+
+      } else {
+
+        lgPendingRequests[
+          id
+        ].resolve(
+          data.payload
+        );
+
+      }
+
+
+      delete
+        lgPendingRequests[
+          id
+        ];
+
+    }
+
+  }
+
+}
+
+
+/* =========================
+   PETICIÓN SSAP
+========================= */
+
+function lgRequest(
+  uri,
+  payload = {}
+) {
+
+  return new Promise(
+    function(resolve, reject) {
+
+      if (
+        !lgSocket ||
+        lgSocket.readyState !==
+          WebSocket.OPEN
+      ) {
+
+        reject(
+          new Error(
+            "LG no está conectada."
+          )
+        );
+
+        return;
+
+      }
+
+
+      const id =
+        "request_" +
+        (++lgRequestId);
+
+
+      lgPendingRequests[
+        id
+      ] = {
+
+        resolve:
+          resolve,
+
+        reject:
+          reject
+
+      };
+
+
+      const mensaje = {
+
+        type:
+          "request",
+
+        id:
+          id,
+
+        uri:
+          uri,
+
+        payload:
+          payload
+
+      };
+
+
+      lgLog(
+        "→ " +
+        uri
+      );
+
+
+      lgSocket.send(
+        JSON.stringify(
+          mensaje
+        )
+      );
+
+
+      setTimeout(
+        function() {
+
+          if (
+            lgPendingRequests[
+              id
+            ]
+          ) {
+
+            delete
+              lgPendingRequests[
+                id
+              ];
+
+
+            reject(
+              new Error(
+                "Tiempo de espera agotado: " +
+                uri
+              )
+            );
+
+          }
+
+        },
+        10000
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================
+   ENVIAR PELÍCULA A LG
+========================= */
+
+async function enviarPeliculaALG() {
+
+  if (
+    !peliculaLGActual
+  ) {
+
+    alert(
+      "No hay película seleccionada."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !lgSocket ||
+    lgSocket.readyState !==
+      WebSocket.OPEN
+  ) {
+
+    alert(
+      "Primero conecta la TV LG."
+    );
+
+    return;
+
+  }
+
+
+  const enlaceOriginal =
+    peliculaLGActual.videos_url ||
+    "";
+
+
+  if (!enlaceOriginal) {
+
+    alert(
+      "La película no tiene enlace."
+    );
+
+    return;
+
+  }
+
+
+  const urlVideo =
+    convertirDropbox(
+      enlaceOriginal,
+      false
+    );
+
+
+  actualizarEstadoLG(
+    "🟡 Enviando película a la LG..."
+  );
+
+
+  try {
+
+    /*
+      webOS puede abrir una URL
+      directamente en su navegador
+      mediante system.launcher/open.
+    */
+
+    const respuesta =
+      await lgRequest(
+        "ssap://system.launcher/open",
+        {
+          target:
+            urlVideo
+        }
+      );
+
+
+    lgLog(
+      "Película enviada: " +
+      peliculaLGActual.titulo
+    );
+
+
+    lgLog(
+      "URL: " +
+      urlVideo
+    );
+
+
+    actualizarEstadoLG(
+      "🟢 Película enviada a la LG."
+    );
+
+
+    /*
+      Intentamos ordenar reproducción
+      después de abrir el vídeo.
+    */
+
+    setTimeout(
+      function() {
+
+        lgPlay();
+
+      },
+      2500
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      error
+    );
+
+
+    lgLog(
+      "Error enviando película: " +
+      JSON.stringify(
+        error
+      )
+    );
+
+
+    actualizarEstadoLG(
+      "❌ No se pudo enviar la película."
+    );
+
+
+    alert(
+      "La LG rechazó la apertura de la película.\n\n" +
+      "Revisa el registro del panel LG."
+    );
+
+  }
+
+}
+
+
+/* =========================
+   CONTROLES LG
+========================= */
+
+async function lgPlay() {
+
+  try {
+
+    await lgRequest(
+      "ssap://media.controls/play"
+    );
+
+    lgLog(
+      "▶️ Play"
+    );
+
+  } catch (error) {
+
+    lgLog(
+      "Play: " +
+      JSON.stringify(
+        error
+      )
+    );
+
+  }
+
+}
+
+
+async function lgPause() {
+
+  try {
+
+    await lgRequest(
+      "ssap://media.controls/pause"
+    );
+
+    lgLog(
+      "⏸️ Pausa"
+    );
+
+  } catch (error) {
+
+    lgLog(
+      "Pause: " +
+      JSON.stringify(
+        error
+      )
+    );
+
+  }
+
+}
+
+
+async function lgVolumeUp() {
+
+  try {
+
+    await lgRequest(
+      "ssap://audio/volumeUp"
+    );
+
+    lgLog(
+      "🔊 Volumen +"
+    );
+
+  } catch (error) {
+
+    lgLog(
+      "Volumen +: " +
+      JSON.stringify(
+        error
+      )
+    );
+
+  }
+
+}
+
+
+async function lgVolumeDown() {
+
+  try {
+
+    await lgRequest(
+      "ssap://audio/volumeDown"
+    );
+
+    lgLog(
+      "🔉 Volumen -"
+    );
+
+  } catch (error) {
+
+    lgLog(
+      "Volumen -: " +
+      JSON.stringify(
+        error
+      )
+    );
+
+  }
+
+}
+
+
+async function lgFastForward() {
+
+  try {
+
+    await lgRequest(
+      "ssap://media.controls/fastForward"
+    );
+
+    lgLog(
+      "⏩ Adelantar"
+    );
+
+  } catch (error) {
+
+    lgLog(
+      "Adelantar: " +
+      JSON.stringify(
+        error
+      )
+    );
+
+  }
+
+}
+
+
+async function lgRewind() {
+
+  try {
+
+    await lgRequest(
+      "ssap://media.controls/rewind"
+    );
+
+    lgLog(
+      "⏪ Retroceder"
+    );
+
+  } catch (error) {
+
+    lgLog(
+      "Retroceder: " +
+      JSON.stringify(
+        error
+      )
+    );
+
+  }
+
+}
+
+
+/* =========================
+   OLVIDAR TV LG
+========================= */
+
+function olvidarLG() {
+
+  localStorage.removeItem(
+    "lg_webos_client_key"
+  );
+
+  lgClientKey =
+    "";
+
+
+  lgLog(
+    "Clave de emparejamiento eliminada."
+  );
+
+}
+
+
+/* =========================
+   CERRAR SOCKET AL SALIR
+========================= */
+
+window.addEventListener(
+  "beforeunload",
+  function() {
+
+    if (
+      lgSocket
+    ) {
+
+      try {
+
+        lgSocket.close();
+
+      } catch (e) {}
+
+    }
+
+  }
+);
 
 </script>
 
