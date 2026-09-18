@@ -24,7 +24,7 @@ function inicializarGoogleCast() {
       chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
 
     autoJoinPolicy:
-      chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+      chrome.cast.AutoJoinPolicy.PAGE_SCOPED
 
   });
 
@@ -1703,18 +1703,21 @@ async function transmitirPeliculaPorIndice(
       cast.framework.CastContext.getInstance();
 
 
-    let castSession =
+    /*
+      IMPORTANTE:
+
+      No usamos getCurrentSession() para reutilizar
+      automáticamente una sesión anterior.
+
+      La sesión se solicita solamente cuando el usuario
+      pulsa el botón TV.
+    */
+
+    await castContext.requestSession();
+
+
+    const castSession =
       castContext.getCurrentSession();
-
-
-    if (!castSession) {
-
-      await castContext.requestSession();
-
-      castSession =
-        castContext.getCurrentSession();
-
-    }
 
 
     if (!castSession) {
@@ -1790,6 +1793,21 @@ async function transmitirPeliculaPorIndice(
       "Error al transmitir:",
       error
     );
+
+
+    /*
+      Si el usuario cancela la selección de TV,
+      no mostramos un mensaje de error.
+    */
+
+    if (
+      error &&
+      error.code === "cancel"
+    ) {
+
+      return;
+
+    }
 
 
     alert(
