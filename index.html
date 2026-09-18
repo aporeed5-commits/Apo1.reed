@@ -17,21 +17,16 @@ window.__onGCastApiAvailable = function(isAvailable) {
 };
 
 function inicializarGoogleCast() {
-
   cast.framework.CastContext.getInstance().setOptions({
-
     receiverApplicationId:
       chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
-
     autoJoinPolicy:
       chrome.cast.AutoJoinPolicy.PAGE_SCOPED
-
   });
-
 }
 </script>
 
-<script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+<script src="https://www.gstatic.com/cv/js/cast_sender/v1/cast_sender.js?loadCastFramework=1"></script>
 
 <style>
 * {
@@ -194,7 +189,6 @@ header p {
   color: white;
 }
 
-/* BOTÓN TV */
 .tv {
   background: #1683ff;
   color: white;
@@ -204,7 +198,6 @@ header p {
   background: #0066d6;
 }
 
-/* NUEVO BOTÓN LG */
 .tv-lg {
   background: #a21caf;
   color: white;
@@ -435,6 +428,23 @@ header p {
   margin-top: 10px;
 }
 
+.lg-nota {
+  font-size: 12px;
+  color: #888;
+  margin-top: 10px;
+}
+
+#lgProxyFrame {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+  left: -10px;
+  top: -10px;
+}
+
 @media(max-width:600px) {
   header h1 {
     font-size: 32px;
@@ -457,206 +467,181 @@ header p {
 
 <div class="contenedor">
 
-  <!-- BUSCADOR -->
-  <input
-    id="buscador"
-    name="movie-search"
-    class="buscar"
-    type="search"
-    autocomplete="off"
-    autocorrect="off"
-    autocapitalize="off"
-    spellcheck="false"
-    readonly
-    onfocus="this.removeAttribute('readonly')"
-    placeholder="🔎 Buscar película..."
-    oninput="mostrarPeliculas()"
-  >
+<input
+  id="buscador"
+  name="movie-search"
+  class="buscar"
+  type="search"
+  autocomplete="off"
+  autocorrect="off"
+  autocapitalize="off"
+  spellcheck="false"
+  readonly
+  onfocus="this.removeAttribute('readonly')"
+  placeholder="🔎 Buscar película..."
+  oninput="mostrarPeliculas()"
+>
 
-  <div class="categorias">
+<div class="categorias">
 
-    <button
-      class="categoria-btn activo"
-      onclick="cambiarCategoria('todas', this)"
-    >
-      🎬 Todas
-    </button>
+<button
+  class="categoria-btn activo"
+  onclick="cambiarCategoria('todas', this)"
+>
+  🎬 Todas
+</button>
 
-    <button
-      class="categoria-btn"
-      onclick="cambiarCategoria('mari', this)"
-    >
-      ❤️ Mari
-    </button>
+<button
+  class="categoria-btn"
+  onclick="cambiarCategoria('mari', this)"
+>
+  ❤️ Mari
+</button>
 
-    <button
-      class="categoria-btn"
-      onclick="cambiarCategoria('familia', this)"
-    >
-      👨‍👩‍👧 Familia
-    </button>
+<button
+  class="categoria-btn"
+  onclick="cambiarCategoria('familia', this)"
+>
+  👨‍👩‍👧 Familia
+</button>
 
-    <button
-      class="categoria-btn"
-      onclick="cambiarCategoria('terror', this)"
-    >
-      👻 Terror
-    </button>
+<button
+  class="categoria-btn"
+  onclick="cambiarCategoria('terror', this)"
+>
+  👻 Terror
+</button>
 
-    <button
-      class="categoria-btn"
-      onclick="cambiarCategoria('accion', this)"
-    >
-      💥 Acción
-    </button>
-
-  </div>
-
-  <!-- LOGIN -->
-  <div id="panelLogin" class="panel">
-
-    <h2>🔐 Administración</h2>
-
-    <input
-      id="email"
-      name="email-admin"
-      type="email"
-      autocomplete="email"
-      placeholder="Correo"
-    >
-
-    <input
-      id="password"
-      name="password-admin"
-      type="password"
-      autocomplete="current-password"
-      placeholder="Contraseña"
-    >
-
-    <button onclick="iniciarSesion()">
-      Iniciar sesión
-    </button>
-
-    <p id="mensajeLogin"></p>
-
-  </div>
-
-  <!-- ADMIN -->
-  <div id="panelAdmin" class="panel">
-
-    <h2>🎬 Agregar película</h2>
-
-    <input
-      id="titulo"
-      placeholder="Título"
-    >
-
-    <input
-      id="poster"
-      placeholder="Enlace del póster"
-    >
-
-    <input
-      id="enlace"
-      placeholder="Enlace de Dropbox"
-    >
-
-    <input
-      id="anio"
-      placeholder="Año"
-    >
-
-    <input
-      id="calidad"
-      placeholder="Calidad (1080p, 720p...)"
-    >
-
-    <input
-      id="tamano"
-      placeholder="Tamaño (GB, MB...)"
-    >
-
-    <select id="categoria">
-      <option value="principal">🎬 Principal</option>
-      <option value="familia">👨‍👩‍👧 Familia</option>
-      <option value="terror">👻 Terror</option>
-      <option value="accion">💥 Acción</option>
-    </select>
-
-    <div class="checkbox">
-
-      <input
-        id="favoritaMari"
-        type="checkbox"
-      >
-
-      <label for="favoritaMari">
-        ❤️ Favorita de Mari
-      </label>
-
-    </div>
-
-    <textarea
-      id="descripcion"
-      rows="4"
-      placeholder="Descripción"
-    ></textarea>
-
-    <button onclick="agregarPelicula()">
-      ➕ Agregar película
-    </button>
-
-    <button onclick="cerrarSesion()">
-      Cerrar sesión
-    </button>
-
-    <p id="mensajeAdmin"></p>
-
-  </div>
-
-  <!-- PELÍCULAS -->
-  <div id="peliculas" class="peliculas"></div>
+<button
+  class="categoria-btn"
+  onclick="cambiarCategoria('accion', this)"
+>
+  💥 Acción
+</button>
 
 </div>
 
-<!-- BOTÓN ADMIN -->
+<div id="panelLogin" class="panel">
+
+<h2>🔐 Administración</h2>
+
+<input
+  id="email"
+  name="email-admin"
+  type="email"
+  autocomplete="email"
+  placeholder="Correo"
+>
+
+<input
+  id="password"
+  name="password-admin"
+  type="password"
+  autocomplete="current-password"
+  placeholder="Contraseña"
+>
+
+<button onclick="iniciarSesion()">
+  Iniciar sesión
+</button>
+
+<p id="mensajeLogin"></p>
+
+</div>
+
+<div id="panelAdmin" class="panel">
+
+<h2>🎬 Agregar película</h2>
+
+<input id="titulo" placeholder="Título">
+
+<input id="poster" placeholder="Enlace del póster">
+
+<input id="enlace" placeholder="Enlace de Dropbox">
+
+<input id="anio" placeholder="Año">
+
+<input id="calidad" placeholder="Calidad (1080p, 720p...)">
+
+<input id="tamano" placeholder="Tamaño (GB, MB...)">
+
+<select id="categoria">
+  <option value="principal">🎬 Principal</option>
+  <option value="familia">👨‍👩‍👧 Familia</option>
+  <option value="terror">👻 Terror</option>
+  <option value="accion">💥 Acción</option>
+</select>
+
+<div class="checkbox">
+
+<input
+  id="favoritaMari"
+  type="checkbox"
+>
+
+<label for="favoritaMari">
+  ❤️ Favorita de Mari
+</label>
+
+</div>
+
+<textarea
+  id="descripcion"
+  rows="4"
+  placeholder="Descripción"
+></textarea>
+
+<button onclick="agregarPelicula()">
+  ➕ Agregar película
+</button>
+
+<button onclick="cerrarSesion()">
+  Cerrar sesión
+</button>
+
+<p id="mensajeAdmin"></p>
+
+</div>
+
+<div id="peliculas" class="peliculas"></div>
+
+</div>
+
 <button
   class="admin-boton"
   onclick="abrirAdministracion()"
 >
-  ⚙️
+⚙️
 </button>
 
-<!-- REPRODUCTOR -->
 <div id="modal" class="modal">
 
-  <div class="modal-contenido">
+<div class="modal-contenido">
 
-    <button
-      class="cerrar"
-      onclick="cerrarVideo()"
-    >
-      ✕ Cerrar
-    </button>
+<button
+  class="cerrar"
+  onclick="cerrarVideo()"
+>
+  ✕ Cerrar
+</button>
 
-    <video
-      id="videoPlayer"
-      controls
-      playsinline
-      preload="metadata"
-    ></video>
+<video
+  id="videoPlayer"
+  controls
+  playsinline
+  preload="metadata"
+></video>
 
-    <a
-      id="abrirDropbox"
-      class="abrir-dropbox"
-      target="_blank"
-      rel="noopener"
-    >
-      Abrir enlace original de Dropbox
-    </a>
+<a
+  id="abrirDropbox"
+  class="abrir-dropbox"
+  target="_blank"
+  rel="noopener"
+>
+  Abrir enlace original de Dropbox
+</a>
 
-  </div>
-
+</div>
 </div>
 
 <!-- =========================
@@ -665,107 +650,118 @@ header p {
 
 <div id="lgModal" class="lg-modal">
 
-  <div class="lg-panel">
+<div class="lg-panel">
 
-    <h2>📺 LG webOS</h2>
+<h2>📺 LG webOS</h2>
 
-    <p id="lgMovieName">
-      Conectar con tu TV LG.
-    </p>
+<p id="lgMovieName">
+  Conectar con tu TV LG.
+</p>
 
-    <input
-      id="lgIp"
-      class="lg-input"
-      type="text"
-      inputmode="decimal"
-      autocomplete="off"
-      placeholder="IP de la TV, ejemplo: 192.168.1.50"
-    >
+<input
+  id="lgIp"
+  class="lg-input"
+  type="text"
+  inputmode="decimal"
+  autocomplete="off"
+  placeholder="IP de la TV, ejemplo: 192.168.1.50"
+>
 
-    <button
-      class="lg-btn lg-conectar"
-      onclick="conectarLG()"
-    >
-      🔌 Conectar con LG
-    </button>
+<button
+  class="lg-btn lg-conectar"
+  onclick="conectarLG()"
+>
+  🔌 Conectar con LG
+</button>
 
-    <button
-      id="lgEnviarBtn"
-      class="lg-btn lg-enviar"
-      onclick="enviarPeliculaALG()"
-      disabled
-    >
-      🎬 Enviar película a LG
-    </button>
+<button
+  id="lgEnviarBtn"
+  class="lg-btn lg-enviar"
+  onclick="enviarPeliculaALG()"
+  disabled
+>
+  🎬 Enviar película a LG
+</button>
 
-    <div class="lg-controles">
+<div class="lg-controles">
 
-      <button
-        class="lg-btn lg-control"
-        onclick="lgPlay()"
-      >
-        ▶️ Play
-      </button>
+<button
+  class="lg-btn lg-control"
+  onclick="lgPlay()"
+>
+  ▶️ Play
+</button>
 
-      <button
-        class="lg-btn lg-control"
-        onclick="lgPause()"
-      >
-        ⏸️ Pausa
-      </button>
+<button
+  class="lg-btn lg-control"
+  onclick="lgPause()"
+>
+  ⏸️ Pausa
+</button>
 
-      <button
-        class="lg-btn lg-control"
-        onclick="lgVolumeUp()"
-      >
-        🔊 Volumen +
-      </button>
+<button
+  class="lg-btn lg-control"
+  onclick="lgVolumeUp()"
+>
+  🔊 Volumen +
+</button>
 
-      <button
-        class="lg-btn lg-control"
-        onclick="lgVolumeDown()"
-      >
-        🔉 Volumen -
-      </button>
+<button
+  class="lg-btn lg-control"
+  onclick="lgVolumeDown()"
+>
+  🔉 Volumen -
+</button>
 
-      <button
-        class="lg-btn lg-control"
-        onclick="lgFastForward()"
-      >
-        ⏩ Adelantar
-      </button>
+<button
+  class="lg-btn lg-control"
+  onclick="lgFastForward()"
+>
+  ⏩ Adelantar
+</button>
 
-      <button
-        class="lg-btn lg-control"
-        onclick="lgRewind()"
-      >
-        ⏪ Retroceder
-      </button>
-
-    </div>
-
-    <div
-      id="lgEstado"
-      class="lg-estado"
-    >
-      🔴 Desconectado
-    </div>
-
-    <div
-      id="lgLog"
-      class="lg-log"
-    ></div>
-
-    <button
-      class="lg-btn lg-cerrar"
-      onclick="cerrarLGModal()"
-    >
-      ✕ Cerrar
-    </button>
-
-  </div>
+<button
+  class="lg-btn lg-control"
+  onclick="lgRewind()"
+>
+  ⏪ Retroceder
+</button>
 
 </div>
+
+<div
+  id="lgEstado"
+  class="lg-estado"
+>
+  🔴 Desconectado
+</div>
+
+<div
+  id="lgLog"
+  class="lg-log"
+></div>
+
+<p class="lg-nota">
+  La primera vez que conectes, acepta el aviso que aparezca en la TV.
+  Después la clave queda guardada en este navegador.
+</p>
+
+<button
+  class="lg-btn lg-cerrar"
+  onclick="cerrarLGModal()"
+>
+  ✕ Cerrar
+</button>
+
+</div>
+</div>
+
+<!--
+  IFRAME INVISIBLE PARA EL PROXY DE ORIGEN NULL.
+  Esto permite intentar SSAP desde una página HTTPS
+  sin utilizar Node, Firebase ni un servidor externo.
+-->
+<iframe id="lgProxyFrame"></iframe>
 
 <script>
 
@@ -785,11 +781,8 @@ const supabaseClient =
     SUPABASE_KEY
   );
 
-
 let todasLasPeliculas = [];
-
 let categoriaActual = "todas";
-
 let usuarioActual = null;
 
 
@@ -802,30 +795,20 @@ document.addEventListener(
   async function() {
 
     const buscador =
-      document.getElementById(
-        "buscador"
-      );
+      document.getElementById("buscador");
 
     buscador.value = "";
 
     await comprobarSesion();
-
     await cargarPeliculas();
 
-    /*
-      Recuperar IP guardada de la LG.
-    */
-
     const ipGuardada =
-      localStorage.getItem(
-        "lg_webos_tv_ip"
-      );
+      localStorage.getItem("lg_webos_tv_ip");
 
     if (ipGuardada) {
 
-      document.getElementById(
-        "lgIp"
-      ).value = ipGuardada;
+      document.getElementById("lgIp").value =
+        ipGuardada;
 
     }
 
@@ -867,36 +850,24 @@ async function iniciarSesion() {
 
   const resultado =
     await supabaseClient.auth.signInWithPassword({
-
       email: email,
-
       password: password
-
     });
-
 
   if (resultado.error) {
 
-    document.getElementById(
-      "mensajeLogin"
-    ).textContent =
-      "❌ " +
-      resultado.error.message;
+    document.getElementById("mensajeLogin").textContent =
+      "❌ " + resultado.error.message;
 
     return;
 
   }
 
-
   usuarioActual =
     resultado.data.user;
 
-
-  document.getElementById(
-    "mensajeLogin"
-  ).textContent =
+  document.getElementById("mensajeLogin").textContent =
     "✅ Sesión iniciada";
-
 
   actualizarPanelAdmin();
 
@@ -913,9 +884,7 @@ async function cerrarSesion() {
 
   actualizarPanelAdmin();
 
-  alert(
-    "Sesión cerrada"
-  );
+  alert("Sesión cerrada");
 
 }
 
@@ -942,31 +911,19 @@ function abrirAdministracion() {
 function actualizarPanelAdmin() {
 
   const login =
-    document.getElementById(
-      "panelLogin"
-    );
+    document.getElementById("panelLogin");
 
   const admin =
-    document.getElementById(
-      "panelAdmin"
-    );
-
+    document.getElementById("panelAdmin");
 
   if (usuarioActual) {
 
-    login.classList.remove(
-      "visible"
-    );
-
-    admin.classList.add(
-      "visible"
-    );
+    login.classList.remove("visible");
+    admin.classList.add("visible");
 
   } else {
 
-    admin.classList.remove(
-      "visible"
-    );
+    admin.classList.remove("visible");
 
   }
 
@@ -985,40 +942,29 @@ async function cargarPeliculas() {
       .select("*")
       .order(
         "created_at",
-        {
-          ascending: false
-        }
+        { ascending: false }
       );
-
 
   if (resultado.error) {
 
-    console.error(
-      resultado.error
-    );
+    console.error(resultado.error);
 
-    document.getElementById(
-      "peliculas"
-    ).innerHTML =
+    document.getElementById("peliculas").innerHTML =
       '<div class="mensaje">❌ No se pudieron cargar las películas.</div>';
 
     return;
 
   }
 
-
   todasLasPeliculas =
     resultado.data || [];
-
 
   mostrarPeliculas();
 
 }
 
 
-function obtenerDatos(
-  pelicula
-) {
+function obtenerDatos(pelicula) {
 
   try {
 
@@ -1035,64 +981,36 @@ function obtenerDatos(
 
   } catch (error) {
 
-    console.log(
-      "Descripción antigua"
-    );
+    console.log("Descripción antigua");
 
   }
 
-
   return {
-
     anio: "",
-
     calidad: "",
-
     tamano: "",
-
     categoria: "principal",
-
-    texto:
-      pelicula.descripcion || ""
-
+    texto: pelicula.descripcion || ""
   };
 
 }
 
 
-function cambiarCategoria(
-  categoria,
-  boton
-) {
+function cambiarCategoria(categoria, boton) {
 
-  categoriaActual =
-    categoria;
-
+  categoriaActual = categoria;
 
   document
-    .querySelectorAll(
-      ".categoria-btn"
-    )
-    .forEach(
-      function(btn) {
+    .querySelectorAll(".categoria-btn")
+    .forEach(function(btn) {
 
-        btn.classList.remove(
-          "activo"
-        );
+      btn.classList.remove("activo");
 
-      }
-    );
+    });
 
+  boton.classList.add("activo");
 
-  boton.classList.add(
-    "activo"
-  );
-
-
-  document.getElementById(
-    "buscador"
-  ).value = "";
-
+  document.getElementById("buscador").value = "";
 
   mostrarPeliculas();
 
@@ -1102,53 +1020,34 @@ function cambiarCategoria(
 function mostrarPeliculas() {
 
   const contenedor =
-    document.getElementById(
-      "peliculas"
-    );
-
+    document.getElementById("peliculas");
 
   const buscador =
-    document.getElementById(
-      "buscador"
-    );
-
+    document.getElementById("buscador");
 
   let busqueda =
-    (
-      buscador.value || ""
-    )
+    (buscador.value || "")
       .toLowerCase()
       .trim();
 
-
-  if (
-    busqueda.includes("@")
-  ) {
+  if (busqueda.includes("@")) {
 
     buscador.value = "";
-
     busqueda = "";
 
   }
 
-
   let peliculas =
-    todasLasPeliculas.filter(
-      function(pelicula) {
+    todasLasPeliculas.filter(function(pelicula) {
 
-        const datos =
-          obtenerDatos(
-            pelicula
-          );
+      const datos =
+        obtenerDatos(pelicula);
 
+      const categoria =
+        datos.categoria || "principal";
 
-        const categoria =
-          datos.categoria ||
-          "principal";
-
-
-        const textoBusqueda = (
-
+      const textoBusqueda =
+        (
           (pelicula.titulo || "") +
           " " +
           (datos.texto || "") +
@@ -1156,57 +1055,39 @@ function mostrarPeliculas() {
           (datos.anio || "") +
           " " +
           categoria
-
         ).toLowerCase();
 
+      const coincideBusqueda =
+        !busqueda ||
+        textoBusqueda.includes(busqueda);
 
-        const coincideBusqueda =
-          !busqueda ||
-          textoBusqueda.includes(
-            busqueda
-          );
+      let coincideCategoria = true;
 
+      if (categoriaActual === "mari") {
 
-        let coincideCategoria =
-          true;
+        coincideCategoria =
+          pelicula.favorita_mari === true;
 
+      } else if (categoriaActual !== "todas") {
 
-        if (
-          categoriaActual === "mari"
-        ) {
+        const categoriaNormalizada =
+          categoria === "familiares"
+            ? "familia"
+            : categoria;
 
-          coincideCategoria =
-            pelicula.favorita_mari === true;
-
-        } else if (
-          categoriaActual !== "todas"
-        ) {
-
-          const categoriaNormalizada =
-            categoria === "familiares"
-              ? "familia"
-              : categoria;
-
-
-          coincideCategoria =
-            categoriaNormalizada ===
-            categoriaActual;
-
-        }
-
-
-        return (
-          coincideBusqueda &&
-          coincideCategoria
-        );
+        coincideCategoria =
+          categoriaNormalizada === categoriaActual;
 
       }
-    );
 
+      return (
+        coincideBusqueda &&
+        coincideCategoria
+      );
 
-  if (
-    peliculas.length === 0
-  ) {
+    });
+
+  if (peliculas.length === 0) {
 
     contenedor.innerHTML =
       '<div class="mensaje">🍿 No hay películas en esta sección.</div>';
@@ -1215,48 +1096,33 @@ function mostrarPeliculas() {
 
   }
 
-
   contenedor.innerHTML =
     peliculas
-      .map(
-        function(pelicula) {
+      .map(function(pelicula) {
 
-          const indice =
-            todasLasPeliculas.indexOf(
-              pelicula
-            );
+        const indice =
+          todasLasPeliculas.indexOf(pelicula);
 
+        return crearTarjeta(
+          pelicula,
+          indice
+        );
 
-          return crearTarjeta(
-            pelicula,
-            indice
-          );
-
-        }
-      )
+      })
       .join("");
 
 }
 
 
-function crearTarjeta(
-  pelicula,
-  indice
-) {
+function crearTarjeta(pelicula, indice) {
 
   const datos =
-    obtenerDatos(
-      pelicula
-    );
-
+    obtenerDatos(pelicula);
 
   const categoria =
-    datos.categoria ||
-    "principal";
-
+    datos.categoria || "principal";
 
   let etiquetas = "";
-
 
   if (datos.anio) {
 
@@ -1265,14 +1131,12 @@ function crearTarjeta(
 
   }
 
-
   if (datos.calidad) {
 
     etiquetas +=
       `<span class="etiqueta">${datos.calidad}</span>`;
 
   }
-
 
   if (datos.tamano) {
 
@@ -1281,64 +1145,45 @@ function crearTarjeta(
 
   }
 
-
-  if (
-    categoria === "familia"
-  ) {
+  if (categoria === "familia") {
 
     etiquetas +=
       `<span class="etiqueta">👨‍👩‍👧 Familia</span>`;
 
   }
 
-
-  if (
-    categoria === "terror"
-  ) {
+  if (categoria === "terror") {
 
     etiquetas +=
       `<span class="etiqueta">👻 Terror</span>`;
 
   }
 
-
-  if (
-    categoria === "accion"
-  ) {
+  if (categoria === "accion") {
 
     etiquetas +=
       `<span class="etiqueta">💥 Acción</span>`;
 
   }
 
-
-  if (
-    pelicula.favorita_mari === true
-  ) {
+  if (pelicula.favorita_mari === true) {
 
     etiquetas +=
       `<span class="etiqueta favorita">❤️ Mari</span>`;
 
   }
 
-
   const poster =
-    pelicula.poster_url ||
-    "";
-
+    pelicula.poster_url || "";
 
   const descripcion =
-    datos.texto ||
-    "";
-
+    datos.texto || "";
 
   const enlaceDescarga =
     convertirDropbox(
-      pelicula.videos_url ||
-      "",
+      pelicula.videos_url || "",
       true
     );
-
 
   return `
 
@@ -1377,7 +1222,8 @@ function crearTarjeta(
             ▶️ Ver
           </button>
 
-          <!-- GOOGLE CAST: SE MANTIENE IGUAL -->
+          <!-- GOOGLE CAST: SIN CAMBIOS -->
+
           <button
             class="btn tv"
             onclick="transmitirPeliculaPorIndice(${indice})"
@@ -1385,7 +1231,8 @@ function crearTarjeta(
             📺 TV
           </button>
 
-          <!-- NUEVO: LG WEBOS -->
+          <!-- LG -->
+
           <button
             class="btn tv-lg"
             onclick="prepararTransmisionLG(${indice})"
@@ -1433,53 +1280,32 @@ function crearTarjeta(
    DROPBOX
 ========================= */
 
-function convertirDropbox(
-  url,
-  descargar
-) {
+function convertirDropbox(url, descargar) {
 
   if (!url) {
-
     return "";
-
   }
-
 
   try {
 
     const nuevaUrl =
-      new URL(
-        url.trim()
-      );
-
+      new URL(url.trim());
 
     if (descargar) {
 
-      nuevaUrl.searchParams.set(
-        "dl",
-        "1"
-      );
+      nuevaUrl.searchParams.set("dl", "1");
 
-      nuevaUrl.searchParams.delete(
-        "raw"
-      );
+      nuevaUrl.searchParams.delete("raw");
 
     } else {
 
-      nuevaUrl.searchParams.delete(
-        "dl"
-      );
+      nuevaUrl.searchParams.delete("dl");
 
-      nuevaUrl.searchParams.set(
-        "raw",
-        "1"
-      );
+      nuevaUrl.searchParams.set("raw", "1");
 
     }
 
-
     return nuevaUrl.toString();
-
 
   } catch (error) {
 
@@ -1499,27 +1325,17 @@ function convertirDropbox(
    REPRODUCIR
 ========================= */
 
-function verPeliculaPorIndice(
-  indice
-) {
+function verPeliculaPorIndice(indice) {
 
   const pelicula =
-    todasLasPeliculas[
-      indice
-    ];
-
+    todasLasPeliculas[indice];
 
   if (!pelicula) {
-
     return;
-
   }
 
-
   const enlaceOriginal =
-    pelicula.videos_url ||
-    "";
-
+    pelicula.videos_url || "";
 
   if (!enlaceOriginal) {
 
@@ -1531,105 +1347,62 @@ function verPeliculaPorIndice(
 
   }
 
-
   const urlVideo =
     convertirDropbox(
       enlaceOriginal,
       false
     );
 
-
   const video =
-    document.getElementById(
-      "videoPlayer"
-    );
-
+    document.getElementById("videoPlayer");
 
   const modal =
-    document.getElementById(
-      "modal"
-    );
-
+    document.getElementById("modal");
 
   const enlace =
-    document.getElementById(
-      "abrirDropbox"
-    );
+    document.getElementById("abrirDropbox");
 
-
-  modal.classList.add(
-    "visible"
-  );
-
+  modal.classList.add("visible");
 
   video.pause();
 
-
-  video.removeAttribute(
-    "src"
-  );
-
+  video.removeAttribute("src");
 
   video.load();
 
+  video.src = urlVideo;
 
-  video.src =
-    urlVideo;
-
-
-  enlace.href =
-    enlaceOriginal;
-
+  enlace.href = enlaceOriginal;
 
   video.load();
 
+  video.play().catch(function(error) {
 
-  video.play().catch(
-    function(error) {
+    console.log(
+      "Autoplay bloqueado:",
+      error
+    );
 
-      console.log(
-        "Autoplay bloqueado:",
-        error
-      );
-
-    }
-  );
+  });
 
 }
 
 
-/* =========================
-   CERRAR VIDEO
-========================= */
-
 function cerrarVideo() {
 
   const video =
-    document.getElementById(
-      "videoPlayer"
-    );
-
+    document.getElementById("videoPlayer");
 
   const modal =
-    document.getElementById(
-      "modal"
-    );
-
+    document.getElementById("modal");
 
   video.pause();
 
-
-  video.removeAttribute(
-    "src"
-  );
-
+  video.removeAttribute("src");
 
   video.load();
 
-
-  modal.classList.remove(
-    "visible"
-  );
+  modal.classList.remove("visible");
 
 }
 
@@ -1642,80 +1415,40 @@ async function agregarPelicula() {
 
   if (!usuarioActual) {
 
-    alert(
-      "Debes iniciar sesión."
-    );
+    alert("Debes iniciar sesión.");
 
     return;
 
   }
 
-
   const titulo =
-    document
-      .getElementById("titulo")
-      .value
-      .trim();
-
+    document.getElementById("titulo").value.trim();
 
   const poster =
-    document
-      .getElementById("poster")
-      .value
-      .trim();
-
+    document.getElementById("poster").value.trim();
 
   const enlace =
-    document
-      .getElementById("enlace")
-      .value
-      .trim();
-
+    document.getElementById("enlace").value.trim();
 
   const anio =
-    document
-      .getElementById("anio")
-      .value
-      .trim();
-
+    document.getElementById("anio").value.trim();
 
   const calidad =
-    document
-      .getElementById("calidad")
-      .value
-      .trim();
-
+    document.getElementById("calidad").value.trim();
 
   const tamano =
-    document
-      .getElementById("tamano")
-      .value
-      .trim();
-
+    document.getElementById("tamano").value.trim();
 
   const categoria =
-    document
-      .getElementById("categoria")
-      .value;
-
+    document.getElementById("categoria").value;
 
   const favoritaMari =
-    document
-      .getElementById("favoritaMari")
-      .checked;
-
+    document.getElementById("favoritaMari").checked;
 
   const descripcion =
-    document
-      .getElementById("descripcion")
-      .value
-      .trim();
+    document.getElementById("descripcion").value.trim();
 
-
-  if (
-    !titulo ||
-    !enlace
-  ) {
+  if (!titulo || !enlace) {
 
     alert(
       "Escribe al menos el título y el enlace de Dropbox."
@@ -1725,34 +1458,25 @@ async function agregarPelicula() {
 
   }
 
-
   const datos = {
 
     anio: anio,
-
     calidad: calidad,
-
     tamano: tamano,
-
     categoria: categoria,
-
     texto: descripcion
 
   };
-
 
   const resultado =
     await supabaseClient
       .from("peliculas")
       .insert({
 
-        titulo:
-          titulo,
+        titulo: titulo,
 
         descripcion:
-          JSON.stringify(
-            datos
-          ),
+          JSON.stringify(datos),
 
         poster_url:
           poster,
@@ -1765,71 +1489,28 @@ async function agregarPelicula() {
 
       });
 
-
   if (resultado.error) {
 
-    console.error(
-      resultado.error
-    );
+    console.error(resultado.error);
 
-
-    document.getElementById(
-      "mensajeAdmin"
-    ).textContent =
-      "❌ " +
-      resultado.error.message;
-
+    document.getElementById("mensajeAdmin").textContent =
+      "❌ " + resultado.error.message;
 
     return;
 
   }
 
-
-  document.getElementById(
-    "mensajeAdmin"
-  ).textContent =
+  document.getElementById("mensajeAdmin").textContent =
     "✅ Película agregada";
 
-
-  document.getElementById(
-    "titulo"
-  ).value = "";
-
-
-  document.getElementById(
-    "poster"
-  ).value = "";
-
-
-  document.getElementById(
-    "enlace"
-  ).value = "";
-
-
-  document.getElementById(
-    "anio"
-  ).value = "";
-
-
-  document.getElementById(
-    "calidad"
-  ).value = "";
-
-
-  document.getElementById(
-    "tamano"
-  ).value = "";
-
-
-  document.getElementById(
-    "descripcion"
-  ).value = "";
-
-
-  document.getElementById(
-    "favoritaMari"
-  ).checked = false;
-
+  document.getElementById("titulo").value = "";
+  document.getElementById("poster").value = "";
+  document.getElementById("enlace").value = "";
+  document.getElementById("anio").value = "";
+  document.getElementById("calidad").value = "";
+  document.getElementById("tamano").value = "";
+  document.getElementById("descripcion").value = "";
+  document.getElementById("favoritaMari").checked = false;
 
   await cargarPeliculas();
 
@@ -1840,55 +1521,40 @@ async function agregarPelicula() {
    ELIMINAR
 ========================= */
 
-async function eliminarPelicula(
-  id
-) {
+async function eliminarPelicula(id) {
 
   if (!usuarioActual) {
 
-    alert(
-      "Debes iniciar sesión."
-    );
+    alert("Debes iniciar sesión.");
 
     return;
 
   }
-
 
   const confirmar =
     confirm(
       "¿Quieres eliminar esta película?"
     );
 
-
   if (!confirmar) {
-
     return;
-
   }
-
 
   const resultado =
     await supabaseClient
       .from("peliculas")
       .delete()
-      .eq(
-        "id",
-        id
-      );
-
+      .eq("id", id);
 
   if (resultado.error) {
 
     alert(
-      "❌ " +
-      resultado.error.message
+      "❌ " + resultado.error.message
     );
 
     return;
 
   }
-
 
   await cargarPeliculas();
 
@@ -1897,30 +1563,20 @@ async function eliminarPelicula(
 
 /* =========================
    GOOGLE CAST / TV
-   ORIGINAL SIN CAMBIOS
+   ORIGINAL
 ========================= */
 
-async function transmitirPeliculaPorIndice(
-  indice
-) {
+async function transmitirPeliculaPorIndice(indice) {
 
   const pelicula =
-    todasLasPeliculas[
-      indice
-    ];
-
+    todasLasPeliculas[indice];
 
   if (!pelicula) {
-
     return;
-
   }
 
-
   const enlaceOriginal =
-    pelicula.videos_url ||
-    "";
-
+    pelicula.videos_url || "";
 
   if (!enlaceOriginal) {
 
@@ -1931,7 +1587,6 @@ async function transmitirPeliculaPorIndice(
     return;
 
   }
-
 
   if (
     typeof cast === "undefined" ||
@@ -1947,29 +1602,15 @@ async function transmitirPeliculaPorIndice(
 
   }
 
-
   try {
 
     const castContext =
       cast.framework.CastContext.getInstance();
 
-
-    /*
-      IMPORTANTE:
-
-      No usamos getCurrentSession() para reutilizar
-      automáticamente una sesión anterior.
-
-      La sesión se solicita solamente cuando el usuario
-      pulsa el botón TV.
-    */
-
     await castContext.requestSession();
-
 
     const castSession =
       castContext.getCurrentSession();
-
 
     if (!castSession) {
 
@@ -1981,13 +1622,11 @@ async function transmitirPeliculaPorIndice(
 
     }
 
-
     const urlVideo =
       convertirDropbox(
         enlaceOriginal,
         false
       );
-
 
     const mediaInfo =
       new chrome.cast.media.MediaInfo(
@@ -1995,48 +1634,37 @@ async function transmitirPeliculaPorIndice(
         "video/mp4"
       );
 
-
     mediaInfo.metadata =
       new chrome.cast.media.GenericMediaMetadata();
 
-
     mediaInfo.metadata.title =
-      pelicula.titulo ||
-      "Película";
-
+      pelicula.titulo || "Película";
 
     if (pelicula.poster_url) {
 
       mediaInfo.metadata.images = [
         {
-          url:
-            pelicula.poster_url
+          url: pelicula.poster_url
         }
       ];
 
     }
-
 
     const request =
       new chrome.cast.media.LoadRequest(
         mediaInfo
       );
 
-
-    request.autoplay =
-      true;
-
+    request.autoplay = true;
 
     await castSession.loadMedia(
       request
     );
 
-
     console.log(
       "Película enviada a la TV:",
       pelicula.titulo
     );
-
 
   } catch (error) {
 
@@ -2045,21 +1673,12 @@ async function transmitirPeliculaPorIndice(
       error
     );
 
-
-    /*
-      Si el usuario cancela la selección de TV,
-      no mostramos un mensaje de error.
-    */
-
     if (
       error &&
       error.code === "cancel"
     ) {
-
       return;
-
     }
-
 
     alert(
       "No se pudo transmitir la película a la pantalla."
@@ -2071,15 +1690,13 @@ async function transmitirPeliculaPorIndice(
 
 
 /* =========================================================
-   LG WEBOS / SSAP
-   NUEVA FUNCIÓN
+   LG WEBOS
+   CONEXIÓN DIRECTA MEDIANTE ORIGEN NULL
 ========================================================= */
 
-let lgSocket = null;
-
-let lgRequestId = 0;
-
-let lgPendingRequests = {};
+let lgProxyFrame = null;
+let lgProxyReady = false;
+let lgProxyCounter = 0;
 
 let lgIpActual =
   localStorage.getItem(
@@ -2093,27 +1710,389 @@ let lgClientKey =
 
 let peliculaLGActual = null;
 
+let lgPending = {};
+
+let lgEstadoConexion = false;
+
 
 /* =========================
-   PREPARAR TRANSMISIÓN LG
+   PROXY HTML
 ========================= */
 
-function prepararTransmisionLG(
-  indice
-) {
+function crearLGProxy() {
 
-  const pelicula =
-    todasLasPeliculas[
-      indice
-    ];
+  if (lgProxyFrame) {
+    return;
+  }
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+<script>
+
+let socket = null;
+let contador = 0;
+let pendientes = {};
+
+function enviar(obj) {
+
+  parent.postMessage(
+    {
+      fuente: "APO1_LG_PROXY",
+      datos: obj
+    },
+    "*"
+  );
+
+}
+
+function cerrar() {
+
+  if (socket) {
+
+    try {
+      socket.close();
+    } catch(e) {}
+
+  }
+
+  socket = null;
+
+  enviar({
+    tipo: "cerrado"
+  });
+
+}
+
+window.addEventListener(
+  "message",
+  function(event) {
+
+    const msg = event.data;
+
+    if (
+      !msg ||
+      msg.fuente !== "APO1_LG_MAIN"
+    ) {
+      return;
+    }
+
+    if (
+      msg.accion === "conectar"
+    ) {
+
+      const ip = msg.ip;
+
+      if (!ip) {
+        return;
+      }
+
+      cerrar();
+
+      try {
+
+        socket =
+          new WebSocket(
+            "ws://" +
+            ip +
+            ":3000"
+          );
+
+      } catch(error) {
+
+        enviar({
+          tipo: "error",
+          mensaje:
+            error.message || "Error WebSocket"
+        });
+
+        return;
+
+      }
+
+      socket.onopen =
+        function() {
+
+          enviar({
+            tipo: "abierto"
+          });
+
+        };
+
+      socket.onmessage =
+        function(event) {
+
+          enviar({
+            tipo: "mensaje",
+            datos: event.data
+          });
+
+        };
+
+      socket.onerror =
+        function() {
+
+          enviar({
+            tipo: "error",
+            mensaje: "Error WebSocket"
+          });
+
+        };
+
+      socket.onclose =
+        function() {
+
+          enviar({
+            tipo: "cerrado"
+          });
+
+          socket = null;
+
+        };
+
+      return;
+    }
+
+    if (
+      msg.accion === "enviar"
+    ) {
+
+      if (
+        !socket ||
+        socket.readyState !==
+          WebSocket.OPEN
+      ) {
+
+        enviar({
+          tipo: "error",
+          mensaje:
+            "WebSocket no conectado"
+        });
+
+        return;
+
+      }
+
+      try {
+
+        socket.send(
+          JSON.stringify(
+            msg.mensaje
+          )
+        );
+
+      } catch(error) {
+
+        enviar({
+          tipo: "error",
+          mensaje:
+            error.message
+        });
+
+      }
+
+      return;
+    }
+
+    if (
+      msg.accion === "cerrar"
+    ) {
+
+      cerrar();
+
+    }
+
+  }
+);
+
+enviar({
+  tipo: "proxy-listo"
+});
+
+<\/script>
+</body>
+</html>
+`;
+
+  lgProxyFrame =
+    document.createElement("iframe");
+
+  lgProxyFrame.id =
+    "lgProxyFrame";
+
+  lgProxyFrame.src =
+    "data:text/html;charset=utf-8," +
+    encodeURIComponent(html);
+
+  document.body.appendChild(
+    lgProxyFrame
+  );
+
+}
 
 
-  if (!pelicula) {
+window.addEventListener(
+  "message",
+  function(event) {
+
+    const msg =
+      event.data;
+
+    if (
+      !msg ||
+      msg.fuente !==
+        "APO1_LG_PROXY"
+    ) {
+      return;
+    }
+
+    manejarMensajeProxyLG(
+      msg.datos
+    );
+
+  }
+);
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
+
+    crearLGProxy();
+
+  }
+);
+
+
+/* =========================
+   MENSAJES DEL PROXY
+========================= */
+
+function manejarMensajeProxyLG(data) {
+
+  if (!data) {
+    return;
+  }
+
+  if (
+    data.tipo ===
+      "proxy-listo"
+  ) {
+
+    lgProxyReady = true;
+
+    lgLog(
+      "Proxy LG preparado."
+    );
 
     return;
 
   }
 
+  if (
+    data.tipo ===
+      "abierto"
+  ) {
+
+    lgLog(
+      "WebSocket directo conectado."
+    );
+
+    lgEstadoConexion = true;
+
+    actualizarEstadoLG(
+      "🟡 TV conectada. Iniciando SSAP..."
+    );
+
+    lgEnviarRaw({
+      type: "hello",
+      id: "hello"
+    });
+
+    return;
+
+  }
+
+  if (
+    data.tipo ===
+      "mensaje"
+  ) {
+
+    try {
+
+      const objeto =
+        JSON.parse(
+          data.datos
+        );
+
+      manejarMensajeLG(
+        objeto
+      );
+
+    } catch(error) {
+
+      lgLog(
+        "Respuesta no JSON."
+      );
+
+    }
+
+    return;
+
+  }
+
+  if (
+    data.tipo ===
+      "error"
+  ) {
+
+    lgEstadoConexion = false;
+
+    lgLog(
+      "Error: " +
+      data.mensaje
+    );
+
+    actualizarEstadoLG(
+      "❌ Error de conexión"
+    );
+
+    return;
+
+  }
+
+  if (
+    data.tipo ===
+      "cerrado"
+  ) {
+
+    lgEstadoConexion = false;
+
+    actualizarEstadoLG();
+
+    return;
+
+  }
+
+}
+
+
+/* =========================
+   PREPARAR LG
+========================= */
+
+function prepararTransmisionLG(indice) {
+
+  const pelicula =
+    todasLasPeliculas[indice];
+
+  if (!pelicula) {
+    return;
+  }
 
   if (!pelicula.videos_url) {
 
@@ -2125,10 +2104,8 @@ function prepararTransmisionLG(
 
   }
 
-
   peliculaLGActual =
     pelicula;
-
 
   document.getElementById(
     "lgMovieName"
@@ -2136,13 +2113,11 @@ function prepararTransmisionLG(
     "🎬 Película seleccionada: " +
     (pelicula.titulo || "Película");
 
-
   document.getElementById(
     "lgModal"
   ).classList.add(
     "visible"
   );
-
 
   actualizarEstadoLG();
 
@@ -2150,91 +2125,72 @@ function prepararTransmisionLG(
 
 
 /* =========================
-   CERRAR PANEL LG
+   CERRAR PANEL
 ========================= */
 
 function cerrarLGModal() {
 
   document
-    .getElementById(
-      "lgModal"
-    )
-    .classList.remove(
-      "visible"
-    );
+    .getElementById("lgModal")
+    .classList.remove("visible");
 
 }
 
 
 /* =========================
-   ESTADO LG
+   ESTADO
 ========================= */
 
-function actualizarEstadoLG(
-  texto
-) {
+function actualizarEstadoLG(texto) {
 
   const estado =
     document.getElementById(
       "lgEstado"
     );
 
+  const boton =
+    document.getElementById(
+      "lgEnviarBtn"
+    );
 
   if (texto) {
 
     estado.textContent =
       texto;
 
-    return;
-
-  }
-
-
-  if (
-    lgSocket &&
-    lgSocket.readyState ===
-      WebSocket.OPEN
+  } else if (
+    lgEstadoConexion
   ) {
 
     estado.textContent =
       "🟢 LG conectada";
-
-    document.getElementById(
-      "lgEnviarBtn"
-    ).disabled = false;
 
   } else {
 
     estado.textContent =
       "🔴 LG desconectada";
 
-    document.getElementById(
-      "lgEnviarBtn"
-    ).disabled = true;
-
   }
+
+  boton.disabled =
+    !lgEstadoConexion;
 
 }
 
 
 /* =========================
-   LOG LG
+   LOG
 ========================= */
 
-function lgLog(
-  mensaje
-) {
+function lgLog(mensaje) {
 
   const log =
     document.getElementById(
       "lgLog"
     );
 
-
   const hora =
-    new Date()
-      .toLocaleTimeString();
-
+    new Date().toLocaleTimeString();
 
   log.textContent +=
     "[" +
@@ -2243,10 +2199,8 @@ function lgLog(
     mensaje +
     "\n";
 
-
   log.scrollTop =
     log.scrollHeight;
-
 
   console.log(
     "[LG]",
@@ -2257,7 +2211,7 @@ function lgLog(
 
 
 /* =========================
-   CONECTAR LG
+   CONECTAR
 ========================= */
 
 async function conectarLG() {
@@ -2266,7 +2220,6 @@ async function conectarLG() {
     document.getElementById(
       "lgIp"
     );
-
 
   let ip =
     input.value
@@ -2280,7 +2233,6 @@ async function conectarLG() {
         ""
       );
 
-
   if (!ip) {
 
     alert(
@@ -2291,406 +2243,148 @@ async function conectarLG() {
 
   }
 
-
   lgIpActual =
     ip;
-
 
   localStorage.setItem(
     "lg_webos_tv_ip",
     ip
   );
 
-
-  if (
-    lgSocket &&
-    lgSocket.readyState ===
-      WebSocket.OPEN
-  ) {
-
-    actualizarEstadoLG(
-      "🟢 Ya estás conectado a la LG."
-    );
-
-    return;
-
-  }
-
+  crearLGProxy();
 
   actualizarEstadoLG(
-    "🟡 Conectando con " +
+    "🟡 Preparando conexión con " +
     ip +
     "..."
   );
 
-
   lgLog(
-    "Iniciando conexión con " +
-    ip
+    "Solicitando conexión directa con " +
+    ip +
+    ":3000"
   );
 
+  if (!lgProxyReady) {
 
-  /*
-    Primero intentamos el puerto 3000,
-    que es el protocolo SSAP tradicional.
+    await new Promise(
+      function(resolve) {
 
-    Si el navegador/TV no lo permite,
-    probamos 3001 con WSS.
-  */
+        let intentos = 0;
 
-  try {
+        const timer =
+          setInterval(
+            function() {
 
-    await conectarLGWebSocket(
-      "ws://" +
-      ip +
-      ":3000"
-    );
+              intentos++;
 
+              if (
+                lgProxyReady ||
+                intentos >= 50
+              ) {
 
-    return;
+                clearInterval(timer);
 
-  } catch (error) {
+                resolve();
 
-    lgLog(
-      "ws://:3000 falló: " +
-      error.message
-    );
+              }
 
-  }
-
-
-  try {
-
-    await conectarLGWebSocket(
-      "wss://" +
-      ip +
-      ":3001"
-    );
-
-
-    return;
-
-  } catch (error) {
-
-    lgLog(
-      "wss://:3001 falló: " +
-      error.message
-    );
-
-  }
-
-
-  actualizarEstadoLG(
-    "❌ No se pudo conectar con la LG."
-  );
-
-
-  alert(
-    "No se pudo conectar con la TV LG.\n\n" +
-    "Revisa que celular y TV estén en la misma Wi-Fi.\n\n" +
-    "Si tu TV es reciente, Chrome puede bloquear " +
-    "la conexión segura de webOS por el certificado " +
-    "de la TV. El registro de abajo muestra el error."
-  );
-
-}
-
-
-/* =========================
-   WEBSOCKET LG
-========================= */
-
-function conectarLGWebSocket(
-  url
-) {
-
-  return new Promise(
-    function(resolve, reject) {
-
-      lgLog(
-        "Abriendo " +
-        url
-      );
-
-
-      let ws;
-
-
-      try {
-
-        ws =
-          new WebSocket(
-            url
+            },
+            100
           );
-
-      } catch (error) {
-
-        reject(error);
-
-        return;
 
       }
+    );
 
+  }
 
-      lgSocket =
-        ws;
+  if (!lgProxyReady) {
 
-
-      let terminado =
-        false;
-
-
-      const timeout =
-        setTimeout(
-          function() {
-
-            if (
-              !terminado
-            ) {
-
-              terminado =
-                true;
-
-              try {
-
-                ws.close();
-
-              } catch (e) {}
-
-
-              reject(
-                new Error(
-                  "Tiempo de espera agotado"
-                )
-              );
-
-            }
-
-          },
-          10000
-        );
-
-
-      ws.onopen =
-        function() {
-
-          lgLog(
-            "WebSocket conectado."
-          );
-
-
-          /*
-            SSAP comienza con HELLO.
-          */
-
-          enviarLGHello();
-
-        };
-
-
-      ws.onmessage =
-        function(event) {
-
-          try {
-
-            const data =
-              JSON.parse(
-                event.data
-              );
-
-
-            manejarMensajeLG(
-              data
-            );
-
-          } catch (error) {
-
-            lgLog(
-              "Mensaje no JSON recibido."
-            );
-
-          }
-
-        };
-
-
-      ws.onerror =
-        function() {
-
-          lgLog(
-            "Error WebSocket."
-          );
-
-        };
-
-
-      ws.onclose =
-        function() {
-
-          lgLog(
-            "WebSocket cerrado."
-          );
-
-
-          lgSocket =
-            null;
-
-
-          actualizarEstadoLG();
-
-
-          if (
-            !terminado
-          ) {
-
-            terminado =
-              true;
-
-            clearTimeout(
-              timeout
-            );
-
-
-            reject(
-              new Error(
-                "WebSocket cerrado"
-              )
-            );
-
-          }
-
-        };
-
-
-      window.__lgResolve =
-        function() {
-
-          if (
-            terminado
-          ) {
-
-            return;
-
-          }
-
-
-          terminado =
-            true;
-
-
-          clearTimeout(
-            timeout
-          );
-
-
-          resolve(
-            true
-          );
-
-        };
-
-
-      window.__lgReject =
-        function(error) {
-
-          if (
-            terminado
-          ) {
-
-            return;
-
-          }
-
-
-          terminado =
-            true;
-
-
-          clearTimeout(
-            timeout
-          );
-
-
-          reject(
-            error
-          );
-
-        };
-
-    }
-  );
-
-}
-
-
-/* =========================
-   HELLO
-========================= */
-
-function enviarLGHello() {
-
-  if (
-    !lgSocket
-  ) {
+    actualizarEstadoLG(
+      "❌ No se pudo iniciar el módulo LG."
+    );
 
     return;
 
   }
 
+  lgEnviarAlProxy({
+    fuente: "APO1_LG_MAIN",
+    accion: "conectar",
+    ip: ip
+  });
 
-  const mensaje = {
-
-    type:
-      "hello",
-
-    id:
-      "hello"
-
-  };
+}
 
 
-  lgLog(
-    "→ hello"
-  );
+/* =========================
+   ENVIAR AL PROXY
+========================= */
 
+function lgEnviarAlProxy(mensaje) {
 
-  lgSocket.send(
-    JSON.stringify(
-      mensaje
-    )
+  if (!lgProxyFrame) {
+    crearLGProxy();
+  }
+
+  if (
+    !lgProxyFrame ||
+    !lgProxyFrame.contentWindow
+  ) {
+
+    lgLog(
+      "Proxy no disponible."
+    );
+
+    return;
+
+  }
+
+  lgProxyFrame.contentWindow.postMessage(
+    mensaje,
+    "*"
   );
 
 }
 
 
 /* =========================
-   REGISTRO / PAIRING
+   ENVIAR SSAP
+========================= */
+
+function lgEnviarRaw(mensaje) {
+
+  lgEnviarAlProxy({
+
+    fuente:
+      "APO1_LG_MAIN",
+
+    accion:
+      "enviar",
+
+    mensaje:
+      mensaje
+
+  });
+
+}
+
+
+/* =========================
+   HELLO / REGISTRO
 ========================= */
 
 function registrarLG() {
 
-  if (
-    !lgSocket
-  ) {
-
-    return;
-
-  }
-
-
   const manifest = {
 
-    manifestVersion:
-      1,
+    manifestVersion: 1,
 
-    appVersion:
-      "1.0",
+    appVersion: "1.0",
 
     signed: {
-
       created:
         "2026-01-01T00:00:00Z"
-
     },
 
     permissions: [
@@ -2719,7 +2413,6 @@ function registrarLG() {
 
   };
 
-
   const payload = {
 
     pairingType:
@@ -2730,18 +2423,14 @@ function registrarLG() {
 
   };
 
-
-  if (
-    lgClientKey
-  ) {
+  if (lgClientKey) {
 
     payload["client-key"] =
       lgClientKey;
 
   }
 
-
-  const mensaje = {
+  lgEnviarRaw({
 
     type:
       "register",
@@ -2752,8 +2441,7 @@ function registrarLG() {
     payload:
       payload
 
-  };
-
+  });
 
   lgLog(
     lgClientKey
@@ -2761,39 +2449,22 @@ function registrarLG() {
       : "→ Solicitando emparejamiento."
   );
 
-
-  lgSocket.send(
-    JSON.stringify(
-      mensaje
-    )
-  );
-
 }
 
 
 /* =========================
-   MENSAJES LG
+   MENSAJES SSAP
 ========================= */
 
-function manejarMensajeLG(
-  data
-) {
+function manejarMensajeLG(data) {
 
   lgLog(
     "← " +
-    JSON.stringify(
-      data
-    )
+    JSON.stringify(data)
   );
 
-
-  /*
-    Respuesta al HELLO.
-  */
-
   if (
-    data.type ===
-      "hello"
+    data.type === "hello"
   ) {
 
     registrarLG();
@@ -2802,14 +2473,8 @@ function manejarMensajeLG(
 
   }
 
-
-  /*
-    Registro exitoso.
-  */
-
   if (
-    data.type ===
-      "registered"
+    data.type === "registered"
   ) {
 
     const key =
@@ -2819,18 +2484,15 @@ function manejarMensajeLG(
         data.payload.clientKey
       );
 
-
     if (key) {
 
       lgClientKey =
         key;
 
-
       localStorage.setItem(
         "lg_webos_client_key",
         lgClientKey
       );
-
 
       lgLog(
         "🔑 Clave de LG guardada."
@@ -2838,37 +2500,18 @@ function manejarMensajeLG(
 
     }
 
+    lgEstadoConexion = true;
 
     actualizarEstadoLG(
       "🟢 LG conectada y emparejada."
     );
 
-
-    if (
-      window.__lgResolve
-    ) {
-
-      window.__lgResolve();
-
-      window.__lgResolve =
-        null;
-
-    }
-
-
     return;
 
   }
 
-
-  /*
-    Algunas TVs mandan una respuesta
-    intermedia indicando el método de pairing.
-  */
-
   if (
-    data.type ===
-      "response" &&
+    data.type === "response" &&
     data.payload &&
     data.payload.pairingType
   ) {
@@ -2877,7 +2520,6 @@ function manejarMensajeLG(
       "Método de emparejamiento: " +
       data.payload.pairingType
     );
-
 
     if (
       data.payload.pairingType ===
@@ -2890,54 +2532,38 @@ function manejarMensajeLG(
 
     }
 
-
     return;
 
   }
 
-
-  /*
-    Respuestas normales a comandos.
-  */
-
   if (
-    data.type ===
-      "response"
+    data.type === "response"
   ) {
 
     const id =
       data.id;
 
-
     if (
-      lgPendingRequests[id]
+      lgPending[id]
     ) {
 
       if (
         data.error
       ) {
 
-        lgPendingRequests[
-          id
-        ].reject(
+        lgPending[id].reject(
           data.error
         );
 
       } else {
 
-        lgPendingRequests[
-          id
-        ].resolve(
+        lgPending[id].resolve(
           data.payload
         );
 
       }
 
-
-      delete
-        lgPendingRequests[
-          id
-        ];
+      delete lgPending[id];
 
     }
 
@@ -2959,9 +2585,7 @@ function lgRequest(
     function(resolve, reject) {
 
       if (
-        !lgSocket ||
-        lgSocket.readyState !==
-          WebSocket.OPEN
+        !lgEstadoConexion
       ) {
 
         reject(
@@ -2974,15 +2598,11 @@ function lgRequest(
 
       }
 
-
       const id =
         "request_" +
-        (++lgRequestId);
+        (++lgProxyCounter);
 
-
-      lgPendingRequests[
-        id
-      ] = {
+      lgPending[id] = {
 
         resolve:
           resolve,
@@ -2992,8 +2612,7 @@ function lgRequest(
 
       };
 
-
-      const mensaje = {
+      lgEnviarRaw({
 
         type:
           "request",
@@ -3007,36 +2626,21 @@ function lgRequest(
         payload:
           payload
 
-      };
-
+      });
 
       lgLog(
         "→ " +
         uri
       );
 
-
-      lgSocket.send(
-        JSON.stringify(
-          mensaje
-        )
-      );
-
-
       setTimeout(
         function() {
 
           if (
-            lgPendingRequests[
-              id
-            ]
+            lgPending[id]
           ) {
 
-            delete
-              lgPendingRequests[
-                id
-              ];
-
+            delete lgPending[id];
 
             reject(
               new Error(
@@ -3058,14 +2662,12 @@ function lgRequest(
 
 
 /* =========================
-   ENVIAR PELÍCULA A LG
+   ENVIAR PELÍCULA
 ========================= */
 
 async function enviarPeliculaALG() {
 
-  if (
-    !peliculaLGActual
-  ) {
+  if (!peliculaLGActual) {
 
     alert(
       "No hay película seleccionada."
@@ -3075,12 +2677,7 @@ async function enviarPeliculaALG() {
 
   }
 
-
-  if (
-    !lgSocket ||
-    lgSocket.readyState !==
-      WebSocket.OPEN
-  ) {
+  if (!lgEstadoConexion) {
 
     alert(
       "Primero conecta la TV LG."
@@ -3090,11 +2687,8 @@ async function enviarPeliculaALG() {
 
   }
 
-
   const enlaceOriginal =
-    peliculaLGActual.videos_url ||
-    "";
-
+    peliculaLGActual.videos_url || "";
 
   if (!enlaceOriginal) {
 
@@ -3106,88 +2700,58 @@ async function enviarPeliculaALG() {
 
   }
 
-
   const urlVideo =
     convertirDropbox(
       enlaceOriginal,
       false
     );
 
-
   actualizarEstadoLG(
     "🟡 Enviando película a la LG..."
   );
 
-
   try {
 
-    /*
-      webOS puede abrir una URL
-      directamente en su navegador
-      mediante system.launcher/open.
-    */
-
-    const respuesta =
-      await lgRequest(
-        "ssap://system.launcher/open",
-        {
-          target:
-            urlVideo
-        }
-      );
-
+    await lgRequest(
+      "ssap://system.launcher/open",
+      {
+        target:
+          urlVideo
+      }
+    );
 
     lgLog(
       "Película enviada: " +
       peliculaLGActual.titulo
     );
 
-
     lgLog(
       "URL: " +
       urlVideo
     );
 
-
     actualizarEstadoLG(
       "🟢 Película enviada a la LG."
     );
 
-
     /*
-      Intentamos ordenar reproducción
-      después de abrir el vídeo.
+      Dejamos que la TV abra la URL.
+      El usuario puede utilizar el control físico
+      de la LG para pausar/reanudar.
     */
 
-    setTimeout(
-      function() {
+  } catch(error) {
 
-        lgPlay();
-
-      },
-      2500
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      error
-    );
-
+    console.error(error);
 
     lgLog(
       "Error enviando película: " +
-      JSON.stringify(
-        error
-      )
+      JSON.stringify(error)
     );
-
 
     actualizarEstadoLG(
       "❌ No se pudo enviar la película."
     );
-
 
     alert(
       "La LG rechazó la apertura de la película.\n\n" +
@@ -3211,17 +2775,13 @@ async function lgPlay() {
       "ssap://media.controls/play"
     );
 
-    lgLog(
-      "▶️ Play"
-    );
+    lgLog("▶️ Play");
 
-  } catch (error) {
+  } catch(error) {
 
     lgLog(
       "Play: " +
-      JSON.stringify(
-        error
-      )
+      JSON.stringify(error)
     );
 
   }
@@ -3237,17 +2797,13 @@ async function lgPause() {
       "ssap://media.controls/pause"
     );
 
-    lgLog(
-      "⏸️ Pausa"
-    );
+    lgLog("⏸️ Pausa");
 
-  } catch (error) {
+  } catch(error) {
 
     lgLog(
       "Pause: " +
-      JSON.stringify(
-        error
-      )
+      JSON.stringify(error)
     );
 
   }
@@ -3263,17 +2819,13 @@ async function lgVolumeUp() {
       "ssap://audio/volumeUp"
     );
 
-    lgLog(
-      "🔊 Volumen +"
-    );
+    lgLog("🔊 Volumen +");
 
-  } catch (error) {
+  } catch(error) {
 
     lgLog(
       "Volumen +: " +
-      JSON.stringify(
-        error
-      )
+      JSON.stringify(error)
     );
 
   }
@@ -3289,17 +2841,13 @@ async function lgVolumeDown() {
       "ssap://audio/volumeDown"
     );
 
-    lgLog(
-      "🔉 Volumen -"
-    );
+    lgLog("🔉 Volumen -");
 
-  } catch (error) {
+  } catch(error) {
 
     lgLog(
       "Volumen -: " +
-      JSON.stringify(
-        error
-      )
+      JSON.stringify(error)
     );
 
   }
@@ -3315,17 +2863,13 @@ async function lgFastForward() {
       "ssap://media.controls/fastForward"
     );
 
-    lgLog(
-      "⏩ Adelantar"
-    );
+    lgLog("⏩ Adelantar");
 
-  } catch (error) {
+  } catch(error) {
 
     lgLog(
       "Adelantar: " +
-      JSON.stringify(
-        error
-      )
+      JSON.stringify(error)
     );
 
   }
@@ -3341,17 +2885,13 @@ async function lgRewind() {
       "ssap://media.controls/rewind"
     );
 
-    lgLog(
-      "⏪ Retroceder"
-    );
+    lgLog("⏪ Retroceder");
 
-  } catch (error) {
+  } catch(error) {
 
     lgLog(
       "Retroceder: " +
-      JSON.stringify(
-        error
-      )
+      JSON.stringify(error)
     );
 
   }
@@ -3360,7 +2900,7 @@ async function lgRewind() {
 
 
 /* =========================
-   OLVIDAR TV LG
+   OLVIDAR LG
 ========================= */
 
 function olvidarLG() {
@@ -3369,9 +2909,7 @@ function olvidarLG() {
     "lg_webos_client_key"
   );
 
-  lgClientKey =
-    "";
-
+  lgClientKey = "";
 
   lgLog(
     "Clave de emparejamiento eliminada."
@@ -3381,24 +2919,25 @@ function olvidarLG() {
 
 
 /* =========================
-   CERRAR SOCKET AL SALIR
+   CERRAR AL SALIR
 ========================= */
 
 window.addEventListener(
   "beforeunload",
   function() {
 
-    if (
-      lgSocket
-    ) {
+    try {
 
-      try {
+      lgEnviarAlProxy({
+        fuente:
+          "APO1_LG_MAIN",
 
-        lgSocket.close();
+        accion:
+          "cerrar"
 
-      } catch (e) {}
+      });
 
-    }
+    } catch(e) {}
 
   }
 );
