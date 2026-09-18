@@ -422,7 +422,7 @@ header p {
 
     <input
       id="tamano"
-    placeholder="Tamaño (GB, MB...)"
+      placeholder="Tamaño (GB, MB...)"
     >
 
     <select id="categoria">
@@ -490,6 +490,7 @@ header p {
     ></video>
 
     <div class="controles-tv">
+
       <button
         id="botonTV"
         class="btn transmitir"
@@ -497,6 +498,7 @@ header p {
       >
         📺 Ver en TV
       </button>
+
     </div>
 
     <a
@@ -518,7 +520,7 @@ const SUPABASE_URL =
   "https://jnxtndenqxgqqzmmckco.supabase.co";
 
 const SUPABASE_KEY =
-  "sb_publishable_3gyntuSUrTd999iy3dbkoQ_d-CcVBG4";
+  "sb_publishable_3gyntuSUrTd999iy3dbkoQ_d-CcVBg4";
 
 const supabaseClient =
   supabase.createClient(
@@ -926,4 +928,538 @@ function crearTarjeta(
     "";
 
   const descripcion =
-    datos
+    datos.texto ||
+    "";
+
+  const enlaceDescarga =
+    convertirDropbox(
+      pelicula.videos_url ||
+      "",
+      true
+    );
+
+  return `
+
+    <div class="tarjeta">
+
+      ${
+        poster
+          ? `<img
+              class="poster"
+              src="${poster}"
+              alt="${pelicula.titulo}"
+            >`
+          : `<div class="poster"></div>`
+      }
+
+      <div class="contenido">
+
+        <div class="titulo">
+          ${pelicula.titulo}
+        </div>
+
+        <div class="etiquetas">
+          ${etiquetas}
+        </div>
+
+        <div class="descripcion">
+          ${descripcion}
+        </div>
+
+        <div class="botones">
+
+          <button
+            class="btn ver"
+            onclick="verPeliculaPorIndice(${indice})"
+          >
+            ▶️ Ver
+          </button>
+
+          ${
+            enlaceDescarga
+              ? `<a
+                  class="btn descargar"
+                  href="${enlaceDescarga}"
+                  target="_blank"
+                  rel="noopener"
+                  download
+                >
+                  ⬇️ Descargar
+                </a>`
+              : ""
+          }
+
+          ${
+            usuarioActual
+              ? `<button
+                  class="btn eliminar"
+                  onclick="eliminarPelicula('${pelicula.id}')"
+                >
+                  🗑️
+                </button>`
+              : ""
+          }
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+}
+
+
+/* =========================
+   DROPBOX
+========================= */
+
+function convertirDropbox(
+  url,
+  descargar
+) {
+
+  if (!url) {
+    return "";
+  }
+
+  try {
+
+    const nuevaUrl =
+      new URL(
+        url.trim()
+      );
+
+    if (descargar) {
+
+      nuevaUrl.searchParams.set(
+        "dl",
+        "1"
+      );
+
+      nuevaUrl.searchParams.delete(
+        "raw"
+      );
+
+    } else {
+
+      nuevaUrl.searchParams.delete(
+        "dl"
+      );
+
+      nuevaUrl.searchParams.set(
+        "raw",
+        "1"
+      );
+
+    }
+
+    return nuevaUrl.toString();
+
+  } catch (error) {
+
+    console.error(
+      "Enlace Dropbox inválido:",
+      error
+    );
+
+    return url.trim();
+
+  }
+
+}
+
+
+/* =========================
+   REPRODUCIR
+========================= */
+
+function verPeliculaPorIndice(
+  indice
+) {
+
+  const pelicula =
+    todasLasPeliculas[indice];
+
+  if (!pelicula) {
+    return;
+  }
+
+  const enlaceOriginal =
+    pelicula.videos_url ||
+    "";
+
+  if (!enlaceOriginal) {
+
+    alert(
+      "Esta película no tiene un enlace de Dropbox."
+    );
+
+    return;
+  }
+
+  const urlVideo =
+    convertirDropbox(
+      enlaceOriginal,
+      false
+    );
+
+  const video =
+    document.getElementById(
+      "videoPlayer"
+    );
+
+  const modal =
+    document.getElementById(
+      "modal"
+    );
+
+  const enlace =
+    document.getElementById(
+      "abrirDropbox"
+    );
+
+  modal.classList.add(
+    "visible"
+  );
+
+  video.pause();
+
+  video.removeAttribute(
+    "src"
+  );
+
+  video.load();
+
+  video.src =
+    urlVideo;
+
+  enlace.href =
+    enlaceOriginal;
+
+  video.load();
+
+  video.play().catch(
+    function(error) {
+
+      console.log(
+        "Autoplay bloqueado:",
+        error
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================
+   TRANSMITIR A TV
+========================= */
+
+async function transmitirATV() {
+
+  const video =
+    document.getElementById(
+      "videoPlayer"
+    );
+
+  if (!video) {
+    return;
+  }
+
+  /*
+    Algunos navegadores y dispositivos
+    ofrecen reproducción remota mediante
+    la API Remote Playback.
+  */
+
+  if (
+    "remote" in video &&
+    video.remote &&
+    typeof video.remote.prompt === "function"
+  ) {
+
+    try {
+
+      await video.remote.prompt();
+
+    } catch (error) {
+
+      console.log(
+        "Transmisión cancelada o no disponible:",
+        error
+      );
+
+    }
+
+    return;
+  }
+
+  /*
+    Si el teléfono no ofrece esta función,
+    no modificamos la reproducción.
+  */
+
+  alert(
+    "Esta opción depende de que tu teléfono y tu TV sean compatibles con transmisión desde el navegador. " +
+    "Si no aparece tu TV, usa la opción 'Transmitir' o 'Compartir pantalla' de tu teléfono."
+  );
+
+}
+
+
+/* =========================
+   CERRAR VIDEO
+========================= */
+
+function cerrarVideo() {
+
+  const video =
+    document.getElementById(
+      "videoPlayer"
+    );
+
+  const modal =
+    document.getElementById(
+      "modal"
+    );
+
+  video.pause();
+
+  video.removeAttribute(
+    "src"
+  );
+
+  video.load();
+
+  modal.classList.remove(
+    "visible"
+  );
+
+}
+
+
+/* =========================
+   AGREGAR
+========================= */
+
+async function agregarPelicula() {
+
+  if (!usuarioActual) {
+
+    alert(
+      "Debes iniciar sesión."
+    );
+
+    return;
+  }
+
+  const titulo =
+    document
+      .getElementById("titulo")
+      .value
+      .trim();
+
+  const poster =
+    document
+      .getElementById("poster")
+      .value
+      .trim();
+
+  const enlace =
+    document
+      .getElementById("enlace")
+      .value
+      .trim();
+
+  const anio =
+    document
+      .getElementById("anio")
+      .value
+      .trim();
+
+  const calidad =
+    document
+      .getElementById("calidad")
+      .value
+      .trim();
+
+  const tamano =
+    document
+      .getElementById("tamano")
+      .value
+      .trim();
+
+  const categoria =
+    document
+      .getElementById("categoria")
+      .value;
+
+  const favoritaMari =
+    document
+      .getElementById("favoritaMari")
+      .checked;
+
+  const descripcion =
+    document
+      .getElementById("descripcion")
+      .value
+      .trim();
+
+  if (
+    !titulo ||
+    !enlace
+  ) {
+
+    alert(
+      "Escribe al menos el título y el enlace de Dropbox."
+    );
+
+    return;
+  }
+
+  const datos = {
+
+    anio: anio,
+
+    calidad: calidad,
+
+    tamano: tamano,
+
+    categoria: categoria,
+
+    texto: descripcion
+
+  };
+
+  const resultado =
+    await supabaseClient
+      .from("peliculas")
+      .insert({
+
+        titulo: titulo,
+
+        descripcion:
+          JSON.stringify(
+            datos
+          ),
+
+        poster_url:
+          poster,
+
+        videos_url:
+          enlace,
+
+        favorita_mari:
+          favoritaMari
+
+      });
+
+  if (resultado.error) {
+
+    console.error(
+      resultado.error
+    );
+
+    document.getElementById(
+      "mensajeAdmin"
+    ).textContent =
+      "❌ " +
+      resultado.error.message;
+
+    return;
+  }
+
+  document.getElementById(
+    "mensajeAdmin"
+  ).textContent =
+    "✅ Película agregada";
+
+  document.getElementById(
+    "titulo"
+  ).value = "";
+
+  document.getElementById(
+    "poster"
+  ).value = "";
+
+  document.getElementById(
+    "enlace"
+  ).value = "";
+
+  document.getElementById(
+    "anio"
+  ).value = "";
+
+  document.getElementById(
+    "calidad"
+  ).value = "";
+
+  document.getElementById(
+    "tamano"
+  ).value = "";
+
+  document.getElementById(
+    "descripcion"
+  ).value = "";
+
+  document.getElementById(
+    "favoritaMari"
+  ).checked = false;
+
+  await cargarPeliculas();
+
+}
+
+
+/* =========================
+   ELIMINAR
+========================= */
+
+async function eliminarPelicula(
+  id
+) {
+
+  if (!usuarioActual) {
+
+    alert(
+      "Debes iniciar sesión."
+    );
+
+    return;
+  }
+
+  const confirmar =
+    confirm(
+      "¿Quieres eliminar esta película?"
+    );
+
+  if (!confirmar) {
+    return;
+  }
+
+  const resultado =
+    await supabaseClient
+      .from("peliculas")
+      .delete()
+      .eq("id", id);
+
+  if (resultado.error) {
+
+    alert(
+      "❌ " +
+      resultado.error.message
+    );
+
+    return;
+  }
+
+  await cargarPeliculas();
+
+}
+
+</script>
+
+</body>
+</html>
