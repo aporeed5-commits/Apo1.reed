@@ -8,7 +8,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Google Cast -->
+<!-- =========================
+     GOOGLE CAST
+========================= -->
 <script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
 
 <style>
@@ -48,4 +50,1859 @@ header p {
 .contenedor {
   width: 92%;
   max-width: 1200px;
-  margin
+  margin: 25px auto;
+}
+
+.buscar {
+  width: 100%;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid #444;
+  background: #181820;
+  color: white;
+  font-size: 16px;
+  margin-bottom: 18px;
+}
+
+.categorias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.categoria-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 11px 16px;
+  background: #222230;
+  color: white;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.categoria-btn:hover,
+.categoria-btn.activo {
+  background: #5c4cff;
+}
+
+.peliculas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 22px;
+}
+
+.tarjeta {
+  background: #17171f;
+  border: 1px solid #292936;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0,0,0,.25);
+}
+
+.poster {
+  width: 100%;
+  height: 330px;
+  object-fit: cover;
+  background: #222;
+}
+
+.contenido {
+  padding: 15px;
+}
+
+.titulo {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.descripcion {
+  color: #aaa;
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 10px 0;
+}
+
+.etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.etiqueta {
+  background: #292943;
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-size: 12px;
+  color: #ddd;
+}
+
+.favorita {
+  background: #7b294e;
+}
+
+.botones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: none;
+  border-radius: 9px;
+  padding: 10px 13px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 14px;
+  display: inline-block;
+}
+
+.ver {
+  background: #5c4cff;
+  color: white;
+}
+
+.descargar {
+  background: #292936;
+  color: white;
+}
+
+.eliminar {
+  background: #8b2635;
+  color: white;
+}
+
+.admin-boton {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  z-index: 1000;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  background: #292936;
+  color: white;
+  cursor: pointer;
+  font-size: 21px;
+  box-shadow: 0 5px 18px rgba(0,0,0,.4);
+}
+
+.panel {
+  display: none;
+  background: #17171f;
+  border: 1px solid #333344;
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 25px;
+}
+
+.panel.visible {
+  display: block;
+}
+
+.panel input,
+.panel select,
+.panel textarea {
+  width: 100%;
+  margin: 7px 0;
+  padding: 12px;
+  border-radius: 9px;
+  border: 1px solid #444;
+  background: #0e0e14;
+  color: white;
+}
+
+.panel button {
+  border: none;
+  border-radius: 9px;
+  padding: 11px 15px;
+  background: #5c4cff;
+  color: white;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.checkbox input {
+  width: auto;
+}
+
+.mensaje {
+  color: #aaa;
+  text-align: center;
+  padding: 35px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.92);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal.visible {
+  display: flex;
+}
+
+.modal-contenido {
+  width: 100%;
+  max-width: 1100px;
+  position: relative;
+}
+
+#videoPlayer {
+  width: 100%;
+  max-height: 80vh;
+  background: black;
+  border-radius: 12px;
+}
+
+.cerrar {
+  position: absolute;
+  right: 0;
+  top: -45px;
+  border: none;
+  background: #8b2635;
+  color: white;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.abrir-dropbox {
+  display: inline-block;
+  margin-top: 10px;
+  color: #bbb;
+  font-size: 13px;
+}
+
+/* =========================
+   GOOGLE CAST
+========================= */
+
+.controles-tv {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.boton-tv {
+  border: none;
+  border-radius: 9px;
+  padding: 10px 13px;
+  background: #292936;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.boton-tv:hover {
+  background: #3a3a4c;
+}
+
+@media(max-width:600px) {
+  header h1 {
+    font-size: 32px;
+  }
+
+  .poster {
+    height: 300px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="gatos">🐈‍⬛ ✨ 🐈</div>
+  <h1>Apo1.reed</h1>
+  <p>Películas para nosotros 🍿</p>
+</header>
+
+<div class="contenedor">
+
+  <!-- BUSCADOR -->
+  <input
+    id="buscador"
+    name="movie-search"
+    class="buscar"
+    type="search"
+    autocomplete="off"
+    autocorrect="off"
+    autocapitalize="off"
+    spellcheck="false"
+    readonly
+    onfocus="this.removeAttribute('readonly')"
+    placeholder="🔎 Buscar película..."
+    oninput="mostrarPeliculas()"
+  >
+
+  <div class="categorias">
+
+    <button
+      class="categoria-btn activo"
+      onclick="cambiarCategoria('todas', this)"
+    >
+      🎬 Todas
+    </button>
+
+    <button
+      class="categoria-btn"
+      onclick="cambiarCategoria('mari', this)"
+    >
+      ❤️ Mari
+    </button>
+
+    <button
+      class="categoria-btn"
+      onclick="cambiarCategoria('familia', this)"
+    >
+      👨‍👩‍👧 Familia
+    </button>
+
+    <button
+      class="categoria-btn"
+      onclick="cambiarCategoria('terror', this)"
+    >
+      👻 Terror
+    </button>
+
+    <button
+      class="categoria-btn"
+      onclick="cambiarCategoria('accion', this)"
+    >
+      💥 Acción
+    </button>
+
+  </div>
+
+  <!-- LOGIN -->
+  <div id="panelLogin" class="panel">
+
+    <h2>🔐 Administración</h2>
+
+    <input
+      id="email"
+      name="email-admin"
+      type="email"
+      autocomplete="email"
+      placeholder="Correo"
+    >
+
+    <input
+      id="password"
+      name="password-admin"
+      type="password"
+      autocomplete="current-password"
+      placeholder="Contraseña"
+    >
+
+    <button onclick="iniciarSesion()">
+      Iniciar sesión
+    </button>
+
+    <p id="mensajeLogin"></p>
+
+  </div>
+
+  <!-- ADMIN -->
+  <div id="panelAdmin" class="panel">
+
+    <h2>🎬 Agregar película</h2>
+
+    <input
+      id="titulo"
+      placeholder="Título"
+    >
+
+    <input
+      id="poster"
+      placeholder="Enlace del póster"
+    >
+
+    <input
+      id="enlace"
+      placeholder="Enlace de Dropbox"
+    >
+
+    <input
+      id="anio"
+      placeholder="Año"
+    >
+
+    <input
+      id="calidad"
+      placeholder="Calidad (1080p, 720p...)"
+    >
+
+    <input
+      id="tamano"
+      placeholder="Tamaño (GB, MB...)"
+    >
+
+    <select id="categoria">
+      <option value="principal">🎬 Principal</option>
+      <option value="familia">👨‍👩‍👧 Familia</option>
+      <option value="terror">👻 Terror</option>
+      <option value="accion">💥 Acción</option>
+    </select>
+
+    <div class="checkbox">
+
+      <input
+        id="favoritaMari"
+        type="checkbox"
+      >
+
+      <label for="favoritaMari">
+        ❤️ Favorita de Mari
+      </label>
+
+    </div>
+
+    <textarea
+      id="descripcion"
+      rows="4"
+      placeholder="Descripción"
+    ></textarea>
+
+    <button onclick="agregarPelicula()">
+      ➕ Agregar película
+    </button>
+
+    <button onclick="cerrarSesion()">
+      Cerrar sesión
+    </button>
+
+    <p id="mensajeAdmin"></p>
+
+  </div>
+
+  <!-- PELÍCULAS -->
+  <div id="peliculas" class="peliculas"></div>
+
+</div>
+
+<!-- BOTÓN ADMIN -->
+<button
+  class="admin-boton"
+  onclick="abrirAdministracion()"
+>
+  ⚙️
+</button>
+
+<!-- REPRODUCTOR -->
+<div id="modal" class="modal">
+
+  <div class="modal-contenido">
+
+    <button
+      class="cerrar"
+      onclick="cerrarVideo()"
+    >
+      ✕ Cerrar
+    </button>
+
+    <video
+      id="videoPlayer"
+      controls
+      playsinline
+      preload="metadata"
+    ></video>
+
+    <!-- =========================
+         BOTÓN TV
+    ========================= -->
+
+    <div class="controles-tv">
+
+      <button
+        id="botonTV"
+        class="boton-tv"
+        onclick="transmitirATV()"
+      >
+        📺 Ver en TV
+      </button>
+
+    </div>
+
+    <a
+      id="abrirDropbox"
+      class="abrir-dropbox"
+      target="_blank"
+      rel="noopener"
+    >
+      Abrir enlace original de Dropbox
+    </a>
+
+  </div>
+
+</div>
+
+<script>
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+  "https://jnxtndenqxgqqzmmckco.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_3gyntuSUrTd999iy3dbkoQ_d-CcVBG4";
+
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+let todasLasPeliculas = [];
+
+let categoriaActual = "todas";
+
+let usuarioActual = null;
+
+
+/* =========================
+   GOOGLE CAST
+========================= */
+
+let googleCastDisponible = false;
+
+
+/*
+  Google llama automáticamente
+  a esta función cuando la API
+  de Cast termina de cargar.
+*/
+
+window.__onGCastApiAvailable =
+  function(isAvailable) {
+
+    if (!isAvailable) {
+
+      console.log(
+        "Google Cast no está disponible."
+      );
+
+      return;
+
+    }
+
+
+    inicializarGoogleCast();
+
+  };
+
+
+function inicializarGoogleCast() {
+
+  try {
+
+    if (
+      typeof cast === "undefined" ||
+      !cast.framework
+    ) {
+
+      return;
+
+    }
+
+
+    const castContext =
+      cast.framework.CastContext.getInstance();
+
+
+    castContext.setOptions({
+
+      receiverApplicationId:
+        chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+
+      autoJoinPolicy:
+        chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+
+    });
+
+
+    googleCastDisponible = true;
+
+
+    console.log(
+      "Google Cast disponible."
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Error al iniciar Google Cast:",
+      error
+    );
+
+  }
+
+}
+
+
+/*
+  Transmite la película que está
+  abierta actualmente en el reproductor.
+*/
+
+async function transmitirATV() {
+
+  if (!googleCastDisponible) {
+
+    alert(
+      "Google Cast no está disponible en este navegador."
+    );
+
+    return;
+
+  }
+
+
+  const video =
+    document.getElementById(
+      "videoPlayer"
+    );
+
+
+  if (
+    !video ||
+    !(video.currentSrc || video.src)
+  ) {
+
+    alert(
+      "Primero abre una película."
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    const castContext =
+      cast.framework.CastContext.getInstance();
+
+
+    let session =
+      castContext.getCurrentSession();
+
+
+    /*
+      Si no hay conexión con una TV,
+      abre el selector de dispositivos.
+    */
+
+    if (!session) {
+
+      await castContext.requestSession();
+
+      session =
+        castContext.getCurrentSession();
+
+    }
+
+
+    if (!session) {
+
+      return;
+
+    }
+
+
+    const fuente =
+      video.currentSrc ||
+      video.src;
+
+
+    /*
+      Detectamos el tipo de archivo.
+    */
+
+    let tipoVideo =
+      "video/mp4";
+
+
+    if (
+      fuente
+        .toLowerCase()
+        .includes(".webm")
+    ) {
+
+      tipoVideo =
+        "video/webm";
+
+    }
+
+
+    /*
+      Información del contenido.
+    */
+
+    const mediaInfo =
+      new chrome.cast.media.MediaInfo(
+        fuente,
+        tipoVideo
+      );
+
+
+    mediaInfo.streamType =
+      chrome.cast.media.StreamType.BUFFERED;
+
+
+    /*
+      Enviamos la película.
+    */
+
+    const request =
+      new chrome.cast.media.LoadRequest(
+        mediaInfo
+      );
+
+
+    /*
+      Mantener la posición actual
+      de la película.
+    */
+
+    request.currentTime =
+      video.currentTime || 0;
+
+
+    await session.loadMedia(
+      request
+    );
+
+
+    console.log(
+      "Película enviada a la TV."
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Error al transmitir:",
+      error
+    );
+
+
+    alert(
+      "No se pudo transmitir la película a la TV."
+    );
+
+  }
+
+}
+
+
+/* =========================
+   INICIO
+========================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async function() {
+
+    const buscador =
+      document.getElementById(
+        "buscador"
+      );
+
+    buscador.value = "";
+
+    await comprobarSesion();
+
+    await cargarPeliculas();
+
+  }
+);
+
+
+/* =========================
+   SESIÓN
+========================= */
+
+async function comprobarSesion() {
+
+  const resultado =
+    await supabaseClient.auth.getSession();
+
+  usuarioActual =
+    resultado.data.session
+      ? resultado.data.session.user
+      : null;
+
+  actualizarPanelAdmin();
+
+}
+
+
+async function iniciarSesion() {
+
+  const email =
+    document
+      .getElementById("email")
+      .value
+      .trim();
+
+  const password =
+    document
+      .getElementById("password")
+      .value;
+
+  const resultado =
+    await supabaseClient.auth.signInWithPassword({
+
+      email: email,
+
+      password: password
+
+    });
+
+
+  if (resultado.error) {
+
+    document.getElementById(
+      "mensajeLogin"
+    ).textContent =
+      "❌ " +
+      resultado.error.message;
+
+    return;
+
+  }
+
+
+  usuarioActual =
+    resultado.data.user;
+
+
+  document.getElementById(
+    "mensajeLogin"
+  ).textContent =
+    "✅ Sesión iniciada";
+
+
+  actualizarPanelAdmin();
+
+  await cargarPeliculas();
+
+}
+
+
+async function cerrarSesion() {
+
+  await supabaseClient.auth.signOut();
+
+  usuarioActual = null;
+
+  actualizarPanelAdmin();
+
+  alert(
+    "Sesión cerrada"
+  );
+
+}
+
+
+function abrirAdministracion() {
+
+  if (usuarioActual) {
+
+    document
+      .getElementById("panelAdmin")
+      .classList.toggle("visible");
+
+  } else {
+
+    document
+      .getElementById("panelLogin")
+      .classList.toggle("visible");
+
+  }
+
+}
+
+
+function actualizarPanelAdmin() {
+
+  const login =
+    document.getElementById(
+      "panelLogin"
+    );
+
+  const admin =
+    document.getElementById(
+      "panelAdmin"
+    );
+
+
+  if (usuarioActual) {
+
+    login.classList.remove(
+      "visible"
+    );
+
+    admin.classList.add(
+      "visible"
+    );
+
+  } else {
+
+    admin.classList.remove(
+      "visible"
+    );
+
+  }
+
+}
+
+
+/* =========================
+   PELÍCULAS
+========================= */
+
+async function cargarPeliculas() {
+
+  const resultado =
+    await supabaseClient
+      .from("peliculas")
+      .select("*")
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  if (resultado.error) {
+
+    console.error(
+      resultado.error
+    );
+
+    document.getElementById(
+      "peliculas"
+    ).innerHTML =
+      '<div class="mensaje">❌ No se pudieron cargar las películas.</div>';
+
+    return;
+
+  }
+
+
+  todasLasPeliculas =
+    resultado.data || [];
+
+
+  mostrarPeliculas();
+
+}
+
+
+function obtenerDatos(
+  pelicula
+) {
+
+  try {
+
+    if (
+      pelicula.descripcion &&
+      typeof pelicula.descripcion === "string"
+    ) {
+
+      return JSON.parse(
+        pelicula.descripcion
+      );
+
+    }
+
+  } catch (error) {
+
+    console.log(
+      "Descripción antigua"
+    );
+
+  }
+
+
+  return {
+
+    anio: "",
+
+    calidad: "",
+
+    tamano: "",
+
+    categoria: "principal",
+
+    texto:
+      pelicula.descripcion || ""
+
+  };
+
+}
+
+
+function cambiarCategoria(
+  categoria,
+  boton
+) {
+
+  categoriaActual =
+    categoria;
+
+
+  document
+    .querySelectorAll(
+      ".categoria-btn"
+    )
+    .forEach(
+      function(btn) {
+
+        btn.classList.remove(
+          "activo"
+        );
+
+      }
+    );
+
+
+  boton.classList.add(
+    "activo"
+  );
+
+
+  document.getElementById(
+    "buscador"
+  ).value = "";
+
+
+  mostrarPeliculas();
+
+}
+
+
+function mostrarPeliculas() {
+
+  const contenedor =
+    document.getElementById(
+      "peliculas"
+    );
+
+
+  const buscador =
+    document.getElementById(
+      "buscador"
+    );
+
+
+  let busqueda =
+    (
+      buscador.value || ""
+    )
+      .toLowerCase()
+      .trim();
+
+
+  /*
+    Evita que un correo que el navegador
+    haya puesto automáticamente en el
+    buscador oculte las películas.
+  */
+
+  if (
+    busqueda.includes("@")
+  ) {
+
+    buscador.value = "";
+
+    busqueda = "";
+
+  }
+
+
+  let peliculas =
+    todasLasPeliculas.filter(
+      function(pelicula) {
+
+        const datos =
+          obtenerDatos(
+            pelicula
+          );
+
+
+        const categoria =
+          datos.categoria ||
+          "principal";
+
+
+        const textoBusqueda = (
+
+          (pelicula.titulo || "") +
+          " " +
+          (datos.texto || "") +
+          " " +
+          (datos.anio || "") +
+          " " +
+          categoria
+
+        ).toLowerCase();
+
+
+        const coincideBusqueda =
+          !busqueda ||
+          textoBusqueda.includes(
+            busqueda
+          );
+
+
+        let coincideCategoria =
+          true;
+
+
+        if (
+          categoriaActual === "mari"
+        ) {
+
+          coincideCategoria =
+            pelicula.favorita_mari === true;
+
+        } else if (
+          categoriaActual !== "todas"
+        ) {
+
+          const categoriaNormalizada =
+            categoria === "familiares"
+              ? "familia"
+              : categoria;
+
+
+          coincideCategoria =
+            categoriaNormalizada ===
+            categoriaActual;
+
+        }
+
+
+        return (
+          coincideBusqueda &&
+          coincideCategoria
+        );
+
+      }
+    );
+
+
+  if (
+    peliculas.length === 0
+  ) {
+
+    contenedor.innerHTML =
+      '<div class="mensaje">🍿 No hay películas en esta sección.</div>';
+
+    return;
+
+  }
+
+
+  contenedor.innerHTML =
+    peliculas
+      .map(
+        function(pelicula) {
+
+          const indice =
+            todasLasPeliculas.indexOf(
+              pelicula
+            );
+
+
+          return crearTarjeta(
+            pelicula,
+            indice
+          );
+
+        }
+      )
+      .join("");
+
+}
+
+
+function crearTarjeta(
+  pelicula,
+  indice
+) {
+
+  const datos =
+    obtenerDatos(
+      pelicula
+    );
+
+
+  const categoria =
+    datos.categoria ||
+    "principal";
+
+
+  let etiquetas = "";
+
+
+  if (datos.anio) {
+
+    etiquetas +=
+      `<span class="etiqueta">${datos.anio}</span>`;
+
+  }
+
+
+  if (datos.calidad) {
+
+    etiquetas +=
+      `<span class="etiqueta">${datos.calidad}</span>`;
+
+  }
+
+
+  if (datos.tamano) {
+
+    etiquetas +=
+      `<span class="etiqueta">${datos.tamano}</span>`;
+
+  }
+
+
+  if (
+    categoria === "familia"
+  ) {
+
+    etiquetas +=
+      `<span class="etiqueta">👨‍👩‍👧 Familia</span>`;
+
+  }
+
+
+  if (
+    categoria === "terror"
+  ) {
+
+    etiquetas +=
+      `<span class="etiqueta">👻 Terror</span>`;
+
+  }
+
+
+  if (
+    categoria === "accion"
+  ) {
+
+    etiquetas +=
+      `<span class="etiqueta">💥 Acción</span>`;
+
+  }
+
+
+  if (
+    pelicula.favorita_mari === true
+  ) {
+
+    etiquetas +=
+      `<span class="etiqueta favorita">❤️ Mari</span>`;
+
+  }
+
+
+  const poster =
+    pelicula.poster_url ||
+    "";
+
+
+  const descripcion =
+    datos.texto ||
+    "";
+
+
+  const enlaceDescarga =
+    convertirDropbox(
+      pelicula.videos_url ||
+      "",
+      true
+    );
+
+
+  return `
+
+    <div class="tarjeta">
+
+      ${
+        poster
+          ? `<img
+              class="poster"
+              src="${poster}"
+              alt="${pelicula.titulo}"
+            >`
+          : `<div class="poster"></div>`
+      }
+
+      <div class="contenido">
+
+        <div class="titulo">
+          ${pelicula.titulo}
+        </div>
+
+        <div class="etiquetas">
+          ${etiquetas}
+        </div>
+
+        <div class="descripcion">
+          ${descripcion}
+        </div>
+
+        <div class="botones">
+
+          <button
+            class="btn ver"
+            onclick="verPeliculaPorIndice(${indice})"
+          >
+            ▶️ Ver
+          </button>
+
+          ${
+            enlaceDescarga
+              ? `<a
+                  class="btn descargar"
+                  href="${enlaceDescarga}"
+                  target="_blank"
+                  rel="noopener"
+                  download
+                >
+                  ⬇️ Descargar
+                </a>`
+              : ""
+          }
+
+          ${
+            usuarioActual
+              ? `<button
+                  class="btn eliminar"
+                  onclick="eliminarPelicula('${pelicula.id}')"
+                >
+                  🗑️
+                </button>`
+              : ""
+          }
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================
+   DROPBOX
+========================= */
+
+function convertirDropbox(
+  url,
+  descargar
+) {
+
+  if (!url) {
+
+    return "";
+
+  }
+
+
+  try {
+
+    const nuevaUrl =
+      new URL(
+        url.trim()
+      );
+
+
+    /*
+      Para descargar:
+      dl=1
+
+      Para reproducir:
+      raw=1
+
+      Conservamos rlkey, st
+      y cualquier otro parámetro.
+    */
+
+    if (descargar) {
+
+      nuevaUrl.searchParams.set(
+        "dl",
+        "1"
+      );
+
+      nuevaUrl.searchParams.delete(
+        "raw"
+      );
+
+    } else {
+
+      nuevaUrl.searchParams.delete(
+        "dl"
+      );
+
+      nuevaUrl.searchParams.set(
+        "raw",
+        "1"
+      );
+
+    }
+
+
+    return nuevaUrl.toString();
+
+
+  } catch (error) {
+
+    console.error(
+      "Enlace Dropbox inválido:",
+      error
+    );
+
+    return url.trim();
+
+  }
+
+}
+
+
+/* =========================
+   REPRODUCIR
+========================= */
+
+function verPeliculaPorIndice(
+  indice
+) {
+
+  const pelicula =
+    todasLasPeliculas[
+      indice
+    ];
+
+
+  if (!pelicula) {
+
+    return;
+
+  }
+
+
+  const enlaceOriginal =
+    pelicula.videos_url ||
+    "";
+
+
+  if (!enlaceOriginal) {
+
+    alert(
+      "Esta película no tiene un enlace de Dropbox."
+    );
+
+    return;
+
+  }
+
+
+  const urlVideo =
+    convertirDropbox(
+      enlaceOriginal,
+      false
+    );
+
+
+  const video =
+    document.getElementById(
+      "videoPlayer"
+    );
+
+
+  const modal =
+    document.getElementById(
+      "modal"
+    );
+
+
+  const enlace =
+    document.getElementById(
+      "abrirDropbox"
+    );
+
+
+  modal.classList.add(
+    "visible"
+  );
+
+
+  video.pause();
+
+
+  video.removeAttribute(
+    "src"
+  );
+
+
+  video.load();
+
+
+  video.src =
+    urlVideo;
+
+
+  enlace.href =
+    enlaceOriginal;
+
+
+  video.load();
+
+
+  video.play().catch(
+    function(error) {
+
+      console.log(
+        "Autoplay bloqueado:",
+        error
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================
+   CERRAR VIDEO
+========================= */
+
+function cerrarVideo() {
+
+  const video =
+    document.getElementById(
+      "videoPlayer"
+    );
+
+
+  const modal =
+    document.getElementById(
+      "modal"
+    );
+
+
+  video.pause();
+
+
+  video.removeAttribute(
+    "src"
+  );
+
+
+  video.load();
+
+
+  modal.classList.remove(
+    "visible"
+  );
+
+}
+
+
+/* =========================
+   AGREGAR
+========================= */
+
+async function agregarPelicula() {
+
+  if (!usuarioActual) {
+
+    alert(
+      "Debes iniciar sesión."
+    );
+
+    return;
+
+  }
+
+
+  const titulo =
+    document
+      .getElementById("titulo")
+      .value
+      .trim();
+
+
+  const poster =
+    document
+      .getElementById("poster")
+      .value
+      .trim();
+
+
+  const enlace =
+    document
+      .getElementById("enlace")
+      .value
+      .trim();
+
+
+  const anio =
+    document
+      .getElementById("anio")
+      .value
+      .trim();
+
+
+  const calidad =
+    document
+      .getElementById("calidad")
+      .value
+      .trim();
+
+
+  const tamano =
+    document
+      .getElementById("tamano")
+      .value
+      .trim();
+
+
+  const categoria =
+    document
+      .getElementById("categoria")
+      .value;
+
+
+  const favoritaMari =
+    document
+      .getElementById("favoritaMari")
+      .checked;
+
+
+  const descripcion =
+    document
+      .getElementById("descripcion")
+      .value
+      .trim();
+
+
+  if (
+    !titulo ||
+    !enlace
+  ) {
+
+    alert(
+      "Escribe al menos el título y el enlace de Dropbox."
+    );
+
+    return;
+
+  }
+
+
+  const datos = {
+
+    anio: anio,
+
+    calidad: calidad,
+
+    tamano: tamano,
+
+    categoria: categoria,
+
+    texto: descripcion
+
+  };
+
+
+  const resultado =
+    await supabaseClient
+      .from("peliculas")
+      .insert({
+
+        titulo:
+          titulo,
+
+        descripcion:
+          JSON.stringify(
+            datos
+          ),
+
+        poster_url:
+          poster,
+
+        videos_url:
+          enlace,
+
+        favorita_mari:
+          favoritaMari
+
+      });
+
+
+  if (resultado.error) {
+
+    console.error(
+      resultado.error
+    );
+
+
+    document.getElementById(
+      "mensajeAdmin"
+    ).textContent =
+      "❌ " +
+      resultado.error.message;
+
+
+    return;
+
+  }
+
+
+  document.getElementById(
+    "mensajeAdmin"
+  ).textContent =
+    "✅ Película agregada";
+
+
+  document.getElementById(
+    "titulo"
+  ).value = "";
+
+
+  document.getElementById(
+    "poster"
+  ).value = "";
+
+
+  document.getElementById(
+    "enlace"
+  ).value = "";
+
+
+  document.getElementById(
+    "anio"
+  ).value = "";
+
+
+  document.getElementById(
+    "calidad"
+  ).value = "";
+
+
+  document.getElementById(
+    "tamano"
+  ).value = "";
+
+
+  document.getElementById(
+    "descripcion"
+  ).value = "";
+
+
+  document.getElementById(
+    "favoritaMari"
+  ).checked = false;
+
+
+  await cargarPeliculas();
+
+}
+
+
+/* =========================
+   ELIMINAR
+========================= */
+
+async function eliminarPelicula(
+  id
+) {
+
+  if (!usuarioActual) {
+
+    alert(
+      "Debes iniciar sesión."
+    );
+
+    return;
+
+  }
+
+
+  const confirmar =
+    confirm(
+      "¿Quieres eliminar esta película?"
+    );
+
+
+  if (!confirmar) {
+
+    return;
+
+  }
+
+
+  const resultado =
+    await supabaseClient
+      .from("peliculas")
+      .delete()
+      .eq(
+        "id",
+        id
+      );
+
+
+  if (resultado.error) {
+
+    alert(
+      "❌ " +
+      resultado.error.message
+    );
+
+    return;
+
+  }
+
+
+  await cargarPeliculas();
+
+}
+
+</script>
+
+</body>
+</html>
