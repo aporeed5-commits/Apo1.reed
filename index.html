@@ -1,1985 +1,780 @@
-<!DOCTYPE html><html lang="es">
+<!DOCTYPE html>
+<html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Apo1.reed</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><!-- =====================================================
-     GOOGLE CAST
-===================================================== --><script>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apo1.reed</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
 let googleCastDisponible = false;
 let googleCastInicializado = false;
 
-
-/*
-  Google llama automáticamente a esta función
-  cuando termina de cargar el SDK de Cast.
-*/
 window.__onGCastApiAvailable = function(isAvailable) {
-
-  console.log(
-    "Google Cast API disponible:",
-    isAvailable
-  );
-
+  console.log("Google Cast API disponible:", isAvailable);
 
   if (!isAvailable) {
-
     googleCastDisponible = false;
-
-    console.warn(
-      "Google Cast no está disponible en este navegador."
-    );
-
     return;
   }
-
 
   inicializarGoogleCast();
-
 };
 
-
-/*
-  Inicialización de Google Cast.
-*/
 function inicializarGoogleCast() {
-
-  if (googleCastInicializado) {
-
-    return;
-
-  }
-
+  if (googleCastInicializado) return;
 
   try {
-
     if (
       typeof cast === "undefined" ||
       !cast.framework ||
       !cast.framework.CastContext
     ) {
-
-      console.warn(
-        "Google Cast todavía no está listo."
-      );
-
+      console.warn("Google Cast todavía no está listo.");
       return;
-
     }
 
-
-    const castContext =
-      cast.framework.CastContext.getInstance();
-
+    const castContext = cast.framework.CastContext.getInstance();
 
     castContext.setOptions({
-
       receiverApplicationId:
         chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
-
       autoJoinPolicy:
         chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
-
     });
 
-
     googleCastDisponible = true;
-
     googleCastInicializado = true;
-
-
-    console.log(
-      "✅ Google Cast inicializado correctamente."
-    );
-
-
+    console.log("✅ Google Cast inicializado correctamente.");
   } catch (error) {
-
     googleCastDisponible = false;
-
-    console.error(
-      "❌ Error inicializando Google Cast:",
-      error
-    );
-
+    console.error("❌ Error inicializando Google Cast:", error);
   }
-
 }
-
-</script><!-- SDK OFICIAL DE GOOGLE CAST --><script
-  src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"
-></script><style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0d0d12;
-  color: white;
-}
-
-header {
-  background: linear-gradient(135deg, #171722, #292943);
-  padding: 30px 20px;
-  text-align: center;
-  border-bottom: 2px solid #3b3b5c;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 42px;
-}
-
-header p {
-  margin: 8px 0 0;
-  color: #bbb;
-}
-
-.gatos {
-  font-size: 30px;
-  margin-bottom: 8px;
-}
-
-.contenedor {
-  width: 92%;
-  max-width: 1200px;
-  margin: 25px auto;
-}
-
-.buscar {
-  width: 100%;
-  padding: 15px;
-  border-radius: 12px;
-  border: 1px solid #444;
-  background: #181820;
-  color: white;
-  font-size: 16px;
-  margin-bottom: 18px;
-}
-
-.categorias {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 25px;
-}
-
-.categoria-btn {
-  border: none;
-  border-radius: 12px;
-  padding: 11px 16px;
-  background: #222230;
-  color: white;
-  cursor: pointer;
-  font-size: 15px;
-}
-
-.categoria-btn:hover,
-.categoria-btn.activo {
-  background: #5c4cff;
-}
-
-.peliculas {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 22px;
-}
-
-.tarjeta {
-  background: #17171f;
-  border: 1px solid #292936;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 8px 25px rgba(0,0,0,.25);
-}
-
-.poster {
-  width: 100%;
-  height: 330px;
-  object-fit: cover;
-  background: #222;
-}
-
-.contenido {
-  padding: 15px;
-}
-
-.titulo {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.descripcion {
-  color: #aaa;
-  font-size: 14px;
-  line-height: 1.4;
-  margin: 10px 0;
-}
-
-.etiquetas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
-.etiqueta {
-  background: #292943;
-  border-radius: 8px;
-  padding: 5px 8px;
-  font-size: 12px;
-  color: #ddd;
-}
-
-.favorita {
-  background: #7b294e;
-}
-
-.botones {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.btn {
-  border: none;
-  border-radius: 9px;
-  padding: 10px 13px;
-  cursor: pointer;
-  text-decoration: none;
-  font-size: 14px;
-  display: inline-block;
-}
-
-.ver {
-  background: #5c4cff;
-  color: white;
-}
-
-.descargar {
-  background: #292936;
-  color: white;
-}
-
-.eliminar {
-  background: #8b2635;
-  color: white;
-}
-
-/* BOTÓN TV */
-.tv {
-  background: #1683ff;
-  color: white;
-}
-
-.tv:hover {
-  background: #0066d6;
-}
-
-.admin-boton {
-  position: fixed;
-  bottom: 15px;
-  left: 15px;
-  z-index: 1000;
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  background: #292936;
-  color: white;
-  cursor: pointer;
-  font-size: 21px;
-  box-shadow: 0 5px 18px rgba(0,0,0,.4);
-}
-
-.panel {
-  display: none;
-  background: #17171f;
-  border: 1px solid #333344;
-  padding: 20px;
-  border-radius: 15px;
-  margin-bottom: 25px;
-}
-
-.panel.visible {
-  display: block;
-}
-
-.panel input,
-.panel select,
-.panel textarea {
-  width: 100%;
-  margin: 7px 0;
-  padding: 12px;
-  border-radius: 9px;
-  border: 1px solid #444;
-  background: #0e0e14;
-  color: white;
-}
-
-.panel button {
-  border: none;
-  border-radius: 9px;
-  padding: 11px 15px;
-  background: #5c4cff;
-  color: white;
-  cursor: pointer;
-  margin-top: 8px;
-}
-
-.checkbox {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 10px 0;
-}
-
-.checkbox input {
-  width: auto;
-}
-
-.mensaje {
-  color: #aaa;
-  text-align: center;
-  padding: 35px;
-}
-
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.92);
-  z-index: 2000;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.modal.visible {
-  display: flex;
-}
-
-.modal-contenido {
-  width: 100%;
-  max-width: 1100px;
-  position: relative;
-}
-
-#videoPlayer {
-  width: 100%;
-  max-height: 80vh;
-  background: black;
-  border-radius: 12px;
-}
-
-.cerrar {
-  position: absolute;
-  right: 0;
-  top: -45px;
-  border: none;
-  background: #8b2635;
-  color: white;
-  border-radius: 8px;
-  padding: 10px 14px;
-  cursor: pointer;
-}
-
-.abrir-dropbox {
-  display: inline-block;
-  margin-top: 10px;
-  color: #bbb;
-  font-size: 13px;
-}
-
+</script>
+<script src="https://www.gstatic.com/cv/js/cast_sender.js?loadCastFramework=1"></script>
+<style>
+* { box-sizing: border-box; }
+body { margin:0; font-family:Arial,sans-serif; background:#0d0d12; color:white; }
+header { background:linear-gradient(135deg,#171722,#292943); padding:30px 20px; text-align:center; border-bottom:2px solid #3b3b5c; }
+header h1 { margin:0; font-size:42px; }
+header p { margin:8px 0 0; color:#bbb; }
+.gatos { font-size:30px; margin-bottom:8px; }
+.contenedor { width:92%; max-width:1200px; margin:25px auto; }
+.buscar { width:100%; padding:15px; border-radius:12px; border:1px solid #444; background:#181820; color:white; font-size:16px; margin-bottom:18px; }
+.categorias { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:25px; }
+.categoria-btn { border:none; border-radius:12px; padding:11px 16px; background:#222230; color:white; cursor:pointer; font-size:15px; }
+.categoria-btn:hover,.categoria-btn.activo { background:#5c4cff; }
+.peliculas { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:22px; }
+.tarjeta { background:#17171f; border:1px solid #292936; border-radius:16px; overflow:hidden; box-shadow:0 8px 25px rgba(0,0,0,.25); }
+.poster { width:100%; height:330px; object-fit:cover; background:#222; }
+.contenido { padding:15px; }
+.titulo { font-size:20px; font-weight:bold; margin-bottom:10px; }
+.descripcion { color:#aaa; font-size:14px; line-height:1.4; margin:10px 0; }
+.etiquetas { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+.etiqueta { background:#292943; border-radius:8px; padding:5px 8px; font-size:12px; color:#ddd; }
+.favorita { background:#7b294e; }
+.botones { display:flex; gap:8px; flex-wrap:wrap; }
+.btn { border:none; border-radius:9px; padding:10px 13px; cursor:pointer; text-decoration:none; font-size:14px; display:inline-block; }
+.ver { background:#5c4cff; color:white; }
+.descargar { background:#292936; color:white; }
+.eliminar { background:#8b2635; color:white; }
+.admin-boton { position:fixed; bottom:15px; left:15px; z-index:1500; border:none; border-radius:50%; width:52px; height:52px; background:#292936; color:white; cursor:pointer; font-size:22px; box-shadow:0 5px 18px rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; }
+.panel { display:none; background:#17171f; border:1px solid #333344; padding:20px; border-radius:15px; margin-bottom:25px; }
+.panel.visible { display:block; }
+.panel input,.panel select,.panel textarea { width:100%; margin:7px 0; padding:12px; border-radius:9px; border:1px solid #444; background:#0e0e14; color:white; }
+.panel button { border:none; border-radius:9px; padding:11px 15px; background:#5c4cff; color:white; cursor:pointer; margin-top:8px; }
+.checkbox { display:flex; align-items:center; gap:8px; margin:10px 0; }
+.checkbox input { width:auto; }
+.mensaje { color:#aaa; text-align:center; padding:35px; }
+.modal { display:none !important; visibility:hidden; opacity:0; pointer-events:none; position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:2000; align-items:center; justify-content:center; padding:20px; }
+.modal.visible { display:flex !important; visibility:visible; opacity:1; pointer-events:auto; }
+.modal-contenido { width:100%; max-width:1100px; position:relative; }
+#videoPlayer { width:100%; max-height:80vh; background:black; border-radius:12px; }
+.cerrar { position:absolute; right:0; top:-45px; border:none; background:#8b2635; color:white; border-radius:8px; padding:10px 14px; cursor:pointer; }
+.abrir-dropbox { display:inline-block; margin-top:10px; color:#bbb; font-size:13px; }
 @media(max-width:600px) {
-  header h1 {
-    font-size: 32px;
-  }
-
-  .poster {
-    height: 300px;
-  }
+  header h1 { font-size:32px; }
+  .poster { height:300px; }
 }
-</style></head><body><header>
+</style>
+</head>
+<body>
+<header>
   <div class="gatos">🐈‍⬛ ✨ 🐈</div>
   <h1>Apo1.reed</h1>
   <p>Películas para nosotros 🍿</p>
-</header><div class="contenedor">  <!-- BUSCADOR --><input
-id="buscador"
-name="movie-search"
-class="buscar"
-type="search"
-autocomplete="off"
-autocorrect="off"
-autocapitalize="off"
-spellcheck="false"
-readonly
-onfocus="this.removeAttribute('readonly')"
-placeholder="🔎 Buscar película..."
-oninput="mostrarPeliculas()"
+</header>
 
-«»
+<div class="contenedor">
+  <input id="buscador" name="movie-search" class="buscar" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" readonly onfocus="this.removeAttribute('readonly')" placeholder="🔎 Buscar película..." oninput="mostrarPeliculas()">
 
-  <div class="categorias"><button
-  class="categoria-btn activo"
-  onclick="cambiarCategoria('todas', this)"
->
-  🎬 Todas
-</button>
+  <div class="categorias">
+    <button class="categoria-btn activo" onclick="cambiarCategoria('todas', this)">🎬 Todas</button>
+    <button class="categoria-btn" onclick="cambiarCategoria('mari', this)">❤️ Mari</button>
+    <button class="categoria-btn" onclick="cambiarCategoria('familia', this)">👨‍👩‍👧 Familia</button>
+    <button class="categoria-btn" onclick="cambiarCategoria('terror', this)">👻 Terror</button>
+    <button class="categoria-btn" onclick="cambiarCategoria('accion', this)">💥 Acción</button>
+  </div>
 
-<button
-  class="categoria-btn"
-  onclick="cambiarCategoria('mari', this)"
->
-  ❤️ Mari
-</button>
+  <div id="panelLogin" class="panel">
+    <h2>🔐 Administración</h2>
+    <input id="email" name="email-admin" type="email" autocomplete="email" placeholder="Correo">
+    <input id="password" name="password-admin" type="password" autocomplete="current-password" placeholder="Contraseña">
+    <button onclick="iniciarSesion()">Iniciar sesión</button>
+    <p id="mensajeLogin"></p>
+  </div>
 
-<button
-  class="categoria-btn"
-  onclick="cambiarCategoria('familia', this)"
->
-  👨‍👩‍👧 Familia
-</button>
+  <div id="panelAdmin" class="panel">
+    <h2>🎬 Agregar película</h2>
+    <input id="titulo" placeholder="Título">
+    <input id="poster" placeholder="Enlace del póster">
+    <input id="enlace" placeholder="Enlace de Dropbox">
+    <input id="anio" placeholder="Año">
+    <input id="calidad" placeholder="Calidad (1080p, 720p...)">
+    <input id="tamano" placeholder="Tamaño (GB, MB...)">
+    <select id="categoria">
+      <option value="principal">🎬 Principal</option>
+      <option value="familia">👨‍👩‍👧 Familia</option>
+      <option value="terror">👻 Terror</option>
+      <option value="accion">💥 Acción</option>
+    </select>
+    <div class="checkbox">
+      <input id="favoritaMari" type="checkbox">
+      <label for="favoritaMari">❤️ Favorita de Mari</label>
+    </div>
+    <textarea id="descripcion" rows="4" placeholder="Descripción"></textarea>
+    <button onclick="agregarPelicula()">➕ Agregar película</button>
+    <button onclick="cerrarSesion()">Cerrar sesión</button>
+    <p id="mensajeAdmin"></p>
+  </div>
 
-<button
-  class="categoria-btn"
-  onclick="cambiarCategoria('terror', this)"
->
-  👻 Terror
-</button>
-
-<button
-  class="categoria-btn"
-  onclick="cambiarCategoria('accion', this)"
->
-  💥 Acción
-</button>
-
-  </div>  <!-- LOGIN -->  <div id="panelLogin" class="panel"><h2>🔐 Administración</h2>
-
-<input
-  id="email"
-  name="email-admin"
-  type="email"
-  autocomplete="email"
-  placeholder="Correo"
->
-
-<input
-  id="password"
-  name="password-admin"
-  type="password"
-  autocomplete="current-password"
-  placeholder="Contraseña"
->
-
-<button onclick="iniciarSesion()">
-  Iniciar sesión
-</button>
-
-<p id="mensajeLogin"></p>
-
-  </div>  <!-- ADMIN -->  <div id="panelAdmin" class="panel"><h2>🎬 Agregar película</h2>
-
-<input
-  id="titulo"
-  placeholder="Título"
->
-
-<input
-  id="poster"
-  placeholder="Enlace del póster"
->
-
-<input
-  id="enlace"
-  placeholder="Enlace de Dropbox"
->
-
-<input
-  id="anio"
-  placeholder="Año"
->
-
-<input
-  id="calidad"
-  placeholder="Calidad (1080p, 720p...)"
->
-
-<input
-  id="tamano"
-  placeholder="Tamaño (GB, MB...)"
->
-
-<select id="categoria">
-  <option value="principal">🎬 Principal</option>
-  <option value="familia">👨‍👩‍👧 Familia</option>
-  <option value="terror">👻 Terror</option>
-  <option value="accion">💥 Acción</option>
-</select>
-
-<div class="checkbox">
-
-  <input
-    id="favoritaMari"
-    type="checkbox"
-  >
-
-  <label for="favoritaMari">
-    ❤️ Favorita de Mari
-  </label>
-
+  <div id="peliculas" class="peliculas"></div>
 </div>
 
-<textarea
-  id="descripcion"
-  rows="4"
-  placeholder="Descripción"
-></textarea>
+<button class="admin-boton" onclick="abrirAdministracion()">⚙️</button>
 
-<button onclick="agregarPelicula()">
-  ➕ Agregar película
-</button>
+<div id="modal" class="modal">
+  <div class="modal-contenido">
+    <button class="cerrar" onclick="cerrarVideo()">✕ Cerrar</button>
+    <video id="videoPlayer" controls playsinline preload="metadata"></video>
+    <a id="abrirDropbox" class="abrir-dropbox" target="_blank" rel="noopener">Abrir enlace original de Dropbox</a>
+  </div>
+</div>
 
-<button onclick="cerrarSesion()">
-  Cerrar sesión
-</button>
+<div id="lgModal" class="modal">
+  <div class="modal-contenido" style="max-width:650px;background:#17171f;border:1px solid #333344;border-radius:18px;padding:20px;max-height:90vh;overflow:auto">
+    <button class="cerrar" onclick="cerrarLGModal()">✕ Cerrar</button>
+    <h2>📺 Enviar a TV LG</h2>
+    <p id="lgPelicula" style="color:#bbb">🎬 Película seleccionada: —</p>
+    <input id="lgIp" type="text" inputmode="decimal" autocomplete="off" placeholder="192.168.1.15" style="width:100%;padding:15px;border-radius:12px;border:1px solid #444;background:#0e0e14;color:white;font-size:18px;margin:7px 0">
+    <button onclick="conectarLG()" style="width:100%;border:none;border-radius:12px;padding:16px;background:#aa1dc0;color:white;font-size:18px;cursor:pointer;margin-top:10px">🔌 Conectar con LG</button>
+    <button id="lgEnviarBtn" onclick="enviarPeliculaALG()" disabled style="width:100%;border:none;border-radius:12px;padding:16px;background:#2588f4;color:white;font-size:18px;cursor:pointer;margin-top:10px">🎬 Enviar película a LG</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px">
+      <button id="lgPlay" onclick="lgPlay()" style="border:none;border-radius:12px;padding:15px;background:#292936;color:white;font-size:17px;cursor:pointer">▶️ Play</button>
+      <button id="lgPause" onclick="lgPause()" style="border:none;border-radius:12px;padding:15px;background:#292936;color:white;font-size:17px;cursor:pointer">⏸️ Pausa</button>
+      <button id="lgVolumeUp" onclick="lgVolumeUp()" style="border:none;border-radius:12px;padding:15px;background:#292936;color:white;font-size:17px;cursor:pointer">🔊 Volumen +</button>
+      <button id="lgVolumeDown" onclick="lgVolumeDown()" style="border:none;border-radius:12px;padding:15px;background:#292936;color:white;font-size:17px;cursor:pointer">🔉 Volumen -</button>
+      <button id="lgFastForward" onclick="lgFastForward()" style="border:none;border-radius:12px;padding:15px;background:#292936;color:white;font-size:17px;cursor:pointer">⏩ Adelantar</button>
+      <button id="lgRewind" onclick="lgRewind()" style="border:none;border-radius:12px;padding:15px;background:#292936;color:white;font-size:17px;cursor:pointer">⏪ Retroceder</button>
+    </div>
+    <div id="lgEstado" style="background:#0e0e14;border-radius:12px;padding:15px;margin-top:18px;font-size:17px">🔴 LG desconectada</div>
+    <div id="lgLog" style="background:#050507;color:#bbb;border-radius:14px;padding:15px;margin-top:15px;min-height:120px;max-height:230px;overflow:auto;font-family:monospace;font-size:13px;white-space:pre-wrap"></div>
+    <p style="color:#aaa;font-size:13px;line-height:1.5">La primera vez que conectes, acepta el aviso que aparezca en la TV. Después la clave queda guardada en este navegador. La conexión WebSocket se realiza dentro de un iframe de origen aislado para evitar el bloqueo de la página HTTPS.</p>
+    <button onclick="cerrarLGModal()" style="width:100%;border:none;border-radius:10px;padding:12px;background:#8b2635;color:white;cursor:pointer;margin-top:8px">Cerrar</button>
+  </div>
+</div>
+<iframe id="lgProxy" title="LG WebSocket proxy" style="position:fixed;width:1px;height:1px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none"></iframe>
 
-<p id="mensajeAdmin"></p>
-
-  </div>  <!-- PELÍCULAS -->  <div id="peliculas" class="peliculas"></div></div><!-- BOTÓN ADMIN --><button
-class="admin-boton"
-onclick="abrirAdministracion()"
-
-«»
-
-⚙️
-</button>
-
-<!-- REPRODUCTOR --><div id="modal" class="modal">  <div class="modal-contenido"><button
-  class="cerrar"
-  onclick="cerrarVideo()"
->
-  ✕ Cerrar
-</button>
-
-<video
-  id="videoPlayer"
-  controls
-  playsinline
-  preload="metadata"
-></video>
-
-<a
-  id="abrirDropbox"
-  class="abrir-dropbox"
-  target="_blank"
-  rel="noopener"
->
-  Abrir enlace original de Dropbox
-</a>
-
-  </div></div><script>
-
-/* =========================
-   SUPABASE
-========================= */
-
-const SUPABASE_URL =
-  "https://jnxtndenqxgqqzmmckco.supabase.co";
-
-const SUPABASE_KEY =
-  "sb_publishable_3gyntuSUrTd999iy3dbkoQ_d-CcVBG4";
-
-const supabaseClient =
-  supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
+<script>
+const SUPABASE_URL = "https://jnxtndenqxgqqzmmckco.supabase.co";
+const SUPABASE_KEY = "sb_publishable_3gyntuSUrTd999iy3dbkoQ_d-CcVBG4";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let todasLasPeliculas = [];
-
 let categoriaActual = "todas";
-
 let usuarioActual = null;
 
+document.addEventListener("DOMContentLoaded", async function() {
+  const buscador = document.getElementById("buscador");
+  buscador.value = "";
 
-/* =========================
-   INICIO
-========================= */
+  // Asegura que ningún reproductor/modal quede abierto al cargar o recargar la página.
+  document.getElementById("modal").classList.remove("visible");
+  document.getElementById("lgModal").classList.remove("visible");
+  const videoInicial = document.getElementById("videoPlayer");
+  videoInicial.pause();
+  videoInicial.removeAttribute("src");
+  videoInicial.load();
 
-document.addEventListener(
-  "DOMContentLoaded",
-  async function() {
-
-    const buscador =
-      document.getElementById(
-        "buscador"
-      );
-
-    buscador.value = "";
-
-    await comprobarSesion();
-
-    await cargarPeliculas();
-
-  }
-);
-
-
-/* =========================
-   SESIÓN
-========================= */
+  await comprobarSesion();
+  await cargarPeliculas();
+  prepararProxyLG();
+});
 
 async function comprobarSesion() {
-
-  const resultado =
-    await supabaseClient.auth.getSession();
-
-  usuarioActual =
-    resultado.data.session
-      ? resultado.data.session.user
-      : null;
-
+  const resultado = await supabaseClient.auth.getSession();
+  usuarioActual = resultado.data.session ? resultado.data.session.user : null;
   actualizarPanelAdmin();
-
 }
-
 
 async function iniciarSesion() {
-
-  const email =
-    document
-      .getElementById("email")
-      .value
-      .trim();
-
-  const password =
-    document
-      .getElementById("password")
-      .value;
-
-  const resultado =
-    await supabaseClient.auth.signInWithPassword({
-
-      email: email,
-
-      password: password
-
-    });
-
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const resultado = await supabaseClient.auth.signInWithPassword({email:email,password:password});
 
   if (resultado.error) {
-
-    document.getElementById(
-      "mensajeLogin"
-    ).textContent =
-      "❌ " +
-      resultado.error.message;
-
+    document.getElementById("mensajeLogin").textContent = "❌ " + resultado.error.message;
     return;
-
   }
 
-
-  usuarioActual =
-    resultado.data.user;
-
-
-  document.getElementById(
-    "mensajeLogin"
-  ).textContent =
-    "✅ Sesión iniciada";
-
-
+  usuarioActual = resultado.data.user;
+  document.getElementById("mensajeLogin").textContent = "✅ Sesión iniciada";
   actualizarPanelAdmin();
-
   await cargarPeliculas();
-
 }
-
 
 async function cerrarSesion() {
-
   await supabaseClient.auth.signOut();
-
   usuarioActual = null;
-
   actualizarPanelAdmin();
-
-  alert(
-    "Sesión cerrada"
-  );
-
+  alert("Sesión cerrada");
 }
-
 
 function abrirAdministracion() {
-
   if (usuarioActual) {
-
-    document
-      .getElementById("panelAdmin")
-      .classList.toggle("visible");
-
+    document.getElementById("panelAdmin").classList.toggle("visible");
   } else {
-
-    document
-      .getElementById("panelLogin")
-      .classList.toggle("visible");
-
+    document.getElementById("panelLogin").classList.toggle("visible");
   }
-
 }
-
 
 function actualizarPanelAdmin() {
-
-  const login =
-    document.getElementById(
-      "panelLogin"
-    );
-
-  const admin =
-    document.getElementById(
-      "panelAdmin"
-    );
-
+  const login = document.getElementById("panelLogin");
+  const admin = document.getElementById("panelAdmin");
 
   if (usuarioActual) {
-
-    login.classList.remove(
-      "visible"
-    );
-
-    admin.classList.add(
-      "visible"
-    );
-
+    login.classList.remove("visible");
+    admin.classList.add("visible");
   } else {
-
-    admin.classList.remove(
-      "visible"
-    );
-
+    admin.classList.remove("visible");
   }
-
 }
-
-
-/* =========================
-   PELÍCULAS
-========================= */
 
 async function cargarPeliculas() {
-
-  const resultado =
-    await supabaseClient
-      .from("peliculas")
-      .select("*")
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      );
-
+  const resultado = await supabaseClient
+    .from("peliculas")
+    .select("*")
+    .order("created_at", {ascending:false});
 
   if (resultado.error) {
-
-    console.error(
-      resultado.error
-    );
-
-    document.getElementById(
-      "peliculas"
-    ).innerHTML =
+    console.error(resultado.error);
+    document.getElementById("peliculas").innerHTML =
       '<div class="mensaje">❌ No se pudieron cargar las películas.</div>';
-
     return;
-
   }
 
-
-  todasLasPeliculas =
-    resultado.data || [];
-
-
+  todasLasPeliculas = resultado.data || [];
   mostrarPeliculas();
-
 }
 
-
-function obtenerDatos(
-  pelicula
-) {
-
+function obtenerDatos(pelicula) {
   try {
-
-    if (
-      pelicula.descripcion &&
-      typeof pelicula.descripcion === "string"
-    ) {
-
-      return JSON.parse(
-        pelicula.descripcion
-      );
-
+    if (pelicula.descripcion && typeof pelicula.descripcion === "string") {
+      return JSON.parse(pelicula.descripcion);
     }
-
   } catch (error) {
-
-    console.log(
-      "Descripción antigua"
-    );
-
+    console.log("Descripción antigua");
   }
-
 
   return {
-
-    anio: "",
-
-    calidad: "",
-
-    tamano: "",
-
-    categoria: "principal",
-
-    texto:
-      pelicula.descripcion || ""
-
+    anio:"",
+    calidad:"",
+    tamano:"",
+    categoria:"principal",
+    texto:pelicula.descripcion || ""
   };
-
 }
 
+function cambiarCategoria(categoria, boton) {
+  categoriaActual = categoria;
 
-function cambiarCategoria(
-  categoria,
-  boton
-) {
+  document.querySelectorAll(".categoria-btn").forEach(function(btn) {
+    btn.classList.remove("activo");
+  });
 
-  categoriaActual =
-    categoria;
+  boton.classList.add("activo");
 
-
-  document
-    .querySelectorAll(
-      ".categoria-btn"
-    )
-    .forEach(
-      function(btn) {
-
-        btn.classList.remove(
-          "activo"
-        );
-
-      }
-    );
-
-
-  boton.classList.add(
-    "activo"
-  );
-
-
-  document.getElementById(
-    "buscador"
-  ).value = "";
-
-
+  document.getElementById("buscador").value = "";
   mostrarPeliculas();
-
 }
-
 
 function mostrarPeliculas() {
+  const contenedor = document.getElementById("peliculas");
+  const buscador = document.getElementById("buscador");
 
-  const contenedor =
-    document.getElementById(
-      "peliculas"
-    );
+  let busqueda = (buscador.value || "").toLowerCase().trim();
 
-
-  const buscador =
-    document.getElementById(
-      "buscador"
-    );
-
-
-  let busqueda =
-    (
-      buscador.value || ""
-    )
-      .toLowerCase()
-      .trim();
-
-
-  if (
-    busqueda.includes("@")
-  ) {
-
+  if (busqueda.includes("@")) {
     buscador.value = "";
-
     busqueda = "";
-
   }
 
+  let peliculas = todasLasPeliculas.filter(function(pelicula) {
+    const datos = obtenerDatos(pelicula);
+    const categoria = datos.categoria || "principal";
 
-  let peliculas =
-    todasLasPeliculas.filter(
-      function(pelicula) {
+    const textoBusqueda = (
+      (pelicula.titulo || "") + " " +
+      (datos.texto || "") + " " +
+      (datos.anio || "") + " " +
+      categoria
+    ).toLowerCase();
 
-        const datos =
-          obtenerDatos(
-            pelicula
-          );
+    const coincideBusqueda = !busqueda || textoBusqueda.includes(busqueda);
+    let coincideCategoria = true;
 
+    if (categoriaActual === "mari") {
+      coincideCategoria = pelicula.favorita_mari === true;
+    } else if (categoriaActual !== "todas") {
+      const categoriaNormalizada = categoria === "familiares" ? "familia" : categoria;
+      coincideCategoria = categoriaNormalizada === categoriaActual;
+    }
 
-        const categoria =
-          datos.categoria ||
-          "principal";
+    return coincideBusqueda && coincideCategoria;
+  });
 
-
-        const textoBusqueda = (
-
-          (pelicula.titulo || "") +
-          " " +
-          (datos.texto || "") +
-          " " +
-          (datos.anio || "") +
-          " " +
-          categoria
-
-        ).toLowerCase();
-
-
-        const coincideBusqueda =
-          !busqueda ||
-          textoBusqueda.includes(
-            busqueda
-          );
-
-
-        let coincideCategoria =
-          true;
-
-
-        if (
-          categoriaActual === "mari"
-        ) {
-
-          coincideCategoria =
-            pelicula.favorita_mari === true;
-
-        } else if (
-          categoriaActual !== "todas"
-        ) {
-
-          const categoriaNormalizada =
-            categoria === "familiares"
-              ? "familia"
-              : categoria;
-
-
-          coincideCategoria =
-            categoriaNormalizada ===
-            categoriaActual;
-
-        }
-
-
-        return (
-          coincideBusqueda &&
-          coincideCategoria
-        );
-
-      }
-    );
-
-
-  if (
-    peliculas.length === 0
-  ) {
-
-    contenedor.innerHTML =
-      '<div class="mensaje">🍿 No hay películas en esta sección.</div>';
-
+  if (peliculas.length === 0) {
+    contenedor.innerHTML = '<div class="mensaje">🍿 No hay películas en esta sección.</div>';
     return;
-
   }
 
-
-  contenedor.innerHTML =
-    peliculas
-      .map(
-        function(pelicula) {
-
-          const indice =
-            todasLasPeliculas.indexOf(
-              pelicula
-            );
-
-
-          return crearTarjeta(
-            pelicula,
-            indice
-          );
-
-        }
-      )
-      .join("");
-
+  contenedor.innerHTML = peliculas.map(function(pelicula) {
+    const indice = todasLasPeliculas.indexOf(pelicula);
+    return crearTarjeta(pelicula, indice);
+  }).join("");
 }
 
-
-function crearTarjeta(
-  pelicula,
-  indice
-) {
-
-  const datos =
-    obtenerDatos(
-      pelicula
-    );
-
-
-  const categoria =
-    datos.categoria ||
-    "principal";
-
-
+function crearTarjeta(pelicula, indice) {
+  const datos = obtenerDatos(pelicula);
+  const categoria = datos.categoria || "principal";
   let etiquetas = "";
 
+  if (datos.anio) etiquetas += `<span class="etiqueta">${datos.anio}</span>`;
+  if (datos.calidad) etiquetas += `<span class="etiqueta">${datos.calidad}</span>`;
+  if (datos.tamano) etiquetas += `<span class="etiqueta">${datos.tamano}</span>`;
+  if (categoria === "familia") etiquetas += `<span class="etiqueta">👨‍👩‍👧 Familia</span>`;
+  if (categoria === "terror") etiquetas += `<span class="etiqueta">👻 Terror</span>`;
+  if (categoria === "accion") etiquetas += `<span class="etiqueta">💥 Acción</span>`;
+  if (pelicula.favorita_mari === true) etiquetas += `<span class="etiqueta favorita">❤️ Mari</span>`;
 
-  if (datos.anio) {
-
-    etiquetas +=
-      `<span class="etiqueta">${datos.anio}</span>`;
-
-  }
-
-
-  if (datos.calidad) {
-
-    etiquetas +=
-      `<span class="etiqueta">${datos.calidad}</span>`;
-
-  }
-
-
-  if (datos.tamano) {
-
-    etiquetas +=
-      `<span class="etiqueta">${datos.tamano}</span>`;
-
-  }
-
-
-  if (
-    categoria === "familia"
-  ) {
-
-    etiquetas +=
-      `<span class="etiqueta">👨‍👩‍👧 Familia</span>`;
-
-  }
-
-
-  if (
-    categoria === "terror"
-  ) {
-
-    etiquetas +=
-      `<span class="etiqueta">👻 Terror</span>`;
-
-  }
-
-
-  if (
-    categoria === "accion"
-  ) {
-
-    etiquetas +=
-      `<span class="etiqueta">💥 Acción</span>`;
-
-  }
-
-
-  if (
-    pelicula.favorita_mari === true
-  ) {
-
-    etiquetas +=
-      `<span class="etiqueta favorita">❤️ Mari</span>`;
-
-  }
-
-
-  const poster =
-    pelicula.poster_url ||
-    "";
-
-
-  const descripcion =
-    datos.texto ||
-    "";
-
-
-  const enlaceDescarga =
-    convertirDropbox(
-      pelicula.videos_url ||
-      "",
-      true
-    );
-
+  const poster = pelicula.poster_url || "";
+  const descripcion = datos.texto || "";
+  const enlaceDescarga = convertirDropbox(pelicula.videos_url || "", true);
 
   return `
-
     <div class="tarjeta">
-
       ${
         poster
-          ? `<img
-              class="poster"
-              src="${poster}"
-              alt="${pelicula.titulo}"
-            >`
+          ? `<img class="poster" src="${poster}" alt="${pelicula.titulo}">`
           : `<div class="poster"></div>`
       }
-
       <div class="contenido">
-
-        <div class="titulo">
-          ${pelicula.titulo}
-        </div>
-
-        <div class="etiquetas">
-          ${etiquetas}
-        </div>
-
-        <div class="descripcion">
-          ${descripcion}
-        </div>
-
+        <div class="titulo">${pelicula.titulo}</div>
+        <div class="etiquetas">${etiquetas}</div>
+        <div class="descripcion">${descripcion}</div>
         <div class="botones">
-
-          <button
-            class="btn ver"
-            onclick="verPeliculaPorIndice(${indice})"
-          >
-            ▶️ Ver
-          </button>
-
-          <button
-            class="btn tv"
-            onclick="transmitirPeliculaPorIndice(${indice})"
-          >
-            📺 TV
-          </button>
-
+          <button class="btn ver" onclick="verPeliculaPorIndice(${indice})">▶️ Ver</button>
           ${
             enlaceDescarga
-              ? `<a
-                  class="btn descargar"
-                  href="${enlaceDescarga}"
-                  target="_blank"
-                  rel="noopener"
-                  download
-                >
-                  ⬇️ Descargar
-                </a>`
+              ? `<a class="btn descargar" href="${enlaceDescarga}" target="_blank" rel="noopener" download>⬇️ Descargar</a>`
               : ""
           }
-
+          <button class="btn" style="background:#147ef5;color:white" onclick="transmitirPeliculaPorIndice(${indice})">📺 TV</button>
+          <button class="btn" style="background:#aa1dc0;color:white" onclick="prepararTransmisionLG(${indice})">📺 LG</button>
           ${
             usuarioActual
-              ? `<button
-                  class="btn eliminar"
-                  onclick="eliminarPelicula('${pelicula.id}')"
-                >
-                  🗑️
-                </button>`
+              ? `<button class="btn eliminar" onclick="eliminarPelicula('${pelicula.id}')">🗑️</button>`
               : ""
           }
-
         </div>
-
       </div>
-
     </div>
-
   `;
-
 }
 
-
-/* =========================
-   DROPBOX
-========================= */
-
-function convertirDropbox(
-  url,
-  descargar
-) {
-
-  if (!url) {
-
-    return "";
-
-  }
-
+function convertirDropbox(url, descargar) {
+  if (!url) return "";
 
   try {
-
-    const nuevaUrl =
-      new URL(
-        url.trim()
-      );
-
+    const nuevaUrl = new URL(url.trim());
 
     if (descargar) {
-
-      nuevaUrl.searchParams.set(
-        "dl",
-        "1"
-      );
-
-      nuevaUrl.searchParams.delete(
-        "raw"
-      );
-
+      nuevaUrl.searchParams.set("dl","1");
+      nuevaUrl.searchParams.delete("raw");
     } else {
-
-      nuevaUrl.searchParams.delete(
-        "dl"
-      );
-
-      nuevaUrl.searchParams.set(
-        "raw",
-        "1"
-      );
-
+      nuevaUrl.searchParams.delete("dl");
+      nuevaUrl.searchParams.set("raw","1");
     }
-
 
     return nuevaUrl.toString();
-
-
   } catch (error) {
-
-    console.error(
-      "Enlace Dropbox inválido:",
-      error
-    );
-
+    console.error("Enlace Dropbox inválido:", error);
     return url.trim();
-
   }
-
 }
 
+function verPeliculaPorIndice(indice) {
+  const pelicula = todasLasPeliculas[indice];
+  if (!pelicula) return;
 
-/* =========================
-   REPRODUCIR
-========================= */
-
-function verPeliculaPorIndice(
-  indice
-) {
-
-  const pelicula =
-    todasLasPeliculas[
-      indice
-    ];
-
-
-  if (!pelicula) {
-
-    return;
-
-  }
-
-
-  const enlaceOriginal =
-    pelicula.videos_url ||
-    "";
-
+  const enlaceOriginal = pelicula.videos_url || "";
 
   if (!enlaceOriginal) {
-
-    alert(
-      "Esta película no tiene un enlace de Dropbox."
-    );
-
+    alert("Esta película no tiene un enlace de Dropbox.");
     return;
-
   }
 
+  const urlVideo = convertirDropbox(enlaceOriginal, false);
+  const video = document.getElementById("videoPlayer");
+  const modal = document.getElementById("modal");
+  const enlace = document.getElementById("abrirDropbox");
 
-  const urlVideo =
-    convertirDropbox(
-      enlaceOriginal,
-      false
-    );
-
-
-  const video =
-    document.getElementById(
-      "videoPlayer"
-    );
-
-
-  const modal =
-    document.getElementById(
-      "modal"
-    );
-
-
-  const enlace =
-    document.getElementById(
-      "abrirDropbox"
-    );
-
-
-  modal.classList.add(
-    "visible"
-  );
-
+  modal.classList.add("visible");
 
   video.pause();
-
-
-  video.removeAttribute(
-    "src"
-  );
-
-
+  video.removeAttribute("src");
+  video.load();
+  video.src = urlVideo;
+  enlace.href = enlaceOriginal;
   video.load();
 
-
-  video.src =
-    urlVideo;
-
-
-  enlace.href =
-    enlaceOriginal;
-
-
-  video.load();
-
-
-  video.play().catch(
-    function(error) {
-
-      console.log(
-        "Autoplay bloqueado:",
-        error
-      );
-
-    }
-  );
-
+  video.play().catch(function(error) {
+    console.log("Autoplay bloqueado:", error);
+  });
 }
-
-
-/* =========================
-   CERRAR VIDEO
-========================= */
 
 function cerrarVideo() {
-
-  const video =
-    document.getElementById(
-      "videoPlayer"
-    );
-
-
-  const modal =
-    document.getElementById(
-      "modal"
-    );
-
+  const video = document.getElementById("videoPlayer");
+  const modal = document.getElementById("modal");
 
   video.pause();
-
-
-  video.removeAttribute(
-    "src"
-  );
-
-
+  video.removeAttribute("src");
   video.load();
-
-
-  modal.classList.remove(
-    "visible"
-  );
-
+  modal.classList.remove("visible");
 }
-
-
-/* =========================
-   AGREGAR
-========================= */
 
 async function agregarPelicula() {
-
   if (!usuarioActual) {
-
-    alert(
-      "Debes iniciar sesión."
-    );
-
+    alert("Debes iniciar sesión.");
     return;
-
   }
 
+  const titulo = document.getElementById("titulo").value.trim();
+  const poster = document.getElementById("poster").value.trim();
+  const enlace = document.getElementById("enlace").value.trim();
+  const anio = document.getElementById("anio").value.trim();
+  const calidad = document.getElementById("calidad").value.trim();
+  const tamano = document.getElementById("tamano").value.trim();
+  const categoria = document.getElementById("categoria").value;
+  const favoritaMari = document.getElementById("favoritaMari").checked;
+  const descripcion = document.getElementById("descripcion").value.trim();
 
-  const titulo =
-    document
-      .getElementById("titulo")
-      .value
-      .trim();
-
-
-  const poster =
-    document
-      .getElementById("poster")
-      .value
-      .trim();
-
-
-  const enlace =
-    document
-      .getElementById("enlace")
-      .value
-      .trim();
-
-
-  const anio =
-    document
-      .getElementById("anio")
-      .value
-      .trim();
-
-
-  const calidad =
-    document
-      .getElementById("calidad")
-      .value
-      .trim();
-
-
-  const tamano =
-    document
-      .getElementById("tamano")
-      .value
-      .trim();
-
-
-  const categoria =
-    document
-      .getElementById("categoria")
-      .value;
-
-
-  const favoritaMari =
-    document
-      .getElementById("favoritaMari")
-      .checked;
-
-
-  const descripcion =
-    document
-      .getElementById("descripcion")
-      .value
-      .trim();
-
-
-  if (
-    !titulo ||
-    !enlace
-  ) {
-
-    alert(
-      "Escribe al menos el título y el enlace de Dropbox."
-    );
-
+  if (!titulo || !enlace) {
+    alert("Escribe al menos el título y el enlace de Dropbox.");
     return;
-
   }
-
 
   const datos = {
-
-    anio: anio,
-
-    calidad: calidad,
-
-    tamano: tamano,
-
-    categoria: categoria,
-
-    texto: descripcion
-
+    anio:anio,
+    calidad:calidad,
+    tamano:tamano,
+    categoria:categoria,
+    texto:descripcion
   };
 
-
-  const resultado =
-    await supabaseClient
-      .from("peliculas")
-      .insert({
-
-        titulo:
-          titulo,
-
-        descripcion:
-          JSON.stringify(
-            datos
-          ),
-
-        poster_url:
-          poster,
-
-        videos_url:
-          enlace,
-
-        favorita_mari:
-          favoritaMari
-
-      });
-
+  const resultado = await supabaseClient
+    .from("peliculas")
+    .insert({
+      titulo:titulo,
+      descripcion:JSON.stringify(datos),
+      poster_url:poster,
+      videos_url:enlace,
+      favorita_mari:favoritaMari
+    });
 
   if (resultado.error) {
-
-    console.error(
-      resultado.error
-    );
-
-
-    document.getElementById(
-      "mensajeAdmin"
-    ).textContent =
-      "❌ " +
-      resultado.error.message;
-
-
+    console.error(resultado.error);
+    document.getElementById("mensajeAdmin").textContent =
+      "❌ " + resultado.error.message;
     return;
-
   }
 
-
-  document.getElementById(
-    "mensajeAdmin"
-  ).textContent =
-    "✅ Película agregada";
-
-
-  document.getElementById(
-    "titulo"
-  ).value = "";
-
-
-  document.getElementById(
-    "poster"
-  ).value = "";
-
-
-  document.getElementById(
-    "enlace"
-  ).value = "";
-
-
-  document.getElementById(
-    "anio"
-  ).value = "";
-
-
-  document.getElementById(
-    "calidad"
-  ).value = "";
-
-
-  document.getElementById(
-    "tamano"
-  ).value = "";
-
-
-  document.getElementById(
-    "descripcion"
-  ).value = "";
-
-
-  document.getElementById(
-    "favoritaMari"
-  ).checked = false;
-
+  document.getElementById("mensajeAdmin").textContent = "✅ Película agregada";
+  document.getElementById("titulo").value = "";
+  document.getElementById("poster").value = "";
+  document.getElementById("enlace").value = "";
+  document.getElementById("anio").value = "";
+  document.getElementById("calidad").value = "";
+  document.getElementById("tamano").value = "";
+  document.getElementById("descripcion").value = "";
+  document.getElementById("favoritaMari").checked = false;
 
   await cargarPeliculas();
-
 }
 
-
-/* =========================
-   ELIMINAR
-========================= */
-
-async function eliminarPelicula(
-  id
-) {
-
+async function eliminarPelicula(id) {
   if (!usuarioActual) {
-
-    alert(
-      "Debes iniciar sesión."
-    );
-
+    alert("Debes iniciar sesión.");
     return;
-
   }
 
+  const confirmar = confirm("¿Quieres eliminar esta película?");
+  if (!confirmar) return;
 
-  const confirmar =
-    confirm(
-      "¿Quieres eliminar esta película?"
-    );
-
-
-  if (!confirmar) {
-
-    return;
-
-  }
-
-
-  const resultado =
-    await supabaseClient
-      .from("peliculas")
-      .delete()
-      .eq(
-        "id",
-        id
-      );
-
+  const resultado = await supabaseClient
+    .from("peliculas")
+    .delete()
+    .eq("id", id);
 
   if (resultado.error) {
-
-    alert(
-      "❌ " +
-      resultado.error.message
-    );
-
+    alert("❌ " + resultado.error.message);
     return;
-
   }
-
 
   await cargarPeliculas();
-
 }
+/* =========================
+   GOOGLE CAST
+   ========================= */
+async function transmitirPeliculaPorIndice(indice) {
+  const pelicula = todasLasPeliculas[indice];
+  if (!pelicula) return;
 
-
-/* =====================================================
-   GOOGLE CAST / TV
-===================================================== */
-
-async function transmitirPeliculaPorIndice(
-  indice
-) {
-
-  const pelicula =
-    todasLasPeliculas[
-      indice
-    ];
-
-
-  if (!pelicula) {
-
-    alert(
-      "No se encontró la película."
-    );
-
-    return;
-
-  }
-
-
-  const enlaceOriginal =
-    pelicula.videos_url ||
-    "";
-
-
+  const enlaceOriginal = pelicula.videos_url || "";
   if (!enlaceOriginal) {
-
-    alert(
-      "Esta película no tiene un enlace de Dropbox."
-    );
-
+    alert("Esta película no tiene un enlace de Dropbox.");
     return;
-
   }
-
-
-  /*
-    Comprobar que Google Cast haya terminado
-    de inicializarse.
-  */
-
-  if (
-    !googleCastDisponible ||
-    !googleCastInicializado ||
-    typeof cast === "undefined" ||
-    !cast.framework ||
-    !cast.framework.CastContext
-  ) {
-
-    /*
-      Intentar inicializar nuevamente por si
-      el SDK terminó de cargar después.
-    */
-
-    inicializarGoogleCast();
-
-
-    if (
-      !googleCastDisponible
-    ) {
-
-      alert(
-        "Google Cast todavía no está disponible. " +
-        "Espera unos segundos y vuelve a pulsar 📺 TV."
-      );
-
-      return;
-
-    }
-
-  }
-
 
   try {
-
-    const castContext =
-      cast.framework.CastContext.getInstance();
-
-
-    /*
-      Si ya existe una sesión activa,
-      la reutilizamos.
-
-      Si no existe, mostramos el selector
-      de dispositivos de Google Cast.
-    */
-
-    let castSession =
-      castContext.getCurrentSession();
-
-
-    if (!castSession) {
-
-      console.log(
-        "Abriendo selector de Google Cast..."
-      );
-
-
-      await castContext.requestSession();
-
-
-      castSession =
-        castContext.getCurrentSession();
-
+    if (!googleCastInicializado) {
+      inicializarGoogleCast();
     }
 
-
-    if (!castSession) {
-
-      alert(
-        "No se pudo conectar con la pantalla."
-      );
-
+    if (!googleCastDisponible) {
+      alert("Google Cast no está disponible en este navegador.");
       return;
-
     }
 
+    const context = cast.framework.CastContext.getInstance();
+    let session = context.getCurrentSession();
 
-    /*
-      Convertir el enlace de Dropbox
-      a la versión de reproducción.
-    */
+    if (!session) {
+      await context.requestSession();
+      session = context.getCurrentSession();
+    }
 
-    const urlVideo =
-      convertirDropbox(
-        enlaceOriginal,
-        false
-      );
-
-
-    if (!urlVideo) {
-
-      alert(
-        "No se pudo obtener el enlace del video."
-      );
-
+    if (!session) {
+      alert("No se pudo conectar con el dispositivo Google Cast.");
       return;
-
     }
 
+    const urlVideo = convertirDropbox(enlaceOriginal, false);
+    const mediaInfo = new chrome.cast.media.MediaInfo(urlVideo, "video/mp4");
 
-    console.log(
-      "URL enviada a Google Cast:",
-      urlVideo
-    );
+    mediaInfo.streamType = chrome.cast.media.StreamType.BUFFERED;
+    mediaInfo.metadata = new chrome.cast.media.GenericMediaMetadata();
+    mediaInfo.metadata.title = pelicula.titulo || "Película";
 
-
-    /*
-      Crear información multimedia.
-    */
-
-    const mediaInfo =
-      new chrome.cast.media.MediaInfo(
-        urlVideo,
-        "video/mp4"
-      );
-
-
-    /*
-      Indicar que es contenido
-      multimedia almacenado/bufferizado.
-    */
-
-    mediaInfo.streamType =
-      chrome.cast.media.StreamType.BUFFERED;
-
-
-    /*
-      Metadatos de la película.
-    */
-
-    const metadata =
-      new chrome.cast.media.GenericMediaMetadata();
-
-
-    metadata.title =
-      pelicula.titulo ||
-      "Película";
-
-
-    if (
-      pelicula.poster_url
-    ) {
-
-      metadata.images = [
-
-        {
-          url:
-            pelicula.poster_url
-        }
-
+    if (pelicula.poster_url) {
+      mediaInfo.metadata.images = [
+        new chrome.cast.Image(pelicula.poster_url)
       ];
-
     }
 
+    const request = new chrome.cast.media.LoadRequest(mediaInfo);
+    request.autoplay = true;
+    request.currentTime = 0;
 
-    mediaInfo.metadata =
-      metadata;
-
-
-    /*
-      Crear solicitud de carga.
-    */
-
-    const request =
-      new chrome.cast.media.LoadRequest(
-        mediaInfo
-      );
-
-
-    request.autoplay =
-      true;
-
-
-    /*
-      Enviar el video al receptor.
-    */
-
-    console.log(
-      "Enviando película a Google Cast..."
-    );
-
-
-    await castSession.loadMedia(
-      request
-    );
-
-
-    console.log(
-      "✅ Película enviada correctamente a Google Cast:",
-      pelicula.titulo
-    );
-
-
+    await session.loadMedia(request);
+    console.log("✅ Película enviada por Google Cast");
   } catch (error) {
+    console.error("Error Google Cast:", error);
 
-    console.error(
-      "❌ Error de Google Cast:",
-      error
-    );
-
-
-    /*
-      El usuario canceló el selector
-      de dispositivos.
-    */
-
-    if (
-      error &&
-      (
-        error.code === "cancel" ||
-        error.code === "CANCEL"
-      )
-    ) {
-
-      console.log(
-        "Selección de Google Cast cancelada."
-      );
-
+    if (error && error.code === "cancel") {
+      console.log("El usuario canceló la conexión de Google Cast.");
       return;
-
     }
 
-
-    /*
-      Mostrar el código real del error
-      si Google lo proporciona.
-    */
-
-    if (
-      error &&
-      error.code
-    ) {
-
-      alert(
-        "No se pudo transmitir la película.\n\n" +
-        "Código de Google Cast: " +
-        error.code
-      );
-
-      return;
-
-    }
-
-
-    alert(
-      "No se pudo transmitir la película a la pantalla."
-    );
-
+    alert("No se pudo enviar la película por Google Cast.");
   }
-
 }
 
-</script></body>
+/* =========================
+   LG webOS: CONEXIÓN DIRECTA DESDE LA PÁGINA
+   =========================
+   IMPORTANTE: la página principal NO crea el WebSocket.
+   El WebSocket se crea dentro de un iframe data:, cuyo origen es opaco.
+*/
+const LG_STORAGE_KEY = "apo1reed_lg_client_key";
+const LG_IP_STORAGE_KEY = "apo1reed_lg_ip";
+const LG_PROXY_SOURCE = `<!doctype html><html><head><meta charset="utf-8"></head><body><script>
+(function(){
+  let socket=null;
+  function out(x){ parent.postMessage(x,"*"); }
+  addEventListener("message",function(e){
+    const d=e.data||{};
+    if(d.type==="connect"){
+      try{
+        if(socket){try{socket.close()}catch(_){} socket=null;}
+        socket=new WebSocket(d.url);
+        socket.onopen=()=>out({type:"open"});
+        socket.onmessage=e=>out({type:"message",data:e.data});
+        socket.onerror=()=>out({type:"error"});
+        socket.onclose=e=>{out({type:"close",code:e.code,reason:e.reason||""});socket=null;};
+      }catch(err){out({type:"error",message:String(err&&err.message||err)});}
+    }else if(d.type==="send"){
+      if(!socket||socket.readyState!==WebSocket.OPEN){out({type:"send_error",message:"WebSocket no conectado"});return;}
+      try{socket.send(d.data)}catch(err){out({type:"send_error",message:String(err&&err.message||err)});}
+    }else if(d.type==="close"){
+      if(socket){try{socket.close()}catch(_){}} socket=null;
+    }
+  });
+  out({type:"ready"});
+})();
+<\/script></body></html>`;
+
+let lgProxyReady=false, lgSocketOpen=false, lgRegistered=false, lgRequestCounter=0;
+let lgConnectPromise=null, lgConnectResolve=null, lgConnectReject=null, lgCurrentMovie=null, lgLastCommandId=null;
+
+function escribirLGLog(texto){
+  const log=document.getElementById("lgLog"); if(!log)return;
+  log.textContent += "["+new Date().toLocaleTimeString()+"] "+texto+"\n";
+  log.scrollTop=log.scrollHeight;
+}
+function actualizarLGEstado(texto){document.getElementById("lgEstado").textContent=texto;}
+function prepararProxyLG(){
+  const iframe=document.getElementById("lgProxy"); if(!iframe)return;
+  if(lgProxyReady)return;
+  iframe.src="data:text/html;charset=utf-8,"+encodeURIComponent(LG_PROXY_SOURCE);
+  escribirLGLog("Proxy LG preparado.");
+}
+window.addEventListener("message",function(event){
+  const iframe=document.getElementById("lgProxy");
+  if(!iframe||event.source!==iframe.contentWindow)return;
+  const data=event.data||{};
+  if(data.type==="ready"){lgProxyReady=true;escribirLGLog("Proxy LG listo.");return;}
+  if(data.type==="open"){
+    lgSocketOpen=true;lgRegistered=false;
+    actualizarLGEstado("🟡 LG conectada, esperando registro...");
+    escribirLGLog("WebSocket abierto mediante el proxy. Enviando HELLO...");
+    enviarLGHello(); return;
+  }
+  if(data.type==="message"){procesarMensajeLG(data.data);return;}
+  if(data.type==="error"){
+    lgSocketOpen=false;lgRegistered=false;actualizarLGEstado("🔴 Error de conexión LG");
+    escribirLGLog("Error WebSocket.");
+    if(lgConnectReject){const r=lgConnectReject;lgConnectResolve=null;lgConnectReject=null;lgConnectPromise=null;r(new Error(data.message||"Error WebSocket"));}
+    return;
+  }
+  if(data.type==="send_error"){escribirLGLog("Error enviando comando: "+(data.message||"desconocido"));return;}
+  if(data.type==="close"){
+    lgSocketOpen=false;lgRegistered=false;actualizarLGEstado("🔴 LG desconectada");
+    document.getElementById("lgEnviarBtn").disabled=true;escribirLGLog("WebSocket cerrado.");
+    if(lgConnectReject){const r=lgConnectReject;lgConnectResolve=null;lgConnectReject=null;lgConnectPromise=null;r(new Error("WebSocket cerrado"));}
+  }
+});
+function lgSendObject(obj){
+  const iframe=document.getElementById("lgProxy");
+  if(!iframe||!lgSocketOpen){escribirLGLog("LG no está conectada.");return false;}
+  iframe.contentWindow.postMessage({type:"send",data:JSON.stringify(obj)},"*");return true;
+}
+function siguienteLGId(prefijo){lgRequestCounter++;return prefijo+"_"+Date.now()+"_"+lgRequestCounter;}
+function manifestLG(){return {manifestVersion:1,permissions:["LAUNCH","LAUNCH_WEBAPP","CONTROL_AUDIO","CONTROL_DISPLAY","CONTROL_INPUT_JOYSTICK","CONTROL_INPUT_MEDIA_RECORDING","CONTROL_INPUT_MEDIA_PLAYBACK","CONTROL_INPUT_TV","READ_CURRENT_CHANNEL","READ_RUNNING_APPS","READ_INSTALLED_APPS"]};}
+function enviarLGHello(){
+  lgSendObject({type:"hello",id:siguienteLGId("hello"),payload:{manifest:manifestLG(),deviceId:"apo1reed-"+Math.random().toString(36).slice(2),sdkVersion:"1.0.0",apiVersion:1}});
+}
+function enviarLGRegister(clientKey){
+  const payload={manifest:manifestLG()}; if(clientKey)payload.clientKey=clientKey;
+  lgSendObject({type:"register",id:siguienteLGId("register"),payload});
+}
+function procesarMensajeLG(raw){
+  let msg;try{msg=typeof raw==="string"?JSON.parse(raw):raw;}catch(_){escribirLGLog("Mensaje LG no JSON.");return;}
+  if(msg.type==="hello"){
+    escribirLGLog("LG respondió al HELLO.");
+    enviarLGRegister(localStorage.getItem(LG_STORAGE_KEY)||null);return;
+  }
+  if(msg.type==="registered"){
+    lgRegistered=true;lgSocketOpen=true;
+    const key=msg.payload&&(msg.payload["client-key"]||msg.payload.clientKey);
+    if(key)localStorage.setItem(LG_STORAGE_KEY,key);
+    actualizarLGEstado("🟢 LG conectada");document.getElementById("lgEnviarBtn").disabled=false;
+    escribirLGLog("LG registrada correctamente.");
+    if(lgConnectResolve){const r=lgConnectResolve;lgConnectResolve=null;lgConnectReject=null;lgConnectPromise=null;r(true);}
+    return;
+  }
+  if(msg.type==="response"){
+    const p=msg.payload||{};
+    if(p.pairingType==="PROMPT"){actualizarLGEstado("🟡 Acepta la conexión en la TV...");escribirLGLog("La TV pide aceptar el aviso de conexión.");}
+    if(p["client-key"])localStorage.setItem(LG_STORAGE_KEY,p["client-key"]);
+    return;
+  }
+  if(msg.type==="error"){escribirLGLog("LG respondió con error: "+(msg.error||"desconocido"));return;}
+  if(msg.type==="prompt"){actualizarLGEstado("🟡 Acepta el aviso en la TV...");escribirLGLog("Acepta el aviso de conexión en la TV.");}
+}
+function conectarLG(){
+  const ip=document.getElementById("lgIp").value.trim();
+  if(!ip){alert("Escribe la IP de tu TV LG.");return;}
+  if(!/^[0-9a-fA-F:.]+$/.test(ip)){alert("La IP de la TV no parece válida.");return;}
+  localStorage.setItem(LG_IP_STORAGE_KEY,ip);
+  if(!lgProxyReady){prepararProxyLG();setTimeout(conectarLG,600);return;}
+  if(lgSocketOpen&&lgRegistered){actualizarLGEstado("🟢 LG conectada");escribirLGLog("La LG ya está conectada.");return;}
+  if(lgSocketOpen){escribirLGLog("Ya hay una conexión intentando registrarse.");return;}
+  const url="ws://"+ip+":3000";
+  escribirLGLog("Solicitando conexión mediante proxy a "+ip+":3000");actualizarLGEstado("🟡 Conectando con LG...");
+  lgConnectPromise=new Promise((resolve,reject)=>{lgConnectResolve=resolve;lgConnectReject=reject;});
+  document.getElementById("lgProxy").contentWindow.postMessage({type:"connect",url:url},"*");
+  lgConnectPromise.catch(()=>{});
+}
+async function asegurarConexionLG(){
+  if(lgSocketOpen&&lgRegistered)return true;
+  conectarLG();
+  if(!lgConnectPromise)return false;
+  try{
+    await Promise.race([lgConnectPromise,new Promise((_,rej)=>setTimeout(()=>rej(new Error("Tiempo de espera agotado")),15000))]);
+    return lgRegistered;
+  }catch(error){escribirLGLog("No se pudo registrar la LG: "+error.message);actualizarLGEstado("🔴 LG desconectada");return false;}
+}
+function prepararTransmisionLG(indice){
+  const pelicula=todasLasPeliculas[indice];if(!pelicula)return;
+  lgCurrentMovie=pelicula;
+  document.getElementById("lgPelicula").textContent="🎬 Película seleccionada: "+(pelicula.titulo||"Sin título");
+  document.getElementById("lgModal").classList.add("visible");
+  document.getElementById("lgEnviarBtn").disabled=!(lgSocketOpen&&lgRegistered);
+  const guardada=localStorage.getItem(LG_IP_STORAGE_KEY);if(guardada)document.getElementById("lgIp").value=guardada;
+  escribirLGLog("Película seleccionada: "+(pelicula.titulo||"Sin título"));
+}
+function cerrarLGModal(){document.getElementById("lgModal").classList.remove("visible");}
+async function enviarPeliculaALG(){
+  if(!lgCurrentMovie){alert("Selecciona primero una película.");return;}
+  const ip=document.getElementById("lgIp").value.trim();if(!ip){alert("Escribe la IP de la TV LG.");return;}
+  localStorage.setItem(LG_IP_STORAGE_KEY,ip);
+  const conectada=await asegurarConexionLG();
+  if(!conectada){alert("No se pudo conectar con la TV LG. Revisa que la TV y el celular estén en la misma red Wi-Fi y acepta el aviso en la TV.");return;}
+  const enlaceOriginal=lgCurrentMovie.videos_url||"";if(!enlaceOriginal){alert("Esta película no tiene un enlace de Dropbox.");return;}
+  const urlVideo=convertirDropbox(enlaceOriginal,false);const id=siguienteLGId("open");lgLastCommandId=id;
+  escribirLGLog("Enviando película a la LG...");actualizarLGEstado("🟢 Enviando película...");
+  lgSendObject({type:"request",id:id,uri:"ssap://system.launcher/open",payload:{target:urlVideo}});
+  setTimeout(()=>{if(lgRegistered){actualizarLGEstado("🟢 Película enviada a LG");escribirLGLog("Película enviada. Usa el control de la TV para reproducir/pausar.");}},1000);
+}
+function lgRequest(uri,payload){if(!lgRegistered){escribirLGLog("LG no está conectada.");return;}const id=siguienteLGId("cmd");lgLastCommandId=id;lgSendObject({type:"request",id,uri,payload:payload||{}});}
+function lgPlay(){lgRequest("ssap://media.controls/play",{});}
+function lgPause(){lgRequest("ssap://media.controls/pause",{});}
+function lgVolumeUp(){lgRequest("ssap://audio/volumeUp",{});}
+function lgVolumeDown(){lgRequest("ssap://audio/volumeDown",{});}
+function lgFastForward(){lgRequest("ssap://media.controls/fastForward",{});}
+function lgRewind(){lgRequest("ssap://media.controls/rewind",{});}
+
+</script>
+</body>
 </html>
