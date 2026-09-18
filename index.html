@@ -21,21 +21,23 @@ window.__onGCastApiAvailable = function(isAvailable) {
 };
 
 function inicializarGoogleCast() {
-  if (googleCastInicializado) return;
+  if (googleCastInicializado) return true;
 
   try {
     if (
       typeof cast === "undefined" ||
       !cast.framework ||
-      !cast.framework.CastContext
+      !cast.framework.CastContext ||
+      typeof chrome === "undefined" ||
+      !chrome.cast
     ) {
       console.warn("Google Cast todavía no está listo.");
-      return;
+      return false;
     }
 
-    const castContext = cast.framework.CastContext.getInstance();
+    const context = cast.framework.CastContext.getInstance();
 
-    castContext.setOptions({
+    context.setOptions({
       receiverApplicationId:
         chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
       autoJoinPolicy:
@@ -45,13 +47,22 @@ function inicializarGoogleCast() {
     googleCastDisponible = true;
     googleCastInicializado = true;
     console.log("✅ Google Cast inicializado correctamente.");
+    return true;
   } catch (error) {
     googleCastDisponible = false;
     console.error("❌ Error inicializando Google Cast:", error);
+    return false;
   }
 }
+
+// Fallback por si el navegador termina de cargar el SDK después del callback.
+window.addEventListener("load", function() {
+  setTimeout(function() {
+    if (!googleCastInicializado) inicializarGoogleCast();
+  }, 300);
+});
 </script>
-<script src="https://www.gstatic.com/cv/js/cast_sender.js?loadCastFramework=1"></script>
+<script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
 <style>
 * { box-sizing: border-box; }
 body { margin:0; font-family:Arial,sans-serif; background:#0d0d12; color:white; }
@@ -78,7 +89,7 @@ header p { margin:8px 0 0; color:#bbb; }
 .ver { background:#5c4cff; color:white; }
 .descargar { background:#292936; color:white; }
 .eliminar { background:#8b2635; color:white; }
-.admin-boton { position:fixed; bottom:15px; left:15px; z-index:1500; border:none; border-radius:50%; width:52px; height:52px; background:#292936; color:white; cursor:pointer; font-size:22px; box-shadow:0 5px 18px rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; }
+.admin-boton { position:fixed; bottom:18px; left:18px; z-index:99999; border:none; border-radius:50%; width:48px; height:48px; background:#292936; color:white; cursor:pointer; font-size:21px; box-shadow:0 5px 18px rgba(0,0,0,.4); }
 .panel { display:none; background:#17171f; border:1px solid #333344; padding:20px; border-radius:15px; margin-bottom:25px; }
 .panel.visible { display:block; }
 .panel input,.panel select,.panel textarea { width:100%; margin:7px 0; padding:12px; border-radius:9px; border:1px solid #444; background:#0e0e14; color:white; }
@@ -86,8 +97,9 @@ header p { margin:8px 0 0; color:#bbb; }
 .checkbox { display:flex; align-items:center; gap:8px; margin:10px 0; }
 .checkbox input { width:auto; }
 .mensaje { color:#aaa; text-align:center; padding:35px; }
-.modal { display:none !important; visibility:hidden; opacity:0; pointer-events:none; position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:2000; align-items:center; justify-content:center; padding:20px; }
-.modal.visible { display:flex !important; visibility:visible; opacity:1; pointer-events:auto; }
+.modal { display:none !important; position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:2000; align-items:center; justify-content:center; padding:20px; }
+.modal.visible { display:flex !important; }
+.modal[hidden], .modal:not(.visible) { display:none !important; }
 .modal-contenido { width:100%; max-width:1100px; position:relative; }
 #videoPlayer { width:100%; max-height:80vh; background:black; border-radius:12px; }
 .cerrar { position:absolute; right:0; top:-45px; border:none; background:#8b2635; color:white; border-radius:8px; padding:10px 14px; cursor:pointer; }
@@ -151,39 +163,15 @@ header p { margin:8px 0 0; color:#bbb; }
   <div id="peliculas" class="peliculas"></div>
 </div>
 
-<button class="admin-boton" onclick="abrirAdministracion()">⚙️</button>
+<button id="adminBoton" class="admin-boton" type="button" onclick="abrirAdministracion()" aria-label="Abrir administración">⚙️</button>
 
-<div id="modal" class="modal">
+<div id="modal" class="modal" hidden>
   <div class="modal-contenido">
     <button class="cerrar" onclick="cerrarVideo()">✕ Cerrar</button>
     <video id="videoPlayer" controls playsinline preload="metadata"></video>
     <a id="abrirDropbox" class="abrir-dropbox" target="_blank" rel="noopener">Abrir enlace original de Dropbox</a>
   </div>
 </div>
-
-<div id="lgModal" class="modal">
-  <div class="modal-contenido" style="max-width:650px;background:#17171f;border:1px solid #333344;border-radius:18px;padding:20px;max-height:90vh;overflow:auto">
-    <button class="cerrar" onclick="cerrarLGModal()">✕ Cerrar</button>
-    <h2>📺 Enviar a TV LG</h2>
-    <p id="lgPelicula" style="color:#bbb">🎬 Película seleccionada: —</p>
-    <input id="lgIp" type="text" inputmode="decimal" autocomplete="off" placeholder="192.168.1.15" style="width:100%;padding:15px;border-radius:12px;border:1px solid #444;background:#0e0e14;color:white;font-size:18px;margin:7px 0">
-    <button onclick="conectarLG()" style="width:100%;border:none;border-radius:12px;padding:16px;background:#aa1dc0;color:white;font-size:18px;cursor:pointer;margin-top:10px">🔌 Conectar con LG</button>
-    <button id="lgEnviarBtn" onclick="enviarPeliculaALG()" disabled style="width:100%;border:none;border-radius:12px;padding:16px;background:#2588f4;color:white;font-size:18px;cursor:pointer;margin-top:10px">🎬 Enviar película a LG</button>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px">
-      <button id="lgPlay" onclick="lgPlay()" style="border:none;border-radius:12px;padding:15px;background:#292936;color:white;font-size:17px;cursor:pointer">▶️ Play</button>
-      <button id="lgPause" onclick="lgPause()" style="border:none;border-radius:12px;padding:15px;background:#292936;color:white;font-size:17px;cursor:pointer">⏸️ Pausa</button>
-      <button id="lgVolumeUp" onclick="lgVolumeUp()" style="border:none;border-radius:12px;padding:15px;background:#292936;color:white;font-size:17px;cursor:pointer">🔊 Volumen +</button>
-      <button id="lgVolumeDown" onclick="lgVolumeDown()" style="border:none;border-radius:12px;padding:15px;background:#292936;color:white;font-size:17px;cursor:pointer">🔉 Volumen -</button>
-      <button id="lgFastForward" onclick="lgFastForward()" style="border:none;border-radius:12px;padding:15px;background:#292936;color:white;font-size:17px;cursor:pointer">⏩ Adelantar</button>
-      <button id="lgRewind" onclick="lgRewind()" style="border:none;border-radius:12px;padding:15px;background:#292936;color:white;font-size:17px;cursor:pointer">⏪ Retroceder</button>
-    </div>
-    <div id="lgEstado" style="background:#0e0e14;border-radius:12px;padding:15px;margin-top:18px;font-size:17px">🔴 LG desconectada</div>
-    <div id="lgLog" style="background:#050507;color:#bbb;border-radius:14px;padding:15px;margin-top:15px;min-height:120px;max-height:230px;overflow:auto;font-family:monospace;font-size:13px;white-space:pre-wrap"></div>
-    <p style="color:#aaa;font-size:13px;line-height:1.5">La primera vez que conectes, acepta el aviso que aparezca en la TV. Después la clave queda guardada en este navegador. La conexión WebSocket se realiza dentro de un iframe de origen aislado para evitar el bloqueo de la página HTTPS.</p>
-    <button onclick="cerrarLGModal()" style="width:100%;border:none;border-radius:10px;padding:12px;background:#8b2635;color:white;cursor:pointer;margin-top:8px">Cerrar</button>
-  </div>
-</div>
-<iframe id="lgProxy" title="LG WebSocket proxy" style="position:fixed;width:1px;height:1px;left:-10px;top:-10px;border:0;opacity:0;pointer-events:none"></iframe>
 
 <script>
 const SUPABASE_URL = "https://jnxtndenqxgqqzmmckco.supabase.co";
@@ -195,20 +183,16 @@ let categoriaActual = "todas";
 let usuarioActual = null;
 
 document.addEventListener("DOMContentLoaded", async function() {
+  document.getElementById("modal").hidden = true;
+  document.getElementById("modal").classList.remove("visible");
+  // Al cargar la página, el reproductor debe estar SIEMPRE cerrado.
+  // Esto evita que una vista/estado anterior del navegador lo deje visible.
+  cerrarVideo();
+
   const buscador = document.getElementById("buscador");
   buscador.value = "";
-
-  // Asegura que ningún reproductor/modal quede abierto al cargar o recargar la página.
-  document.getElementById("modal").classList.remove("visible");
-  document.getElementById("lgModal").classList.remove("visible");
-  const videoInicial = document.getElementById("videoPlayer");
-  videoInicial.pause();
-  videoInicial.removeAttribute("src");
-  videoInicial.load();
-
   await comprobarSesion();
   await cargarPeliculas();
-  prepararProxyLG();
 });
 
 async function comprobarSesion() {
@@ -390,7 +374,6 @@ function crearTarjeta(pelicula, indice) {
               : ""
           }
           <button class="btn" style="background:#147ef5;color:white" onclick="transmitirPeliculaPorIndice(${indice})">📺 TV</button>
-          <button class="btn" style="background:#aa1dc0;color:white" onclick="prepararTransmisionLG(${indice})">📺 LG</button>
           ${
             usuarioActual
               ? `<button class="btn eliminar" onclick="eliminarPelicula('${pelicula.id}')">🗑️</button>`
@@ -439,6 +422,7 @@ function verPeliculaPorIndice(indice) {
   const modal = document.getElementById("modal");
   const enlace = document.getElementById("abrirDropbox");
 
+  modal.hidden = false;
   modal.classList.add("visible");
 
   video.pause();
@@ -461,6 +445,7 @@ function cerrarVideo() {
   video.removeAttribute("src");
   video.load();
   modal.classList.remove("visible");
+  modal.hidden = true;
 }
 
 async function agregarPelicula() {
@@ -561,27 +546,31 @@ async function transmitirPeliculaPorIndice(indice) {
       inicializarGoogleCast();
     }
 
-    if (!googleCastDisponible) {
-      alert("Google Cast no está disponible en este navegador.");
+    if (!googleCastInicializado) {
+      alert("Google Cast no está disponible en este navegador. Abre la página directamente en Google Chrome.");
       return;
     }
 
     const context = cast.framework.CastContext.getInstance();
     let session = context.getCurrentSession();
 
+    // Si todavía no hay una TV conectada, abrimos el selector de Google Cast.
     if (!session) {
-      await context.requestSession();
-      session = context.getCurrentSession();
+      try {
+        session = await context.requestSession();
+      } catch (error) {
+        console.error("No se pudo iniciar la sesión de Google Cast:", error);
+        return;
+      }
     }
 
     if (!session) {
-      alert("No se pudo conectar con el dispositivo Google Cast.");
+      alert("No se pudo conectar con la TV.");
       return;
     }
 
     const urlVideo = convertirDropbox(enlaceOriginal, false);
     const mediaInfo = new chrome.cast.media.MediaInfo(urlVideo, "video/mp4");
-
     mediaInfo.streamType = chrome.cast.media.StreamType.BUFFERED;
     mediaInfo.metadata = new chrome.cast.media.GenericMediaMetadata();
     mediaInfo.metadata.title = pelicula.titulo || "Película";
@@ -597,183 +586,12 @@ async function transmitirPeliculaPorIndice(indice) {
     request.currentTime = 0;
 
     await session.loadMedia(request);
-    console.log("✅ Película enviada por Google Cast");
+    console.log("✅ Película enviada por Google Cast.");
   } catch (error) {
-    console.error("Error Google Cast:", error);
-
-    if (error && error.code === "cancel") {
-      console.log("El usuario canceló la conexión de Google Cast.");
-      return;
-    }
-
-    alert("No se pudo enviar la película por Google Cast.");
+    console.error("❌ Error Google Cast:", error);
+    alert("No se pudo enviar la película por Google Cast. Revisa que la TV esté disponible y vuelve a intentarlo.");
   }
 }
-
-/* =========================
-   LG webOS: CONEXIÓN DIRECTA DESDE LA PÁGINA
-   =========================
-   IMPORTANTE: la página principal NO crea el WebSocket.
-   El WebSocket se crea dentro de un iframe data:, cuyo origen es opaco.
-*/
-const LG_STORAGE_KEY = "apo1reed_lg_client_key";
-const LG_IP_STORAGE_KEY = "apo1reed_lg_ip";
-const LG_PROXY_SOURCE = `<!doctype html><html><head><meta charset="utf-8"></head><body><script>
-(function(){
-  let socket=null;
-  function out(x){ parent.postMessage(x,"*"); }
-  addEventListener("message",function(e){
-    const d=e.data||{};
-    if(d.type==="connect"){
-      try{
-        if(socket){try{socket.close()}catch(_){} socket=null;}
-        socket=new WebSocket(d.url);
-        socket.onopen=()=>out({type:"open"});
-        socket.onmessage=e=>out({type:"message",data:e.data});
-        socket.onerror=()=>out({type:"error"});
-        socket.onclose=e=>{out({type:"close",code:e.code,reason:e.reason||""});socket=null;};
-      }catch(err){out({type:"error",message:String(err&&err.message||err)});}
-    }else if(d.type==="send"){
-      if(!socket||socket.readyState!==WebSocket.OPEN){out({type:"send_error",message:"WebSocket no conectado"});return;}
-      try{socket.send(d.data)}catch(err){out({type:"send_error",message:String(err&&err.message||err)});}
-    }else if(d.type==="close"){
-      if(socket){try{socket.close()}catch(_){}} socket=null;
-    }
-  });
-  out({type:"ready"});
-})();
-<\/script></body></html>`;
-
-let lgProxyReady=false, lgSocketOpen=false, lgRegistered=false, lgRequestCounter=0;
-let lgConnectPromise=null, lgConnectResolve=null, lgConnectReject=null, lgCurrentMovie=null, lgLastCommandId=null;
-
-function escribirLGLog(texto){
-  const log=document.getElementById("lgLog"); if(!log)return;
-  log.textContent += "["+new Date().toLocaleTimeString()+"] "+texto+"\n";
-  log.scrollTop=log.scrollHeight;
-}
-function actualizarLGEstado(texto){document.getElementById("lgEstado").textContent=texto;}
-function prepararProxyLG(){
-  const iframe=document.getElementById("lgProxy"); if(!iframe)return;
-  if(lgProxyReady)return;
-  iframe.src="data:text/html;charset=utf-8,"+encodeURIComponent(LG_PROXY_SOURCE);
-  escribirLGLog("Proxy LG preparado.");
-}
-window.addEventListener("message",function(event){
-  const iframe=document.getElementById("lgProxy");
-  if(!iframe||event.source!==iframe.contentWindow)return;
-  const data=event.data||{};
-  if(data.type==="ready"){lgProxyReady=true;escribirLGLog("Proxy LG listo.");return;}
-  if(data.type==="open"){
-    lgSocketOpen=true;lgRegistered=false;
-    actualizarLGEstado("🟡 LG conectada, esperando registro...");
-    escribirLGLog("WebSocket abierto mediante el proxy. Enviando HELLO...");
-    enviarLGHello(); return;
-  }
-  if(data.type==="message"){procesarMensajeLG(data.data);return;}
-  if(data.type==="error"){
-    lgSocketOpen=false;lgRegistered=false;actualizarLGEstado("🔴 Error de conexión LG");
-    escribirLGLog("Error WebSocket.");
-    if(lgConnectReject){const r=lgConnectReject;lgConnectResolve=null;lgConnectReject=null;lgConnectPromise=null;r(new Error(data.message||"Error WebSocket"));}
-    return;
-  }
-  if(data.type==="send_error"){escribirLGLog("Error enviando comando: "+(data.message||"desconocido"));return;}
-  if(data.type==="close"){
-    lgSocketOpen=false;lgRegistered=false;actualizarLGEstado("🔴 LG desconectada");
-    document.getElementById("lgEnviarBtn").disabled=true;escribirLGLog("WebSocket cerrado.");
-    if(lgConnectReject){const r=lgConnectReject;lgConnectResolve=null;lgConnectReject=null;lgConnectPromise=null;r(new Error("WebSocket cerrado"));}
-  }
-});
-function lgSendObject(obj){
-  const iframe=document.getElementById("lgProxy");
-  if(!iframe||!lgSocketOpen){escribirLGLog("LG no está conectada.");return false;}
-  iframe.contentWindow.postMessage({type:"send",data:JSON.stringify(obj)},"*");return true;
-}
-function siguienteLGId(prefijo){lgRequestCounter++;return prefijo+"_"+Date.now()+"_"+lgRequestCounter;}
-function manifestLG(){return {manifestVersion:1,permissions:["LAUNCH","LAUNCH_WEBAPP","CONTROL_AUDIO","CONTROL_DISPLAY","CONTROL_INPUT_JOYSTICK","CONTROL_INPUT_MEDIA_RECORDING","CONTROL_INPUT_MEDIA_PLAYBACK","CONTROL_INPUT_TV","READ_CURRENT_CHANNEL","READ_RUNNING_APPS","READ_INSTALLED_APPS"]};}
-function enviarLGHello(){
-  lgSendObject({type:"hello",id:siguienteLGId("hello"),payload:{manifest:manifestLG(),deviceId:"apo1reed-"+Math.random().toString(36).slice(2),sdkVersion:"1.0.0",apiVersion:1}});
-}
-function enviarLGRegister(clientKey){
-  const payload={manifest:manifestLG()}; if(clientKey)payload.clientKey=clientKey;
-  lgSendObject({type:"register",id:siguienteLGId("register"),payload});
-}
-function procesarMensajeLG(raw){
-  let msg;try{msg=typeof raw==="string"?JSON.parse(raw):raw;}catch(_){escribirLGLog("Mensaje LG no JSON.");return;}
-  if(msg.type==="hello"){
-    escribirLGLog("LG respondió al HELLO.");
-    enviarLGRegister(localStorage.getItem(LG_STORAGE_KEY)||null);return;
-  }
-  if(msg.type==="registered"){
-    lgRegistered=true;lgSocketOpen=true;
-    const key=msg.payload&&(msg.payload["client-key"]||msg.payload.clientKey);
-    if(key)localStorage.setItem(LG_STORAGE_KEY,key);
-    actualizarLGEstado("🟢 LG conectada");document.getElementById("lgEnviarBtn").disabled=false;
-    escribirLGLog("LG registrada correctamente.");
-    if(lgConnectResolve){const r=lgConnectResolve;lgConnectResolve=null;lgConnectReject=null;lgConnectPromise=null;r(true);}
-    return;
-  }
-  if(msg.type==="response"){
-    const p=msg.payload||{};
-    if(p.pairingType==="PROMPT"){actualizarLGEstado("🟡 Acepta la conexión en la TV...");escribirLGLog("La TV pide aceptar el aviso de conexión.");}
-    if(p["client-key"])localStorage.setItem(LG_STORAGE_KEY,p["client-key"]);
-    return;
-  }
-  if(msg.type==="error"){escribirLGLog("LG respondió con error: "+(msg.error||"desconocido"));return;}
-  if(msg.type==="prompt"){actualizarLGEstado("🟡 Acepta el aviso en la TV...");escribirLGLog("Acepta el aviso de conexión en la TV.");}
-}
-function conectarLG(){
-  const ip=document.getElementById("lgIp").value.trim();
-  if(!ip){alert("Escribe la IP de tu TV LG.");return;}
-  if(!/^[0-9a-fA-F:.]+$/.test(ip)){alert("La IP de la TV no parece válida.");return;}
-  localStorage.setItem(LG_IP_STORAGE_KEY,ip);
-  if(!lgProxyReady){prepararProxyLG();setTimeout(conectarLG,600);return;}
-  if(lgSocketOpen&&lgRegistered){actualizarLGEstado("🟢 LG conectada");escribirLGLog("La LG ya está conectada.");return;}
-  if(lgSocketOpen){escribirLGLog("Ya hay una conexión intentando registrarse.");return;}
-  const url="ws://"+ip+":3000";
-  escribirLGLog("Solicitando conexión mediante proxy a "+ip+":3000");actualizarLGEstado("🟡 Conectando con LG...");
-  lgConnectPromise=new Promise((resolve,reject)=>{lgConnectResolve=resolve;lgConnectReject=reject;});
-  document.getElementById("lgProxy").contentWindow.postMessage({type:"connect",url:url},"*");
-  lgConnectPromise.catch(()=>{});
-}
-async function asegurarConexionLG(){
-  if(lgSocketOpen&&lgRegistered)return true;
-  conectarLG();
-  if(!lgConnectPromise)return false;
-  try{
-    await Promise.race([lgConnectPromise,new Promise((_,rej)=>setTimeout(()=>rej(new Error("Tiempo de espera agotado")),15000))]);
-    return lgRegistered;
-  }catch(error){escribirLGLog("No se pudo registrar la LG: "+error.message);actualizarLGEstado("🔴 LG desconectada");return false;}
-}
-function prepararTransmisionLG(indice){
-  const pelicula=todasLasPeliculas[indice];if(!pelicula)return;
-  lgCurrentMovie=pelicula;
-  document.getElementById("lgPelicula").textContent="🎬 Película seleccionada: "+(pelicula.titulo||"Sin título");
-  document.getElementById("lgModal").classList.add("visible");
-  document.getElementById("lgEnviarBtn").disabled=!(lgSocketOpen&&lgRegistered);
-  const guardada=localStorage.getItem(LG_IP_STORAGE_KEY);if(guardada)document.getElementById("lgIp").value=guardada;
-  escribirLGLog("Película seleccionada: "+(pelicula.titulo||"Sin título"));
-}
-function cerrarLGModal(){document.getElementById("lgModal").classList.remove("visible");}
-async function enviarPeliculaALG(){
-  if(!lgCurrentMovie){alert("Selecciona primero una película.");return;}
-  const ip=document.getElementById("lgIp").value.trim();if(!ip){alert("Escribe la IP de la TV LG.");return;}
-  localStorage.setItem(LG_IP_STORAGE_KEY,ip);
-  const conectada=await asegurarConexionLG();
-  if(!conectada){alert("No se pudo conectar con la TV LG. Revisa que la TV y el celular estén en la misma red Wi-Fi y acepta el aviso en la TV.");return;}
-  const enlaceOriginal=lgCurrentMovie.videos_url||"";if(!enlaceOriginal){alert("Esta película no tiene un enlace de Dropbox.");return;}
-  const urlVideo=convertirDropbox(enlaceOriginal,false);const id=siguienteLGId("open");lgLastCommandId=id;
-  escribirLGLog("Enviando película a la LG...");actualizarLGEstado("🟢 Enviando película...");
-  lgSendObject({type:"request",id:id,uri:"ssap://system.launcher/open",payload:{target:urlVideo}});
-  setTimeout(()=>{if(lgRegistered){actualizarLGEstado("🟢 Película enviada a LG");escribirLGLog("Película enviada. Usa el control de la TV para reproducir/pausar.");}},1000);
-}
-function lgRequest(uri,payload){if(!lgRegistered){escribirLGLog("LG no está conectada.");return;}const id=siguienteLGId("cmd");lgLastCommandId=id;lgSendObject({type:"request",id,uri,payload:payload||{}});}
-function lgPlay(){lgRequest("ssap://media.controls/play",{});}
-function lgPause(){lgRequest("ssap://media.controls/pause",{});}
-function lgVolumeUp(){lgRequest("ssap://audio/volumeUp",{});}
-function lgVolumeDown(){lgRequest("ssap://audio/volumeDown",{});}
-function lgFastForward(){lgRequest("ssap://media.controls/fastForward",{});}
-function lgRewind(){lgRequest("ssap://media.controls/rewind",{});}
 
 </script>
 </body>
