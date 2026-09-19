@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Apo1.reed</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -48,10 +49,8 @@ function inicializarGoogleCast() {
 
     googleCastDisponible = true;
     googleCastInicializado = true;
-
     console.log("✅ Google Cast inicializado correctamente.");
     return true;
-
   } catch (error) {
     googleCastDisponible = false;
     console.error("❌ Error inicializando Google Cast:", error);
@@ -61,9 +60,7 @@ function inicializarGoogleCast() {
 
 window.addEventListener("load", function() {
   setTimeout(function() {
-    if (!googleCastInicializado) {
-      inicializarGoogleCast();
-    }
+    if (!googleCastInicializado) inicializarGoogleCast();
   }, 300);
 });
 </script>
@@ -328,7 +325,6 @@ header p {
   max-height:80vh;
   background:black;
   border-radius:12px;
-  display:block;
 }
 
 .cerrar {
@@ -388,25 +384,11 @@ header p {
   >
 
   <div class="categorias">
-    <button class="categoria-btn activo" onclick="cambiarCategoria('todas', this)">
-      🎬 Todas
-    </button>
-
-    <button class="categoria-btn" onclick="cambiarCategoria('mari', this)">
-      ❤️ Mari
-    </button>
-
-    <button class="categoria-btn" onclick="cambiarCategoria('familia', this)">
-      👨‍👩‍👧 Familia
-    </button>
-
-    <button class="categoria-btn" onclick="cambiarCategoria('terror', this)">
-      👻 Terror
-    </button>
-
-    <button class="categoria-btn" onclick="cambiarCategoria('accion', this)">
-      💥 Acción
-    </button>
+    <button class="categoria-btn activo" onclick="cambiarCategoria('todas', this)">🎬 Todas</button>
+    <button class="categoria-btn" onclick="cambiarCategoria('mari', this)">❤️ Mari</button>
+    <button class="categoria-btn" onclick="cambiarCategoria('familia', this)">👨‍👩‍👧 Familia</button>
+    <button class="categoria-btn" onclick="cambiarCategoria('terror', this)">👻 Terror</button>
+    <button class="categoria-btn" onclick="cambiarCategoria('accion', this)">💥 Acción</button>
   </div>
 
   <div id="panelLogin" class="panel">
@@ -462,13 +444,8 @@ header p {
       placeholder="Descripción"
     ></textarea>
 
-    <button onclick="agregarPelicula()">
-      ➕ Agregar película
-    </button>
-
-    <button onclick="cerrarSesion()">
-      Cerrar sesión
-    </button>
+    <button onclick="agregarPelicula()">➕ Agregar película</button>
+    <button onclick="cerrarSesion()">Cerrar sesión</button>
 
     <p id="mensajeAdmin"></p>
   </div>
@@ -491,17 +468,17 @@ header p {
 
   <div class="modal-contenido">
 
-    <button class="cerrar" onclick="cerrarVideo()">
-      ✕ Cerrar
-    </button>
+    <button class="cerrar" onclick="cerrarVideo()">✕ Cerrar</button>
 
+    <!-- REPRODUCTOR PARA LA PRUEBA DEL NUEVO MP4 -->
     <video
       id="videoPlayer"
       controls
       playsinline
       preload="metadata"
-      type="video/mp4"
-    ></video>
+    >
+      <source id="videoSource" type="video/mp4">
+    </video>
 
     <a
       id="abrirDropbox"
@@ -518,14 +495,13 @@ header p {
 
 <script>
 
-const SUPABASE_URL =
-  "https://jnxtndenqxgqqzmmckco.supabase.co";
+const SUPABASE_URL = "https://jnxtndenqxgqqzmmckco.supabase.co";
+const SUPABASE_KEY = "sb_publishable_3gyntuSUrTd999iy3dbkoQ_d-CcVBG4";
 
-const SUPABASE_KEY =
-  "sb_publishable_3gyntuSUrTd999iy3dbkoQ_d-CcVBG4";
-
-const supabaseClient =
-  supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 let todasLasPeliculas = [];
 let categoriaActual = "todas";
@@ -538,9 +514,7 @@ document.addEventListener("DOMContentLoaded", async function() {
 
   cerrarVideo();
 
-  const buscador =
-    document.getElementById("buscador");
-
+  const buscador = document.getElementById("buscador");
   buscador.value = "";
 
   await comprobarSesion();
@@ -550,24 +524,20 @@ document.addEventListener("DOMContentLoaded", async function() {
 
 async function comprobarSesion() {
 
-  const resultado =
-    await supabaseClient.auth.getSession();
+  const resultado = await supabaseClient.auth.getSession();
 
-  usuarioActual =
-    resultado.data.session
-      ? resultado.data.session.user
-      : null;
+  usuarioActual = resultado.data.session
+    ? resultado.data.session.user
+    : null;
 
   actualizarPanelAdmin();
+
 }
 
 async function iniciarSesion() {
 
-  const email =
-    document.getElementById("email").value.trim();
-
-  const password =
-    document.getElementById("password").value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
   const resultado =
     await supabaseClient.auth.signInWithPassword({
@@ -583,8 +553,7 @@ async function iniciarSesion() {
     return;
   }
 
-  usuarioActual =
-    resultado.data.user;
+  usuarioActual = resultado.data.user;
 
   document.getElementById("mensajeLogin").textContent =
     "✅ Sesión iniciada";
@@ -592,6 +561,7 @@ async function iniciarSesion() {
   actualizarPanelAdmin();
 
   await cargarPeliculas();
+
 }
 
 async function cerrarSesion() {
@@ -603,32 +573,29 @@ async function cerrarSesion() {
   actualizarPanelAdmin();
 
   alert("Sesión cerrada");
+
 }
 
 function abrirAdministracion() {
 
   if (usuarioActual) {
 
-    document
-      .getElementById("panelAdmin")
+    document.getElementById("panelAdmin")
       .classList.toggle("visible");
 
   } else {
 
-    document
-      .getElementById("panelLogin")
+    document.getElementById("panelLogin")
       .classList.toggle("visible");
 
   }
+
 }
 
 function actualizarPanelAdmin() {
 
-  const login =
-    document.getElementById("panelLogin");
-
-  const admin =
-    document.getElementById("panelAdmin");
+  const login = document.getElementById("panelLogin");
+  const admin = document.getElementById("panelAdmin");
 
   if (usuarioActual) {
 
@@ -640,15 +607,15 @@ function actualizarPanelAdmin() {
     admin.classList.remove("visible");
 
   }
+
 }
 
 async function cargarPeliculas() {
 
-  const resultado =
-    await supabaseClient
-      .from("peliculas")
-      .select("*")
-      .order("created_at", {ascending:false});
+  const resultado = await supabaseClient
+    .from("peliculas")
+    .select("*")
+    .order("created_at", {ascending:false});
 
   if (resultado.error) {
 
@@ -660,10 +627,10 @@ async function cargarPeliculas() {
     return;
   }
 
-  todasLasPeliculas =
-    resultado.data || [];
+  todasLasPeliculas = resultado.data || [];
 
   mostrarPeliculas();
+
 }
 
 function obtenerDatos(pelicula) {
@@ -686,20 +653,22 @@ function obtenerDatos(pelicula) {
   }
 
   return {
+
     anio:"",
     calidad:"",
     tamano:"",
     categoria:"principal",
     texto:pelicula.descripcion || ""
+
   };
+
 }
 
 function cambiarCategoria(categoria, boton) {
 
   categoriaActual = categoria;
 
-  document
-    .querySelectorAll(".categoria-btn")
+  document.querySelectorAll(".categoria-btn")
     .forEach(function(btn) {
 
       btn.classList.remove("activo");
@@ -711,6 +680,7 @@ function cambiarCategoria(categoria, boton) {
   document.getElementById("buscador").value = "";
 
   mostrarPeliculas();
+
 }
 
 function mostrarPeliculas() {
@@ -722,9 +692,7 @@ function mostrarPeliculas() {
     document.getElementById("buscador");
 
   let busqueda =
-    (buscador.value || "")
-      .toLowerCase()
-      .trim();
+    (buscador.value || "").toLowerCase().trim();
 
   if (busqueda.includes("@")) {
 
@@ -736,8 +704,7 @@ function mostrarPeliculas() {
   let peliculas =
     todasLasPeliculas.filter(function(pelicula) {
 
-      const datos =
-        obtenerDatos(pelicula);
+      const datos = obtenerDatos(pelicula);
 
       const categoria =
         datos.categoria || "principal";
@@ -771,11 +738,10 @@ function mostrarPeliculas() {
 
         coincideCategoria =
           categoriaNormalizada === categoriaActual;
+
       }
 
-      return
-        coincideBusqueda &&
-        coincideCategoria;
+      return coincideBusqueda && coincideCategoria;
 
     });
 
@@ -785,6 +751,7 @@ function mostrarPeliculas() {
       '<div class="mensaje">🍿 No hay películas en esta sección.</div>';
 
     return;
+
   }
 
   contenedor.innerHTML =
@@ -801,8 +768,7 @@ function mostrarPeliculas() {
 
 function crearTarjeta(pelicula, indice) {
 
-  const datos =
-    obtenerDatos(pelicula);
+  const datos = obtenerDatos(pelicula);
 
   const categoria =
     datos.categoria || "principal";
@@ -855,13 +821,11 @@ function crearTarjeta(pelicula, indice) {
 
       ${
         poster
-
           ? `<img
-                class="poster"
-                src="${poster}"
-                alt="${pelicula.titulo}"
+               class="poster"
+               src="${poster}"
+               alt="${pelicula.titulo}"
              >`
-
           : `<div class="poster"></div>`
       }
 
@@ -890,17 +854,17 @@ function crearTarjeta(pelicula, indice) {
 
           ${
             enlaceDescarga
-
-              ? `<a
-                   class="btn descargar"
-                   href="${enlaceDescarga}"
-                   target="_blank"
-                   rel="noopener"
-                   download
-                 >
-                   ⬇️ Descargar
-                 </a>`
-
+              ? `
+                <a
+                  class="btn descargar"
+                  href="${enlaceDescarga}"
+                  target="_blank"
+                  rel="noopener"
+                  download
+                >
+                  ⬇️ Descargar
+                </a>
+              `
               : ""
           }
 
@@ -914,14 +878,14 @@ function crearTarjeta(pelicula, indice) {
 
           ${
             usuarioActual
-
-              ? `<button
-                   class="btn eliminar"
-                   onclick="eliminarPelicula('${pelicula.id}')"
-                 >
-                   🗑️
-                 </button>`
-
+              ? `
+                <button
+                  class="btn eliminar"
+                  onclick="eliminarPelicula('${pelicula.id}')"
+                >
+                  🗑️
+                </button>
+              `
               : ""
           }
 
@@ -932,22 +896,8 @@ function crearTarjeta(pelicula, indice) {
     </div>
 
   `;
+
 }
-
-/*
-====================================================
-DROPBOX
-====================================================
-
-Para reproducción:
-Dropbox se convierte a raw=1.
-
-Para descarga:
-Dropbox se convierte a dl=1.
-
-No modificamos el enlace original guardado
-en Supabase.
-*/
 
 function convertirDropbox(url, descargar) {
 
@@ -982,13 +932,8 @@ function convertirDropbox(url, descargar) {
     return url.trim();
 
   }
-}
 
-/*
-====================================================
-REPRODUCTOR
-====================================================
-*/
+}
 
 function verPeliculaPorIndice(indice) {
 
@@ -1007,17 +952,8 @@ function verPeliculaPorIndice(indice) {
     );
 
     return;
+
   }
-
-  /*
-  IMPORTANTE:
-
-  La película se reproduce directamente desde
-  Dropbox utilizando raw=1.
-
-  Esto permite probar el MP4 H.264 nuevo sin
-  cambiar el resto del sistema.
-  */
 
   const urlVideo =
     convertirDropbox(
@@ -1028,6 +964,9 @@ function verPeliculaPorIndice(indice) {
   const video =
     document.getElementById("videoPlayer");
 
+  const fuente =
+    document.getElementById("videoSource");
+
   const modal =
     document.getElementById("modal");
 
@@ -1037,43 +976,27 @@ function verPeliculaPorIndice(indice) {
   modal.hidden = false;
   modal.classList.add("visible");
 
-  /*
-  Limpiamos completamente cualquier película
-  anterior antes de cargar la nueva.
-  */
-
   video.pause();
 
   video.removeAttribute("src");
 
-  video.load();
-
-  /*
-  Indicamos explícitamente que es un MP4.
-  */
-
-  video.setAttribute(
-    "type",
-    "video/mp4"
-  );
-
-  video.src =
-    urlVideo;
-
-  enlace.href =
-    enlaceOriginal;
-
-  /*
-  Cargamos nuevamente el archivo.
-  */
+  fuente.removeAttribute("src");
 
   video.load();
 
   /*
-  Intentamos iniciar reproducción.
-  Si la TV bloquea autoplay, los controles
-  seguirán disponibles para iniciar manualmente.
+    CAMBIO PARA LA PRUEBA:
+    El nuevo archivo convertido por HandBrake
+    es MP4/H.264, por lo que indicamos
+    explícitamente video/mp4 al navegador.
   */
+
+  fuente.src = urlVideo;
+  fuente.type = "video/mp4";
+
+  enlace.href = enlaceOriginal;
+
+  video.load();
 
   video.play().catch(function(error) {
 
@@ -1091,10 +1014,15 @@ function cerrarVideo() {
   const video =
     document.getElementById("videoPlayer");
 
+  const fuente =
+    document.getElementById("videoSource");
+
   const modal =
     document.getElementById("modal");
 
   video.pause();
+
+  fuente.removeAttribute("src");
 
   video.removeAttribute("src");
 
@@ -1103,6 +1031,7 @@ function cerrarVideo() {
   modal.classList.remove("visible");
 
   modal.hidden = true;
+
 }
 
 async function agregarPelicula() {
@@ -1112,37 +1041,32 @@ async function agregarPelicula() {
     alert("Debes iniciar sesión.");
 
     return;
+
   }
 
   const titulo =
     document.getElementById("titulo")
-      .value
-      .trim();
+      .value.trim();
 
   const poster =
     document.getElementById("poster")
-      .value
-      .trim();
+      .value.trim();
 
   const enlace =
     document.getElementById("enlace")
-      .value
-      .trim();
+      .value.trim();
 
   const anio =
     document.getElementById("anio")
-      .value
-      .trim();
+      .value.trim();
 
   const calidad =
     document.getElementById("calidad")
-      .value
-      .trim();
+      .value.trim();
 
   const tamano =
     document.getElementById("tamano")
-      .value
-      .trim();
+      .value.trim();
 
   const categoria =
     document.getElementById("categoria")
@@ -1154,8 +1078,7 @@ async function agregarPelicula() {
 
   const descripcion =
     document.getElementById("descripcion")
-      .value
-      .trim();
+      .value.trim();
 
   if (!titulo || !enlace) {
 
@@ -1164,6 +1087,7 @@ async function agregarPelicula() {
     );
 
     return;
+
   }
 
   const datos = {
@@ -1182,39 +1106,25 @@ async function agregarPelicula() {
       .insert({
 
         titulo:titulo,
-
-        descripcion:
-          JSON.stringify(datos),
-
-        poster_url:
-          poster,
-
-        videos_url:
-          enlace,
-
-        favorita_mari:
-          favoritaMari
+        descripcion:JSON.stringify(datos),
+        poster_url:poster,
+        videos_url:enlace,
+        favorita_mari:favoritaMari
 
       });
 
   if (resultado.error) {
 
-    console.error(
-      resultado.error
-    );
+    console.error(resultado.error);
 
-    document.getElementById(
-      "mensajeAdmin"
-    ).textContent =
-      "❌ " +
-      resultado.error.message;
+    document.getElementById("mensajeAdmin").textContent =
+      "❌ " + resultado.error.message;
 
     return;
+
   }
 
-  document.getElementById(
-    "mensajeAdmin"
-  ).textContent =
+  document.getElementById("mensajeAdmin").textContent =
     "✅ Película agregada";
 
   document.getElementById("titulo").value = "";
@@ -1227,6 +1137,7 @@ async function agregarPelicula() {
   document.getElementById("favoritaMari").checked = false;
 
   await cargarPeliculas();
+
 }
 
 async function eliminarPelicula(id) {
@@ -1236,6 +1147,7 @@ async function eliminarPelicula(id) {
     alert("Debes iniciar sesión.");
 
     return;
+
   }
 
   const confirmar =
@@ -1254,21 +1166,21 @@ async function eliminarPelicula(id) {
   if (resultado.error) {
 
     alert(
-      "❌ " +
-      resultado.error.message
+      "❌ " + resultado.error.message
     );
 
     return;
+
   }
 
   await cargarPeliculas();
+
 }
 
-/*
-====================================================
-GOOGLE CAST
-====================================================
-*/
+
+/* =========================
+   GOOGLE CAST
+   ========================= */
 
 async function transmitirPeliculaPorIndice(indice) {
 
@@ -1287,6 +1199,7 @@ async function transmitirPeliculaPorIndice(indice) {
     );
 
     return;
+
   }
 
   try {
@@ -1304,12 +1217,11 @@ async function transmitirPeliculaPorIndice(indice) {
       );
 
       return;
+
     }
 
     const context =
-      cast.framework
-        .CastContext
-        .getInstance();
+      cast.framework.CastContext.getInstance();
 
     let session =
       context.getCurrentSession();
@@ -1329,7 +1241,9 @@ async function transmitirPeliculaPorIndice(indice) {
         );
 
         return;
+
       }
+
     }
 
     if (!session) {
@@ -1339,6 +1253,7 @@ async function transmitirPeliculaPorIndice(indice) {
       );
 
       return;
+
     }
 
     const urlVideo =
@@ -1365,11 +1280,9 @@ async function transmitirPeliculaPorIndice(indice) {
     if (pelicula.poster_url) {
 
       mediaInfo.metadata.images = [
-
         new chrome.cast.Image(
           pelicula.poster_url
         )
-
       ];
 
     }
@@ -1382,9 +1295,7 @@ async function transmitirPeliculaPorIndice(indice) {
     request.autoplay = true;
     request.currentTime = 0;
 
-    await session.loadMedia(
-      request
-    );
+    await session.loadMedia(request);
 
     console.log(
       "✅ Película enviada por Google Cast."
@@ -1400,7 +1311,9 @@ async function transmitirPeliculaPorIndice(indice) {
     alert(
       "No se pudo enviar la película por Google Cast. Revisa que la TV esté disponible y vuelve a intentarlo."
     );
+
   }
+
 }
 
 </script>
