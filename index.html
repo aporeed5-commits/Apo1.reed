@@ -321,10 +321,13 @@ header p {
 }
 
 #videoPlayer {
+  display:block;
   width:100%;
+  height:auto;
   max-height:80vh;
   background:black;
   border-radius:12px;
+  object-fit:contain;
 }
 
 .cerrar {
@@ -470,15 +473,14 @@ header p {
 
     <button class="cerrar" onclick="cerrarVideo()">✕ Cerrar</button>
 
-    <!-- REPRODUCTOR PARA LA PRUEBA DEL NUEVO MP4 -->
     <video
       id="videoPlayer"
       controls
       playsinline
-      preload="metadata"
-    >
-      <source id="videoSource" type="video/mp4">
-    </video>
+      webkit-playsinline
+      preload="auto"
+      type="video/mp4"
+    ></video>
 
     <a
       id="abrirDropbox"
@@ -964,9 +966,6 @@ function verPeliculaPorIndice(indice) {
   const video =
     document.getElementById("videoPlayer");
 
-  const fuente =
-    document.getElementById("videoSource");
-
   const modal =
     document.getElementById("modal");
 
@@ -976,36 +975,61 @@ function verPeliculaPorIndice(indice) {
   modal.hidden = false;
   modal.classList.add("visible");
 
+  /*
+    REPRODUCTOR COMPATIBLE:
+    Se utiliza directamente el atributo src
+    del elemento <video>, en lugar de <source>.
+    Esto evita una capa adicional de manejo
+    que puede comportarse de forma diferente
+    en navegadores antiguos de Smart TV.
+  */
+
   video.pause();
 
   video.removeAttribute("src");
 
-  fuente.removeAttribute("src");
-
   video.load();
 
-  /*
-    CAMBIO PARA LA PRUEBA:
-    El nuevo archivo convertido por HandBrake
-    es MP4/H.264, por lo que indicamos
-    explícitamente video/mp4 al navegador.
-  */
+  video.setAttribute("type", "video/mp4");
 
-  fuente.src = urlVideo;
-  fuente.type = "video/mp4";
+  video.src = urlVideo;
 
   enlace.href = enlaceOriginal;
 
   video.load();
 
-  video.play().catch(function(error) {
+  /*
+    Esperamos a que el navegador tenga
+    información suficiente del archivo
+    antes de intentar reproducirlo.
+  */
 
-    console.log(
-      "Autoplay bloqueado:",
-      error
+  const iniciarReproduccion = function() {
+
+    video.play().catch(function(error) {
+
+      console.log(
+        "Autoplay bloqueado:",
+        error
+      );
+
+    });
+
+  };
+
+  if (video.readyState >= 2) {
+
+    iniciarReproduccion();
+
+  } else {
+
+    video.addEventListener(
+      "loadeddata",
+      iniciarReproduccion,
+      {once:true}
     );
 
-  });
+  }
 
 }
 
@@ -1014,15 +1038,12 @@ function cerrarVideo() {
   const video =
     document.getElementById("videoPlayer");
 
-  const fuente =
-    document.getElementById("videoSource");
-
   const modal =
     document.getElementById("modal");
 
-  video.pause();
+  if (!video) return;
 
-  fuente.removeAttribute("src");
+  video.pause();
 
   video.removeAttribute("src");
 
