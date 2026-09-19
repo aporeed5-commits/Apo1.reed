@@ -216,6 +216,11 @@ header p {
   color:white;
 }
 
+.ver-dropbox {
+  background:#147ef5;
+  color:white;
+}
+
 .descargar {
   background:#292936;
   color:white;
@@ -817,6 +822,17 @@ function crearTarjeta(pelicula, indice) {
       true
     );
 
+  /*
+    VER 2:
+    Usamos el enlace ORIGINAL de Dropbox.
+    No lo transformamos a raw=1.
+    Así la prueba pasa directamente por
+    la página de Dropbox.
+  */
+
+  const enlaceDropbox =
+    pelicula.videos_url || "";
+
   return `
 
     <div class="tarjeta">
@@ -847,12 +863,31 @@ function crearTarjeta(pelicula, indice) {
 
         <div class="botones">
 
+          <!-- VER 1: reproductor de Apo1.reed -->
+
           <button
             class="btn ver"
             onclick="verPeliculaPorIndice(${indice})"
           >
-            ▶️ Ver
+            ▶️ Ver 1
           </button>
+
+          <!-- VER 2: Dropbox directamente -->
+
+          ${
+            enlaceDropbox
+              ? `
+                <a
+                  class="btn ver-dropbox"
+                  href="${enlaceDropbox}"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  ☁️ Ver 2
+                </a>
+              `
+              : ""
+          }
 
           ${
             enlaceDescarga
@@ -975,15 +1010,6 @@ function verPeliculaPorIndice(indice) {
   modal.hidden = false;
   modal.classList.add("visible");
 
-  /*
-    REPRODUCTOR COMPATIBLE:
-    Se utiliza directamente el atributo src
-    del elemento <video>, en lugar de <source>.
-    Esto evita una capa adicional de manejo
-    que puede comportarse de forma diferente
-    en navegadores antiguos de Smart TV.
-  */
-
   video.pause();
 
   video.removeAttribute("src");
@@ -997,12 +1023,6 @@ function verPeliculaPorIndice(indice) {
   enlace.href = enlaceOriginal;
 
   video.load();
-
-  /*
-    Esperamos a que el navegador tenga
-    información suficiente del archivo
-    antes de intentar reproducirlo.
-  */
 
   const iniciarReproduccion = function() {
 
