@@ -567,6 +567,15 @@ async function eliminarPelicula(id){
 }
 
 /* GOOGLE CAST */
+async function esperarGoogleCast(maximoMs=10000){
+  const inicio=Date.now();
+  while(Date.now()-inicio<maximoMs){
+    if(googleCastDisponible && inicializarGoogleCast()) return true;
+    await new Promise(resolve=>setTimeout(resolve,250));
+  }
+  return googleCastInicializado;
+}
+
 async function transmitirPeliculaPorIndice(indice){
   if(castEnviando) return;
   const pelicula=todasLasPeliculas[indice];
@@ -576,8 +585,10 @@ async function transmitirPeliculaPorIndice(indice){
 
   castEnviando=true;
   try{
-    if(!googleCastInicializado && !inicializarGoogleCast()){
-      alert("Google Cast todavía no está listo. Espera unos segundos y vuelve a pulsar TV.");
+    // La API de Cast puede tardar en estar lista al abrir la página desde el celular.
+    // Esperamos aquí en lugar de descartar silenciosamente el primer toque.
+    if(!await esperarGoogleCast()){
+      alert("Google Cast no terminó de cargar. Recarga la página y vuelve a pulsar TV.");
       return;
     }
     const context=cast.framework.CastContext.getInstance();
@@ -611,8 +622,14 @@ async function transmitirPeliculaPorIndice(indice){
     request.autoplay=true;
     request.currentTime=0;
 
+    console.log("Enviando a Google Cast:",{
+      titulo:pelicula.titulo||"Película",
+      url:urlVideo,
+      tipo:mediaInfo.contentType,
+      sesionActiva:!!context.getCurrentSession()
+    });
     await session.loadMedia(request);
-    console.log("Película enviada correctamente por Google Cast.");
+    console.log("Google Cast aceptó la carga de la película.");
   }catch(error){
     console.error("Error al enviar por Google Cast:",error);
     alert("La TV se conectó, pero no se pudo iniciar la película. Puede ser un problema de formato o del enlace de Dropbox. Revisa la consola para ver el error.");
