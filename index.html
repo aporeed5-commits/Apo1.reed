@@ -567,15 +567,6 @@ async function eliminarPelicula(id){
 }
 
 /* GOOGLE CAST */
-async function esperarGoogleCast(maximoMs=10000){
-  const inicio=Date.now();
-  while(Date.now()-inicio<maximoMs){
-    if(googleCastDisponible && inicializarGoogleCast()) return true;
-    await new Promise(resolve=>setTimeout(resolve,250));
-  }
-  return googleCastInicializado;
-}
-
 async function transmitirPeliculaPorIndice(indice){
   if(castEnviando) return;
   const pelicula=todasLasPeliculas[indice];
@@ -583,30 +574,28 @@ async function transmitirPeliculaPorIndice(indice){
   const enlaceOriginal=pelicula.videos_url||"";
   if(!enlaceOriginal){alert("Esta película no tiene un enlace de Dropbox.");return;}
 
+  // IMPORTANTE: requestSession debe ejecutarse directamente desde el toque
+  // del usuario. No debe haber un await antes, porque el navegador móvil
+  // puede perder el permiso de interacción y el primer toque no abre Cast.
+  if(!googleCastDisponible || !inicializarGoogleCast()){
+    alert("Google Cast todavía está cargando. Espera unos segundos y vuelve a pulsar TV.");
+    return;
+  }
+
   castEnviando=true;
   try{
-    // La API de Cast puede tardar en estar lista al abrir la página desde el celular.
-    // Esperamos aquí en lugar de descartar silenciosamente el primer toque.
-    if(!await esperarGoogleCast()){
-      alert("Google Cast no terminó de cargar. Recarga la página y vuelve a pulsar TV.");
-      return;
-    }
     const context=cast.framework.CastContext.getInstance();
     let session=context.getCurrentSession();
 
     if(!session){
-      try{
-        await context.requestSession();
-      }catch(error){
-        console.error("No se pudo iniciar la sesión de Google Cast:",error);
-        alert("No se pudo conectar con la TV. Comprueba que esté encendida, en la misma red y que Google Cast esté disponible.");
-        return;
-      }
+      // Se llama antes de cualquier await para conservar el gesto del toque.
+      const solicitudSesion=context.requestSession();
+      await solicitudSesion;
       session=context.getCurrentSession();
     }
 
     if(!session){
-      alert("La sesión de Google Cast no se inició. Vuelve a pulsar TV.");
+      alert("No se pudo iniciar la sesión de Google Cast. Vuelve a pulsar TV.");
       return;
     }
 
@@ -622,17 +611,11 @@ async function transmitirPeliculaPorIndice(indice){
     request.autoplay=true;
     request.currentTime=0;
 
-    console.log("Enviando a Google Cast:",{
-      titulo:pelicula.titulo||"Película",
-      url:urlVideo,
-      tipo:mediaInfo.contentType,
-      sesionActiva:!!context.getCurrentSession()
-    });
     await session.loadMedia(request);
     console.log("Google Cast aceptó la carga de la película.");
   }catch(error){
     console.error("Error al enviar por Google Cast:",error);
-    alert("La TV se conectó, pero no se pudo iniciar la película. Puede ser un problema de formato o del enlace de Dropbox. Revisa la consola para ver el error.");
+    alert("No se pudo enviar la película. Comprueba que la TV esté encendida, en la misma red y que Google Cast esté disponible. Si la TV se conecta pero no reproduce, puede ser el formato o el enlace.");
   }finally{
     castEnviando=false;
   }
