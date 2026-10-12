@@ -46,6 +46,25 @@ header p{margin:8px 0 0;color:#bbb}
 .checkbox{display:flex;align-items:center;gap:8px;margin:10px 0}
 .checkbox input{width:auto}
 .mensaje{color:#aaa;text-align:center;padding:35px}
+.sagas-admin{margin-top:22px;padding-top:18px;border-top:1px solid #333344}
+.sagas-admin h3{margin:8px 0 12px}
+.sagas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.saga-card{background:#17171f;border:1px solid #292936;border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s}
+.saga-card:hover{transform:translateY(-2px);border-color:#5c4cff}
+.saga-poster{width:100%;height:245px;object-fit:cover;background:#222}
+.saga-card-info{padding:12px}
+.saga-card-title{font-weight:bold;font-size:17px}
+.saga-card-count{color:#aaa;font-size:13px;margin-top:6px}
+.saga-admin-list,.saga-movie-picker,.saga-order-list{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.saga-pick-row,.saga-order-row{display:flex;align-items:center;gap:10px;padding:9px;background:#101017;border:1px solid #2a2a38;border-radius:9px}
+.saga-pick-row input{width:auto;margin:0;flex-shrink:0}
+.saga-pick-row span,.saga-order-row span{flex:1;min-width:0;overflow-wrap:anywhere}
+.saga-order-row button{margin:0;padding:6px 9px}
+.saga-admin-actions{display:flex;gap:8px;flex-wrap:wrap}
+.saga-admin-actions button{margin-top:4px}
+.saga-detalle-cabecera{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.saga-detalle-cabecera button{margin:0;flex-shrink:0}
+@media(max-width:600px){.sagas-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.saga-poster{height:220px}.saga-detalle-cabecera{align-items:flex-start;flex-wrap:wrap}}
 .modal{display:none!important;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:2000;align-items:center;justify-content:center;padding:20px}
 .modal.visible{display:flex!important}
 .modal[hidden],.modal:not(.visible){display:none!important}
@@ -73,7 +92,11 @@ header p{margin:8px 0 0;color:#bbb}
     <button class="categoria-btn" onclick="cambiarCategoria('familia', this)">👨‍👩‍👧 Familia</button>
     <button class="categoria-btn" onclick="cambiarCategoria('terror', this)">👻 Terror</button>
     <button class="categoria-btn" onclick="cambiarCategoria('accion', this)">💥 Acción</button>
+    <button class="categoria-btn" onclick="cambiarCategoria('suspenso', this)">🕵️ Suspenso</button>
+    <button class="categoria-btn" onclick="cambiarCategoria('cienciaficcion', this)">🚀 Ciencia ficción</button>
+    <button class="categoria-btn" onclick="cambiarCategoria('sagas', this)">🎞️ Sagas</button>
   </div>
+  <div id="vistaSagas" style="display:none"></div>
   <div id="panelLogin" class="panel">
     <h2>🔐 Administración</h2>
     <input id="email" name="email-admin" type="email" autocomplete="email" placeholder="Correo">
@@ -95,11 +118,29 @@ header p{margin:8px 0 0;color:#bbb}
       <option value="familia">👨‍👩‍👧 Familia</option>
       <option value="terror">👻 Terror</option>
       <option value="accion">💥 Acción</option>
+      <option value="suspenso">🕵️ Suspenso</option>
+      <option value="cienciaficcion">🚀 Ciencia ficción</option>
     </select>
     <div class="checkbox"><input id="favoritaMari" type="checkbox"><label for="favoritaMari">❤️ Favorita de Mari</label></div>
     <textarea id="descripcion" rows="4" placeholder="Descripción"></textarea>
     <button id="botonGuardar" onclick="agregarPelicula()">➕ Agregar película</button>
     <button id="botonCancelarEdicion" onclick="cancelarEdicion()" style="display:none;background:#555">Cancelar edición</button>
+    <div class="sagas-admin">
+      <h3>🎞️ Administrar sagas</h3>
+      <p style="color:#aaa;font-size:13px;line-height:1.45">Crea una colección con portada y selecciona películas que ya existen en tu catálogo. Puedes ordenar la lista sin duplicar ni borrar películas.</p>
+      <input id="sagaNombre" placeholder="Nombre de la saga (ej. Insidious)">
+      <input id="sagaPortada" placeholder="Enlace de la portada general de la saga">
+      <div id="sagaSelectorPeliculas" class="saga-movie-picker"></div>
+      <h4>Orden de las películas seleccionadas</h4>
+      <div id="sagaOrdenPeliculas" class="saga-order-list"></div>
+      <div class="saga-admin-actions">
+        <button id="botonGuardarSaga" onclick="guardarSaga()">➕ Crear saga</button>
+        <button id="botonCancelarSaga" onclick="cancelarEdicionSaga()" style="display:none;background:#555">Cancelar</button>
+      </div>
+      <p id="mensajeSaga" style="color:#aaa"></p>
+      <h4>Sagas creadas</h4>
+      <div id="listaSagasAdmin" class="saga-admin-list"></div>
+    </div>
     <button onclick="cerrarSesion()">Cerrar sesión</button>
     <p id="mensajeAdmin"></p>
   </div>
@@ -122,6 +163,10 @@ let todasLasPeliculas=[];
 let categoriaActual="todas";
 let usuarioActual=null;
 let peliculaEditandoId=null;
+let todasLasSagas=[];
+let sagaActualId=null;
+let sagaEditandoId=null;
+let sagaPeliculasSeleccionadas=[];
 
 let googleCastDisponible=false;
 let googleCastInicializado=false;
@@ -172,6 +217,7 @@ document.addEventListener("DOMContentLoaded",async function(){
   document.getElementById("buscador").value="";
   await comprobarSesion();
   await cargarPeliculas();
+  await cargarSagas();
 });
 
 async function comprobarSesion(){
@@ -192,6 +238,7 @@ async function iniciarSesion(){
   document.getElementById("mensajeLogin").textContent="✅ Sesión iniciada";
   actualizarPanelAdmin();
   await cargarPeliculas();
+  await cargarSagas();
 }
 
 async function cerrarSesion(){
@@ -230,6 +277,21 @@ async function cargarPeliculas(){
   }
   todasLasPeliculas=resultado.data||[];
   mostrarPeliculas();
+  if(usuarioActual) renderizarSelectorPeliculasSaga();
+}
+
+async function cargarSagas(){
+  const resultado=await supabaseClient.from("sagas").select("*").order("created_at",{ascending:false});
+  if(resultado.error){
+    console.warn("No se pudieron cargar las sagas. Comprueba que hayas creado la tabla sagas con el SQL incluido.",resultado.error);
+    todasLasSagas=[];
+    if(categoriaActual==="sagas") mostrarPeliculas();
+    if(usuarioActual) document.getElementById("listaSagasAdmin").innerHTML='<p style="color:#ff9b9b">No se pudieron cargar las sagas. Crea la tabla sagas en Supabase con el SQL que acompaña al HTML.</p>';
+    return;
+  }
+  todasLasSagas=resultado.data||[];
+  mostrarPeliculas();
+  renderizarListaSagasAdmin();
 }
 
 function obtenerDatos(pelicula){
@@ -251,14 +313,28 @@ function obtenerDatos(pelicula){
 
 function cambiarCategoria(categoria,boton){
   categoriaActual=categoria;
+  sagaActualId=null;
   document.querySelectorAll(".categoria-btn").forEach(btn=>btn.classList.remove("activo"));
   boton.classList.add("activo");
   document.getElementById("buscador").value="";
   mostrarPeliculas();
 }
 
+function activarBotonCategoria(categoria){
+  document.querySelectorAll(".categoria-btn").forEach(btn=>btn.classList.toggle("activo",(btn.getAttribute("onclick")||"").includes("'"+categoria+"'")));
+}
+
 function mostrarPeliculas(){
   const contenedor=document.getElementById("peliculas");
+  const vistaSagas=document.getElementById("vistaSagas");
+  if(categoriaActual==="sagas"){
+    contenedor.style.display="none";
+    vistaSagas.style.display="block";
+    mostrarVistaSagas();
+    return;
+  }
+  contenedor.style.display="grid";
+  vistaSagas.style.display="none";
   const buscador=document.getElementById("buscador");
   let busqueda=(buscador.value||"").toLowerCase().trim();
   if(busqueda.includes("@")){buscador.value="";busqueda="";}
@@ -302,6 +378,8 @@ function crearTarjeta(pelicula,indice){
   if(categoria==="familia") etiquetas+='<span class="etiqueta">👨‍👩‍👧 Familia</span>';
   if(categoria==="terror") etiquetas+='<span class="etiqueta">👻 Terror</span>';
   if(categoria==="accion") etiquetas+='<span class="etiqueta">💥 Acción</span>';
+  if(categoria==="suspenso") etiquetas+='<span class="etiqueta">🕵️ Suspenso</span>';
+  if(categoria==="cienciaficcion") etiquetas+='<span class="etiqueta">🚀 Ciencia ficción</span>';
   if(pelicula.favorita_mari===true) etiquetas+='<span class="etiqueta favorita">❤️ Mari</span>';
 
   const poster=pelicula.poster_url||"";
@@ -334,6 +412,145 @@ function crearTarjeta(pelicula,indice){
         </div>
       </div>
     </div>`;
+}
+
+function peliculasDeSaga(saga){
+  let ids=saga&&saga.pelicula_ids;
+  if(typeof ids==="string"){try{ids=JSON.parse(ids)}catch(e){ids=[]}}
+  if(!Array.isArray(ids)) ids=[];
+  return ids.map(id=>todasLasPeliculas.find(p=>String(p.id)===String(id))).filter(Boolean);
+}
+
+function mostrarVistaSagas(){
+  const vista=document.getElementById("vistaSagas");
+  if(sagaActualId!==null){
+    const saga=todasLasSagas.find(s=>String(s.id)===String(sagaActualId));
+    if(!saga){sagaActualId=null;mostrarVistaSagas();return;}
+    const peliculas=peliculasDeSaga(saga);
+    vista.innerHTML=`<div class="saga-detalle-cabecera"><button class="btn ver" onclick="volverASagas()">← Todas las sagas</button><div><h2 style="margin:0">${escaparHTML(saga.nombre)}</h2><div style="color:#aaa;font-size:13px">${peliculas.length} película(s), en el orden elegido</div></div></div><div class="peliculas">${peliculas.length?peliculas.map(p=>crearTarjeta(p,todasLasPeliculas.indexOf(p))).join(""):'<div class="mensaje">🍿 Todavía no hay películas en esta saga.</div>'}</div>`;
+    return;
+  }
+  if(!todasLasSagas.length){vista.innerHTML='<div class="mensaje">🎞️ Todavía no hay sagas creadas.</div>';return;}
+  vista.innerHTML='<div class="sagas-grid">'+todasLasSagas.map(saga=>{
+    const portada=saga.portada_url||"";
+    const cantidad=peliculasDeSaga(saga).length;
+    const imagen=portada?`<img class="saga-poster" src="${escaparHTML(portada)}" alt="${escaparHTML(saga.nombre)}" onerror="this.style.display='none'">`:'<div class="saga-poster poster-fallback">🎞️ Sin portada</div>';
+    return `<div class="saga-card" onclick="abrirSaga('${escaparHTML(saga.id)}')">${imagen}<div class="saga-card-info"><div class="saga-card-title">${escaparHTML(saga.nombre)}</div><div class="saga-card-count">${cantidad} película(s)</div></div></div>`;
+  }).join("")+'</div>';
+}
+
+function abrirSaga(id){sagaActualId=id;mostrarVistaSagas();window.scrollTo({top:0,behavior:"smooth"});}
+function volverASagas(){sagaActualId=null;mostrarVistaSagas();}
+
+function renderizarSelectorPeliculasSaga(){
+  const cont=document.getElementById("sagaSelectorPeliculas");
+  if(!cont) return;
+  if(!todasLasPeliculas.length){cont.innerHTML='<p style="color:#aaa">Primero agrega películas al catálogo para poder incluirlas en una saga.</p>';return;}
+  cont.innerHTML='<h4>Películas del catálogo</h4>'+todasLasPeliculas.map(p=>`<label class="saga-pick-row"><input type="checkbox" value="${escaparHTML(p.id)}" ${sagaPeliculasSeleccionadas.some(id=>String(id)===String(p.id))?'checked':''} onchange="alternarPeliculaSaga(this)"><span>${escaparHTML(p.titulo||'Sin título')}${obtenerDatos(p).anio?' ('+escaparHTML(obtenerDatos(p).anio)+')':''}</span></label>`).join("");
+  renderizarOrdenSaga();
+}
+
+function alternarPeliculaSaga(input){
+  const id=input.value;
+  if(input.checked){if(!sagaPeliculasSeleccionadas.some(x=>String(x)===String(id)))sagaPeliculasSeleccionadas.push(id);}
+  else sagaPeliculasSeleccionadas=sagaPeliculasSeleccionadas.filter(x=>String(x)!==String(id));
+  renderizarOrdenSaga();
+}
+
+function renderizarOrdenSaga(){
+  const cont=document.getElementById("sagaOrdenPeliculas");
+  if(!cont)return;
+  const peliculas=sagaPeliculasSeleccionadas.map(id=>todasLasPeliculas.find(p=>String(p.id)===String(id))).filter(Boolean);
+  if(!peliculas.length){cont.innerHTML='<p style="color:#aaa">Marca las películas que quieras y luego ordénalas aquí.</p>';return;}
+  cont.innerHTML=peliculas.map((p,i)=>`<div class="saga-order-row"><span>${i+1}. ${escaparHTML(p.titulo||'Sin título')}</span><button type="button" onclick="moverPeliculaSaga(${i},-1)" ${i===0?'disabled':''} aria-label="Subir">↑</button><button type="button" onclick="moverPeliculaSaga(${i},1)" ${i===peliculas.length-1?'disabled':''} aria-label="Bajar">↓</button></div>`).join("");
+}
+
+function moverPeliculaSaga(indice,direccion){
+  const nuevo=indice+direccion;
+  if(nuevo<0||nuevo>=sagaPeliculasSeleccionadas.length)return;
+  const temporal=sagaPeliculasSeleccionadas[indice];
+  sagaPeliculasSeleccionadas[indice]=sagaPeliculasSeleccionadas[nuevo];
+  sagaPeliculasSeleccionadas[nuevo]=temporal;
+  renderizarSelectorPeliculasSaga();
+}
+
+function limpiarFormularioSaga(){
+  document.getElementById("sagaNombre").value="";
+  document.getElementById("sagaPortada").value="";
+  sagaPeliculasSeleccionadas=[];
+  document.getElementById("mensajeSaga").textContent="";
+  document.getElementById("botonGuardarSaga").textContent="➕ Crear saga";
+  document.getElementById("botonGuardarSaga").onclick=guardarSaga;
+  document.getElementById("botonCancelarSaga").style.display="none";
+  sagaEditandoId=null;
+  renderizarSelectorPeliculasSaga();
+}
+function cancelarEdicionSaga(){limpiarFormularioSaga();}
+
+function editarSaga(id){
+  if(!usuarioActual){alert("Debes iniciar sesión.");return;}
+  const saga=todasLasSagas.find(s=>String(s.id)===String(id));
+  if(!saga)return;
+  sagaEditandoId=saga.id;
+  document.getElementById("sagaNombre").value=saga.nombre||"";
+  document.getElementById("sagaPortada").value=saga.portada_url||"";
+  let ids=saga.pelicula_ids;
+  if(typeof ids==="string"){try{ids=JSON.parse(ids)}catch(e){ids=[]}}
+  sagaPeliculasSeleccionadas=Array.isArray(ids)?ids.slice():[];
+  document.getElementById("botonGuardarSaga").textContent="💾 Guardar cambios de saga";
+  document.getElementById("botonGuardarSaga").onclick=guardarSaga;
+  document.getElementById("botonCancelarSaga").style.display="inline-block";
+  document.getElementById("mensajeSaga").textContent="Editando: "+saga.nombre;
+  renderizarSelectorPeliculasSaga();
+  document.getElementById("sagaNombre").scrollIntoView({behavior:"smooth",block:"center"});
+}
+
+async function guardarSaga(){
+  if(!usuarioActual){alert("Debes iniciar sesión para administrar sagas.");return;}
+  const nombre=document.getElementById("sagaNombre").value.trim();
+  const portada=document.getElementById("sagaPortada").value.trim();
+  const mensaje=document.getElementById("mensajeSaga");
+  if(!nombre){alert("Escribe el nombre de la saga.");return;}
+  const boton=document.getElementById("botonGuardarSaga");
+  boton.disabled=true;mensaje.textContent="Guardando saga...";
+  const registro={nombre,portada_url:portada,pelicula_ids:sagaPeliculasSeleccionadas.slice()};
+  try{
+    let resultado;
+    if(sagaEditandoId!==null){
+      resultado=await supabaseClient.from("sagas").update(registro).eq("id",sagaEditandoId).select("id").maybeSingle();
+      if(resultado.error)throw resultado.error;
+      if(!resultado.data)throw new Error("Supabase no confirmó los cambios. Revisa los permisos de la tabla sagas.");
+      mensaje.textContent="✅ Saga actualizada.";
+    }else{
+      resultado=await supabaseClient.from("sagas").insert(registro).select("id").single();
+      if(resultado.error)throw resultado.error;
+      mensaje.textContent="✅ Saga creada.";
+    }
+    await cargarSagas();
+    limpiarFormularioSaga();
+    mensaje.textContent="✅ Saga guardada correctamente.";
+  }catch(error){
+    console.error("Error al guardar saga:",error);
+    mensaje.textContent="❌ No se pudo guardar: "+(error.message||String(error));
+  }finally{boton.disabled=false;}
+}
+
+function renderizarListaSagasAdmin(){
+  const cont=document.getElementById("listaSagasAdmin");
+  if(!cont)return;
+  if(!todasLasSagas.length){cont.innerHTML='<p style="color:#aaa">Todavía no has creado sagas.</p>';return;}
+  cont.innerHTML=todasLasSagas.map(s=>`<div class="saga-pick-row"><span>${escaparHTML(s.nombre)} · ${peliculasDeSaga(s).length} película(s)</span><button type="button" onclick="editarSaga('${escaparHTML(s.id)}')">✏️ Editar</button><button type="button" style="background:#8b2635" onclick="eliminarSaga('${escaparHTML(s.id)}')">🗑️</button></div>`).join("");
+}
+
+async function eliminarSaga(id){
+  if(!usuarioActual){alert("Debes iniciar sesión.");return;}
+  const saga=todasLasSagas.find(s=>String(s.id)===String(id));
+  if(!confirm('¿Eliminar la saga "'+(saga?.nombre||'')+'"? Las películas originales no se borrarán.'))return;
+  const resultado=await supabaseClient.from("sagas").delete().eq("id",id);
+  if(resultado.error){alert("❌ No se pudo eliminar la saga: "+resultado.error.message);return;}
+  if(String(sagaEditandoId)===String(id))limpiarFormularioSaga();
+  if(String(sagaActualId)===String(id))sagaActualId=null;
+  await cargarSagas();
 }
 
 function reemplazarPoster(img){
